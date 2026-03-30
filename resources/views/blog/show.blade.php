@@ -65,7 +65,7 @@
         <h2 class="font-bold text-gray-800 dark:text-gray-100 text-lg mb-4">{{ __('Related Articles') }}</h2>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             @foreach($related as $r)
-            <a href="{{ route('blog.show', $r->slug) }}" class="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden p-4">
+            <a href="{{ route('blog.show', ['id' => $r->id, 'slug' => $r->slug]) }}" class="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden p-4">
                 <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-100 group-hover:text-violet-600 transition-colors line-clamp-2">{{ $r->title }}</h3>
                 <p class="text-xs text-gray-400 mt-2">{{ $r->published_at->diffForHumans() }}</p>
             </a>

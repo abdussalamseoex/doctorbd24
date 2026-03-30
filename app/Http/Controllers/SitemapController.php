@@ -32,7 +32,7 @@ class SitemapController extends Controller
 
     public function blog(): Response
     {
-        $posts   = BlogPost::published()->select('slug', 'published_at', 'updated_at')->get();
+        $posts   = BlogPost::published()->select('id', 'slug', 'published_at', 'updated_at')->get();
         $content = view('sitemap.blog', compact('posts'))->render();
         return response($content, 200)->header('Content-Type', 'application/xml');
     }
