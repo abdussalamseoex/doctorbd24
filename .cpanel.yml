@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/doctorbd/public_html/
+    - /bin/cp -R * $DEPLOYPATH
+    - cd $DEPLOYPATH && php artisan optimize:clear

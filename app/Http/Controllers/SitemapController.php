@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Doctor;
+use App\Models\Hospital;
+use App\Models\BlogPost;
+use App\Models\Specialty;
+use Illuminate\Http\Response;
+
+class SitemapController extends Controller
+{
+    public function index(): Response
+    {
+        $content = view('sitemap.index')->render();
+        return response($content, 200)->header('Content-Type', 'application/xml');
+    }
+
+    public function doctors(): Response
+    {
+        $doctors = Doctor::where('verified', true)->select('slug', 'updated_at')->get();
+        $content = view('sitemap.doctors', compact('doctors'))->render();
+        return response($content, 200)->header('Content-Type', 'application/xml');
+    }
+
+    public function hospitals(): Response
+    {
+        $hospitals = Hospital::select('slug', 'updated_at')->get();
+        $content   = view('sitemap.hospitals', compact('hospitals'))->render();
+        return response($content, 200)->header('Content-Type', 'application/xml');
+    }
+
+    public function blog(): Response
+    {
+        $posts   = BlogPost::published()->select('slug', 'published_at', 'updated_at')->get();
+        $content = view('sitemap.blog', compact('posts'))->render();
+        return response($content, 200)->header('Content-Type', 'application/xml');
+    }
+}
