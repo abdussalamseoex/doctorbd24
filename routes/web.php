@@ -74,7 +74,7 @@ Route::post('/ambulances/{ambulance}/claim', [\App\Http\Controllers\ClaimRequest
 
 // Blog
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-Route::get('/blog/{id}-{slug?}', [BlogController::class, 'show'])->name('blog.show')->where('id', '[0-9]+');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Join Forms
 Route::get('/join/doctor', [JoinController::class, 'doctorForm'])->name('join.doctor');

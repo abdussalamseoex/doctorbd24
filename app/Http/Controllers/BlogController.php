@@ -32,15 +32,9 @@ class BlogController extends Controller
         return view('blog.index', compact('posts', 'categories'));
     }
 
-    public function show($id, $slug = null)
+    public function show(string $slug)
     {
-        $post = BlogPost::published()->with('category', 'author')->findOrFail($id);
-        
-        // SEO Redirect: enforce correct slug in URL
-        if ($slug !== $post->slug) {
-            return redirect()->route('blog.show', ['id' => $post->id, 'slug' => $post->slug], 301);
-        }
-
+        $post = BlogPost::published()->where('slug', $slug)->with('category', 'author')->firstOrFail();
         $post->incrementViewCount();
 
         // ── SEO ──────────────────────────────────────
@@ -48,10 +42,10 @@ class BlogController extends Controller
 
         SEOTools::setTitle($post->title . ' | DoctorBD24');
         SEOTools::setDescription($desc);
-        SEOTools::setCanonical(route('blog.show', ['id' => $post->id, 'slug' => $post->slug]));
+        SEOTools::setCanonical(route('blog.show', $post->slug));
 
         OpenGraph::setType('article');
-        OpenGraph::setUrl(route('blog.show', ['id' => $post->id, 'slug' => $post->slug]));
+        OpenGraph::setUrl(route('blog.show', $post->slug));
         OpenGraph::addProperty('article:author', $post->author->name);
         OpenGraph::addProperty('article:published_time', $post->published_at?->toIso8601String());
         if ($post->image) OpenGraph::addImage(asset('storage/' . $post->image));
@@ -59,7 +53,7 @@ class BlogController extends Controller
         JsonLd::setType('Article');
         JsonLd::setTitle($post->title);
         JsonLd::setDescription($desc);
-        JsonLd::addValue('url', route('blog.show', ['id' => $post->id, 'slug' => $post->slug]));
+        JsonLd::addValue('url', route('blog.show', $post->slug));
         JsonLd::addValue('datePublished', $post->published_at?->toIso8601String());
         JsonLd::addValue('author', ['@type' => 'Person', 'name' => $post->author->name]);
         JsonLd::addValue('publisher', [

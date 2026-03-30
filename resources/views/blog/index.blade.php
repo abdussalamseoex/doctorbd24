@@ -13,7 +13,7 @@
             @if($posts->count())
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 @foreach($posts as $post)
-                <a href="{{ route('blog.show', ['id' => $post->id, 'slug' => $post->slug]) }}"
+                <a href="{{ route('blog.show', $post->slug) }}"
                    class="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:-translate-y-1">
                     @if($post->image)
                         <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" class="h-44 w-full object-cover">
