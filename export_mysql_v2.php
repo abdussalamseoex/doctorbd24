@@ -8,7 +8,7 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $tablesQuery = $pdo->query("SELECT name, sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
 $tables = $tablesQuery->fetchAll(PDO::FETCH_ASSOC);
 
-$out = "SET FOREIGN_KEY_CHECKS=0;\nSET NAMES utf8mb4;\nSET CHARACTER SET utf8mb4;\nSET TIME_ZONE='+00:00';\nSET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n\n";
+$out = "SET FOREIGN_KEY_CHECKS=0;\nSET NAMES utf8mb4;\nSET CHARACTER SET utf8mb4;\nSET TIME_ZONE='+00:00';\nSET SQL_MODE='NO_AUTO_VALUE_ON_ZERO,NO_BACKSLASH_ESCAPES';\n\n";
 
 foreach ($tables as $t) {
     if ($t['name'] === 'sqlite_sequence') continue; // Skip sqlite metadata
