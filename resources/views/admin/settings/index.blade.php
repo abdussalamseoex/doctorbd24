@@ -234,6 +234,36 @@
                 </div>
             </div>
 
+            {{-- ═══════════════════════════════════════
+                 GOOGLE SERVICES & TRACKING
+            ═══════════════════════════════════════ --}}
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Google Services & Tracking</h3>
+                        <p class="text-sm text-gray-500">Add Google Analytics and Search Console Verification codes here.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Google Analytics Code</label>
+                        <p class="text-xs text-gray-500 mb-2">Paste the entire <code>&lt;script&gt;</code> block from Google Analytics.</p>
+                        <textarea name="google_analytics" rows="5" placeholder="<!-- Google tag (gtag.js) -->..." 
+                                  class="w-full font-mono rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm focus:ring-red-500 focus:border-red-500 transition-all p-4">{{ old('google_analytics', $settings['google_analytics'] ?? '') }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Google Search Console Verification</label>
+                        <p class="text-xs text-gray-500 mb-2">Paste the meta tag here (e.g. <code>&lt;meta name="google-site-verification" content="..." /&gt;</code>).</p>
+                        <input type="text" name="google_search_console" value="{{ old('google_search_console', $settings['google_search_console'] ?? '') }}" placeholder="<meta name='google-site-verification' content='...' />"
+                               class="w-full font-mono rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm focus:ring-red-500 focus:border-red-500 transition-all">
+                    </div>
+                </div>
+            </div>
+
             <div class="flex justify-end gap-4 mt-8">
             <button type="submit" class="px-8 py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold shadow-lg shadow-sky-200 dark:shadow-none hover:opacity-90 transition-all">
                 Save All Settings

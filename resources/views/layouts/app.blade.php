@@ -25,6 +25,14 @@
     <meta name="twitter:card" content="summary_large_image">
     @yield('schema')
 
+    {{-- Google Analytics & Search Console --}}
+    @if(setting('google_search_console'))
+        {!! setting('google_search_console') !!}
+    @endif
+    @if(setting('google_analytics'))
+        {!! setting('google_analytics') !!}
+    @endif
+
     {{-- Favicon --}}
     @php
         $faviconUrl = setting('favicon') ? asset('storage/'.setting('favicon')) : asset('favicon.ico');
