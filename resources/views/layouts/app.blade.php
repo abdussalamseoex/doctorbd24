@@ -47,7 +47,7 @@
     {{-- ═══════════════════════════════════════
          NAVBAR
     ═══════════════════════════════════════ --}}
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm"
+    <nav class="sticky top-0 z-50 bg-[#0A2540] backdrop-blur-md shadow-sm border-b border-[#0A2540]"
          x-data="{ mobileOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -63,24 +63,24 @@
                             </svg>
                         </div>
                     @endif
-                    <span class="text-xl font-extrabold bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent tracking-tight">{{ setting('site_name', 'DoctorBD24') }}</span>
+                    <span class="text-xl font-extrabold text-white tracking-tight">{{ setting('site_name', 'DoctorBD24') }}</span>
                 </a>
 
                 {{-- Desktop nav --}}
                 <div class="hidden md:flex items-center gap-6">
-                    <a href="{{ route('doctors.index') }}" class="text-sm transition-colors {{ request()->routeIs('doctors.*') ? 'font-extrabold text-sky-600 dark:text-sky-400' : 'font-medium text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400' }}">
+                    <a href="{{ route('doctors.index') }}" class="text-sm transition-colors {{ request()->routeIs('doctors.*') ? 'font-extrabold text-sky-400' : 'font-medium text-gray-200 hover:text-sky-400' }}">
                         {{ __('Doctors') }}
                     </a>
-                    <a href="{{ route('hospitals.index') }}" class="text-sm transition-colors {{ request()->routeIs('hospitals.*') ? 'font-extrabold text-sky-600 dark:text-sky-400' : 'font-medium text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400' }}">
+                    <a href="{{ route('hospitals.index') }}" class="text-sm transition-colors {{ request()->routeIs('hospitals.*') ? 'font-extrabold text-sky-400' : 'font-medium text-gray-200 hover:text-sky-400' }}">
                         {{ __('Hospitals') }}
                     </a>
-                    <a href="{{ route('ambulances.index') }}" class="text-sm transition-colors {{ request()->routeIs('ambulances.*') ? 'font-extrabold text-sky-600 dark:text-sky-400' : 'font-medium text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400' }}">
+                    <a href="{{ route('ambulances.index') }}" class="text-sm transition-colors {{ request()->routeIs('ambulances.*') ? 'font-extrabold text-sky-400' : 'font-medium text-gray-200 hover:text-sky-400' }}">
                         {{ __('Ambulance') }}
                     </a>
-                    <a href="{{ route('blog.index') }}" class="text-sm transition-colors {{ request()->routeIs('blog.*') ? 'font-extrabold text-sky-600 dark:text-sky-400' : 'font-medium text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400' }}">
+                    <a href="{{ route('blog.index') }}" class="text-sm transition-colors {{ request()->routeIs('blog.*') ? 'font-extrabold text-sky-400' : 'font-medium text-gray-200 hover:text-sky-400' }}">
                         {{ __('Blog') }}
                     </a>
-                    <a href="{{ route('join.doctor') }}" class="text-sm font-medium px-4 py-2 rounded-lg bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors border border-sky-200 dark:border-sky-800">
+                    <a href="{{ route('join.doctor') }}" class="text-sm font-medium px-4 py-2 rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors border border-sky-400">
                         {{ __('Join as Doctor') }}
                     </a>
                 </div>
@@ -90,14 +90,14 @@
 
                     {{-- Language switcher --}}
                     @if(app()->getLocale() === 'en')
-                        <a href="{{ route('lang.switch', 'bn') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-400 transition-colors text-gray-600 dark:text-gray-300">বাংলা</a>
+                        <a href="{{ route('lang.switch', 'bn') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">বাংলা</a>
                     @else
-                        <a href="{{ route('lang.switch', 'en') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-400 transition-colors text-gray-600 dark:text-gray-300">EN</a>
+                        <a href="{{ route('lang.switch', 'en') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">EN</a>
                     @endif
 
                     {{-- Dark mode --}}
                     <button onclick="document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'))"
-                            class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-400 transition-colors text-gray-600 dark:text-gray-300">
+                            class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">
                         <svg class="dark:hidden w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                         </svg>
@@ -252,7 +252,7 @@
     {{-- ═══════════════════════════════════════
          FOOTER
     ═══════════════════════════════════════ --}}
-    <footer class="bg-gray-900 dark:bg-gray-950 text-gray-300 mt-16">
+    <footer class="bg-[#0A2540] text-gray-200 mt-16 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
                 {{-- Brand --}}
