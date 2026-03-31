@@ -153,10 +153,13 @@ class DoctorList extends Component
         SEOTools::setDescription('বাংলাদেশের সেরা বিশেষজ্ঞ ডাক্তারদের তালিকা। এলাকা ও বিশেষজ্ঞতা অনুযায়ী সহজে খুঁজুন।');
 
         if ($this->search) {
-            $query->where(function (\Illuminate\Database\Eloquent\Builder $q) {
-                $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('bio', 'like', "%{$this->search}%")
-                  ->orWhere('specialty', 'like', "%{$this->search}%");
+            $searchTerm = "%{$this->search}%";
+            $query->where(function (\Illuminate\Database\Eloquent\Builder $q) use ($searchTerm) {
+                $q->where('name', 'like', $searchTerm)
+                  ->orWhere('bio', 'like', $searchTerm)
+                  ->orWhereHas('specialties', function ($sq) use ($searchTerm) {
+                      $sq->where('name', 'like', $searchTerm);
+                  });
             });
         }
 
