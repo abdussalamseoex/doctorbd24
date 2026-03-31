@@ -193,8 +193,14 @@
                     <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 text-sm">ℹ</span>
                     {{ __('About Member') }}
                 </h2>
-                <div class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed px-1">
-                    {!! $doctor->bio ?: __('No bio available') !!}
+                <div class="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed px-1">
+                    @if(empty($doctor->bio))
+                        {{ __('No bio available') }}
+                    @elseif(strip_tags($doctor->bio) === $doctor->bio)
+                        {!! nl2br(e($doctor->bio)) !!}
+                    @else
+                        {!! $doctor->bio !!}
+                    @endif
                 </div>
             </div>
 

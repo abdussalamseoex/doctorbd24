@@ -244,7 +244,15 @@
             {{-- About --}}
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-6">
                 <h2 class="font-bold text-gray-800 dark:text-gray-100 mb-3">{{ __('About Us') }}</h2>
-                <div class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{!! $hospital->about !!}</div>
+                <div class="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed">
+                    @if(empty($hospital->about))
+                        {{ __('No description available') }}
+                    @elseif(strip_tags($hospital->about) === $hospital->about)
+                        {!! nl2br(e($hospital->about)) !!}
+                    @else
+                        {!! $hospital->about !!}
+                    @endif
+                </div>
             </div>
 
             {{-- Opening Hours --}}

@@ -133,8 +133,12 @@
                     @if($ambulance->notes)
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Description') }}</p>
-                            <div class="text-gray-800 dark:text-gray-200 mt-1 text-sm leading-relaxed prose dark:prose-invert max-w-none">
-                                {!! $ambulance->notes !!}
+                            <div class="prose prose-sm dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 mt-1 leading-relaxed">
+                                @if(strip_tags($ambulance->notes) === $ambulance->notes)
+                                    {!! nl2br(e($ambulance->notes)) !!}
+                                @else
+                                    {!! $ambulance->notes !!}
+                                @endif
                             </div>
                         </div>
                     @endif
