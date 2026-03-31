@@ -26,6 +26,11 @@ foreach ($tables as $t) {
     // Some basic type conversions
     $create = preg_replace('/(?<!`)\bvarchar\b(?!\()/i', 'VARCHAR(191)', $create);
     $create = str_ireplace('VARCHAR(255)', 'VARCHAR(191)', $create);
+
+    // Fix composite index size limits for specific morph/uuid columns
+    $create = preg_replace('/`model_type`\s+VARCHAR\(191\)/i', '`model_type` VARCHAR(125)', $create);
+    $create = preg_replace('/`tokenable_type`\s+VARCHAR\(191\)/i', '`tokenable_type` VARCHAR(125)', $create);
+    $create = preg_replace('/`uuid`\s+VARCHAR\(191\)/i', '`uuid` VARCHAR(125)', $create);
     $create = preg_replace('/(?<!`)\bdatetime\b/i', 'TIMESTAMP NULL DEFAULT NULL', $create);
     $create = preg_replace('/(?<!`)\btext\b/i', 'LONGTEXT', $create);
     $create = preg_replace('/(?<!`)\binteger\b/i', 'INT(11)', $create);
