@@ -19,6 +19,17 @@ class PageController extends Controller
             return view('pages.seo-show', compact('seoPage'));
         }
 
+        // 1.5. Check if it's a Blog Post for automatic SEO Redirection
+        $blogPost = \App\Models\BlogPost::where('slug', $slug)->where('is_published', true)->first();
+        if ($blogPost) {
+            $from = request()->path();
+            $to = route('blog.show', $slug, false);
+            
+            \App\Models\RedirectLog::record($from, $to);
+            
+            return redirect($to, 301);
+        }
+
         // 2. Fallback to standard static Page
         $page = Page::where('slug', $slug)->where('is_active', true)->firstOrFail();
         return view('pages.show', compact('page'));

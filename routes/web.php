@@ -199,6 +199,9 @@ Route::prefix('admin')
         // Roles & Permissions
         Route::resource('roles', \App\Http\Controllers\Admin\AdminRoleController::class)->except('show')->middleware('permission:manage roles');
 
+        // Redirect Logs
+        Route::resource('redirect-logs', \App\Http\Controllers\Admin\RedirectLogController::class)->only(['index', 'destroy'])->middleware('role:admin');
+
         // Claim Requests
         Route::get('claim-requests', [\App\Http\Controllers\Admin\AdminClaimRequestController::class, 'index'])->name('claim-requests.index')->middleware('permission:manage claims');
         Route::patch('claim-requests/{claimRequest}/status', [\App\Http\Controllers\Admin\AdminClaimRequestController::class, 'updateStatus'])->name('claim-requests.status')->middleware('permission:manage claims');
