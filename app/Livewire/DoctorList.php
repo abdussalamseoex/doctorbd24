@@ -155,7 +155,8 @@ class DoctorList extends Component
         if ($this->search) {
             $query->where(function (\Illuminate\Database\Eloquent\Builder $q) {
                 $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('about', 'like', "%{$this->search}%");
+                  ->orWhere('bio', 'like', "%{$this->search}%")
+                  ->orWhere('specialty', 'like', "%{$this->search}%");
             });
         }
 
