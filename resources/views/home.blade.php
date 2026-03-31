@@ -138,28 +138,71 @@
      QUICK LINK CARDS
 ═══════════════════════════════════════ --}}
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        @php
-        $quickLinks = [
-            ['href' => route('doctors.index'),   'icon' => '👨‍⚕️', 'label' => __('Doctors'),    'color' => 'from-sky-500 to-blue-600',    'count' => $stats['doctors'] . (app()->getLocale() === 'bn' ? ' জন' : '')],
-            ['href' => route('hospitals.index'),  'icon' => '🏥', 'label' => __('Hospitals'),   'color' => 'from-emerald-500 to-teal-600','count' => $stats['hospitals'] . (app()->getLocale() === 'bn' ? ' টি' : '')],
-            ['href' => route('ambulances.index'), 'icon' => '🚑', 'label' => __('Ambulance'), 'color' => 'from-red-500 to-rose-600',    'count' => __('Services')],
-            ['href' => route('blog.index'),       'icon' => '📰', 'label' => __('Blog'), 'color' => 'from-violet-500 to-purple-600','count' => __('Articles')],
-        ];
-        @endphp
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {{-- ════ QUICK LINKS (2 Columns) ════ --}}
+        <div class="lg:col-span-2 grid grid-cols-2 gap-4">
+            @php
+            $quickLinks = [
+                ['href' => route('doctors.index'),   'icon' => '👨‍⚕️', 'label' => __('Doctors'),    'color' => 'from-sky-500 to-blue-600',    'count' => $stats['doctors'] . (app()->getLocale() === 'bn' ? ' জন' : '')],
+                ['href' => route('hospitals.index'),  'icon' => '🏥', 'label' => __('Hospitals'),   'color' => 'from-emerald-500 to-teal-600','count' => $stats['hospitals'] . (app()->getLocale() === 'bn' ? ' টি' : '')],
+                ['href' => route('ambulances.index'), 'icon' => '🚑', 'label' => __('Ambulance'), 'color' => 'from-red-500 to-rose-600',    'count' => __('Services')],
+                ['href' => route('blog.index'),       'icon' => '📰', 'label' => __('Blog'), 'color' => 'from-violet-500 to-purple-600','count' => __('Articles')],
+            ];
+            @endphp
+            @foreach($quickLinks as $link)
+            <a href="{{ $link['href'] }}"
+               class="group bg-white dark:bg-gray-800 rounded-2xl p-5 lg:p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:-translate-y-1 flex flex-col justify-center items-center text-center h-full">
+                <div class="w-12 h-12 lg:w-14 lg:h-14 rounded-xl bg-gradient-to-br {{ $link['color'] }} flex items-center justify-center text-2xl lg:text-3xl mb-3 lg:mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                    {{ $link['icon'] }}
+                </div>
+                <div class="font-bold text-gray-800 dark:text-gray-100 text-sm lg:text-base">
+                    {{ $link['label'] }}
+                </div>
+                <div class="text-xs lg:text-sm font-medium text-gray-500 mt-1">{{ $link['count'] }}</div>
+            </a>
+            @endforeach
+        </div>
 
-        @foreach($quickLinks as $link)
-        <a href="{{ $link['href'] }}"
-           class="group bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:-translate-y-1">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br {{ $link['color'] }} flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform shadow-lg">
-                {{ $link['icon'] }}
+        {{-- ════ EMERGENCY HOTLINE SIDEBAR (1 Column) ════ --}}
+        <div class="lg:col-span-1">
+            <div class="bg-gradient-to-b from-[#5C6BC0] to-[#303F9F] rounded-2xl p-5 lg:p-6 shadow-xl border border-indigo-400/20 flex flex-col items-stretch h-full relative overflow-hidden">
+                {{-- Background decorative stroke --}}
+                <div class="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4 pointer-events-none">
+                    <svg class="w-32 h-32 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                </div>
+                
+                <h3 class="text-white text-lg lg:text-xl font-bold text-center mb-5 relative z-10 tracking-wide">{{ __('জরুরি হটলাইন') }}</h3>
+                
+                <div class="flex flex-col gap-2.5 relative z-10 flex-1 justify-center">
+                    @php
+                        $hotlines = [
+                            ['name' => 'জাতীয় জরুরি সেবা', 'number' => '৯৯৯'],
+                            ['name' => 'অ্যাম্বুলেন্স', 'number' => '১৬২৬৩'],
+                            ['name' => 'নারী ও শিশু সুরক্ষা', 'number' => '১০৯'],
+                            ['name' => 'মহিলা সংস্থা তথ্য', 'number' => '১০৯২২'],
+                            ['name' => 'সুখী পরিবার সেবা', 'number' => '১৬৭৬৭'],
+                        ];
+                    @endphp
+                    @foreach($hotlines as $hl)
+                    @php
+                        // Convert Bengali numbers to English for the tel: href
+                        $telNumber = str_replace(['০','১','২','৩','৪','৫','৬','৭','৮','৯'], ['0','1','2','3','4','5','6','7','8','9'], $hl['number']);
+                    @endphp
+                    <a href="tel:{{ $telNumber }}" 
+                       class="flex items-center justify-between bg-white hover:bg-indigo-50 transition-colors rounded-xl px-4 py-3 text-[#303F9F] group shadow-sm border border-transparent hover:border-indigo-100">
+                        <span class="font-bold text-[13px] lg:text-sm">{{ $hl['name'] }}</span>
+                        <div class="flex items-center gap-1.5 lg:gap-2">
+                            <span class="font-bold text-sm lg:text-base">{{ $hl['number'] }}</span>
+                        </div>
+                    </a>
+                    @endforeach
+                </div>
             </div>
-            <div class="font-semibold text-gray-800 dark:text-gray-100 text-sm">
-                {{ $link['label'] }}
-            </div>
-            <div class="text-xs text-gray-400 mt-0.5">{{ $link['count'] }}</div>
-        </a>
-        @endforeach
+        </div>
+
     </div>
 </section>
 
