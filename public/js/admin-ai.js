@@ -1,7 +1,7 @@
 function getAiContext() {
     let context = {
         language: document.querySelector('select[name="language"]') ? document.querySelector('select[name="language"]').value : 'English',
-        name: document.querySelector('input[name="name"], input[name="title"]') ? document.querySelector('input[name="name"], input[name="title"]').value : ''
+        name: document.querySelector('input[name="name"], input[name="title"], input[name="provider_name"]') ? document.querySelector('input[name="name"], input[name="title"], input[name="provider_name"]').value : ''
     };
 
     let keywordInput = document.querySelector('input[name="keyword"]');
@@ -11,13 +11,19 @@ function getAiContext() {
     if (titleInput) context.title = titleInput.value;
 
     // Doctor specific contexts
-    let specSelect = document.querySelector('select[name="specialties[]"]');
-    if (specSelect) {
-        context.specialties = Array.from(specSelect.selectedOptions).map(opt => opt.text).join(', ');
+    let specSelect = document.querySelectorAll('input[name="specialties[]"]:checked');
+    if (specSelect.length > 0) {
+        context.specialties = Array.from(specSelect).map(opt => opt.parentNode.innerText.trim()).join(', ');
     }
     
-    let qualBox = document.querySelector('textarea[name="qualifications"]');
+    let designationBox = document.querySelector('input[name="designation"]');
+    if (designationBox) context.designation = designationBox.value;
+
+    let qualBox = document.querySelector('input[name="qualifications"]');
     if (qualBox) context.qualifications = qualBox.value;
+
+    let expBox = document.querySelector('input[name="experience_years"]');
+    if (expBox) context.experience_years = expBox.value;
 
     let dobBox = document.querySelector('input[name="dob"]');
     if (dobBox) context.dob = dobBox.value;
@@ -29,9 +35,16 @@ function getAiContext() {
     let addrBox = document.querySelector('input[name="address"], textarea[name="address"]');
     if (addrBox) context.address = addrBox.value;
 
-    let ambTypeBox = document.querySelector('select[name="ambulance_type_id"]');
-    if (ambTypeBox && ambTypeBox.selectedOptions[0]) {
-        context.ambulanceType = ambTypeBox.selectedOptions[0].text;
+    let servicesInput = document.querySelector('input[name="services"]');
+    if (servicesInput && servicesInput.value) {
+        try {
+            context.services = JSON.parse(servicesInput.value).join(', ');
+        } catch(e) {}
+    }
+
+    let ambTypes = document.querySelectorAll('input[name="type[]"]:checked');
+    if (ambTypes.length > 0) {
+        context.ambulanceType = Array.from(ambTypes).map(opt => opt.parentNode.innerText.trim()).join(', ');
     }
 
     // fallback content for SEO from tinyMCE if available
