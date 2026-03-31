@@ -348,36 +348,54 @@
         </div>
 
         {{-- ════ CARD: SUBMIT ════ --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-6">
-                <label class="flex items-center gap-2.5 cursor-pointer group">
-                    <input type="hidden" name="verified" value="0">
-                    <input type="checkbox" name="verified" value="1" @checked(old('verified', $hospital->verified ?? false))
-                           class="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-300">
-                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-green-600 transition-colors">
-                        <span class="text-green-500 mr-1">✓</span> Verified Profile
-                    </span>
-                </label>
-                <label class="flex items-center gap-2.5 cursor-pointer group">
-                    <input type="hidden" name="featured" value="0">
-                    <input type="checkbox" name="featured" value="1" @checked(old('featured', $hospital->featured ?? false))
-                           class="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-300">
-                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-amber-600 transition-colors">
-                        ⭐ Featured (Top spot)
-                    </span>
-                </label>
-            </div>
+        {{-- ════ CARD: SUBMIT ════ --}}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-6">
+                    <label class="flex items-center gap-2.5 cursor-pointer group">
+                        <input type="hidden" name="verified" value="0">
+                        <input type="checkbox" name="verified" value="1" @checked(old('verified', $hospital->verified ?? false))
+                               class="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-300">
+                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-green-600 transition-colors">
+                            <span class="text-green-500 mr-1">✓</span> Verified Profile
+                        </span>
+                    </label>
+                    <label class="flex items-center gap-2.5 cursor-pointer group">
+                        <input type="hidden" name="featured" value="0">
+                        <input type="checkbox" name="featured" value="1" @checked(old('featured', $hospital->featured ?? false))
+                               class="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-300">
+                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-amber-600 transition-colors">
+                            ⭐ Featured (Top spot)
+                        </span>
+                    </label>
+                </div>
 
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <a href="{{ route('admin.hospitals.index') }}"
-                   class="flex-1 md:flex-none px-6 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center">
-                    Cancel
-                </a>
-                <button type="submit"
-                        class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold hover:opacity-90 shadow-md hover:shadow-lg transition-all text-center">
-                    {{ isset($hospital) ? 'Update Hospital' : 'Create Hospital' }}
-                </button>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <a href="{{ route('admin.hospitals.index') }}"
+                       class="flex-1 md:flex-none px-6 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold hover:opacity-90 shadow-md hover:shadow-lg transition-all text-center">
+                        {{ isset($hospital) ? 'Update Hospital' : 'Create Hospital' }}
+                    </button>
+                </div>
             </div>
+            
+            @if(isset($hospital) && $hospital->created_at)
+            <div class="mt-6 pt-5 border-t border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span>Published: <strong class="text-gray-600 dark:text-gray-300">{{ $hospital->created_at->format('M d, Y - h:i A') }}</strong></span>
+                </div>
+                <div class="hidden sm:block text-gray-300 dark:text-gray-600">•</div>
+                <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Last Updated: <strong class="text-gray-700 dark:text-gray-200">{{ $hospital->updated_at->format('M d, Y - h:i A') }}</strong></span>
+                    <span class="text-[10px] bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-full ml-1 font-medium">({{ $hospital->updated_at->diffForHumans() }})</span>
+                </div>
+            </div>
+            @endif
         </div>
     </form>
 </div>

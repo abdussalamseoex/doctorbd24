@@ -333,17 +333,34 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-r from-red-600 to-rose-600 rounded-2xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-center text-white sticky bottom-6 z-20">
-            <div>
-                <h3 class="font-bold text-lg">Save Ambulance Profile</h3>
-                <p class="text-sm opacity-80">Make sure all details are accurate before publishing.</p>
+        <div class="bg-gradient-to-r from-red-600 to-rose-600 rounded-2xl shadow-lg p-6 sticky bottom-6 z-20">
+            <div class="flex flex-col md:flex-row justify-between items-center text-white">
+                <div>
+                    <h3 class="font-bold text-lg">Save Ambulance Profile</h3>
+                    <p class="text-sm opacity-80">Make sure all details are accurate before publishing.</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex gap-4">
+                    <a href="{{ route('admin.ambulances.index') }}" class="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors backdrop-blur-sm shadow-sm">Cancel changes</a>
+                    <button type="submit" class="px-8 py-2.5 bg-white text-red-600 hover:bg-gray-50 font-bold rounded-xl shadow-md transition-all">
+                        {{ isset($ambulance) ? 'Update Ambulance Data' : 'Publish Ambulance' }}
+                    </button>
+                </div>
             </div>
-            <div class="mt-4 md:mt-0 flex gap-4">
-                <a href="{{ route('admin.ambulances.index') }}" class="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors backdrop-blur-sm">Cancel changes</a>
-                <button type="submit" class="px-8 py-2.5 bg-white text-red-600 hover:bg-gray-50 font-bold rounded-xl shadow-md transition-all">
-                    {{ isset($ambulance) ? 'Update Ambulance Data' : 'Publish Ambulance' }}
-                </button>
+
+            @if(isset($ambulance) && $ambulance->created_at)
+            <div class="mt-5 pt-4 border-t border-white/20 flex flex-col sm:flex-row sm:items-center gap-4 text-xs text-red-100">
+                <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span>Published: <strong class="text-white">{{ $ambulance->created_at->format('M d, Y - h:i A') }}</strong></span>
+                </div>
+                <div class="hidden sm:block text-red-300">•</div>
+                <div class="flex items-center gap-1.5 border-l-2 sm:border-l-0 border-white/20 pl-3 sm:pl-0">
+                    <svg class="w-4 h-4 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Last Updated: <strong class="text-white">{{ $ambulance->updated_at->format('M d, Y - h:i A') }}</strong></span>
+                    <span class="text-[10px] bg-black/20 px-1.5 py-0.5 rounded-full ml-1 font-medium text-white/90">({{ $ambulance->updated_at->diffForHumans() }})</span>
+                </div>
             </div>
+            @endif
         </div>
 
     </form>
