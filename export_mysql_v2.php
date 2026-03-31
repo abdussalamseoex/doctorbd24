@@ -24,7 +24,8 @@ foreach ($tables as $t) {
     $create = preg_replace('/`([a-zA-Z0-9_]+)`\s+integer\s+not\s+null\s+primary\s+key\s+autoincrement/i', '`$1` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY', $create);
     
     // Some basic type conversions
-    $create = preg_replace('/(?<!`)\bvarchar\b(?!\()/i', 'VARCHAR(255)', $create);
+    $create = preg_replace('/(?<!`)\bvarchar\b(?!\()/i', 'VARCHAR(191)', $create);
+    $create = str_ireplace('VARCHAR(255)', 'VARCHAR(191)', $create);
     $create = preg_replace('/(?<!`)\bdatetime\b/i', 'TIMESTAMP NULL DEFAULT NULL', $create);
     $create = preg_replace('/(?<!`)\btext\b/i', 'LONGTEXT', $create);
     $create = preg_replace('/(?<!`)\binteger\b/i', 'INT(11)', $create);
