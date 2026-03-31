@@ -45,7 +45,9 @@
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 
     {{-- Vite assets --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -113,7 +115,7 @@
                     @endif
 
                     {{-- Dark mode --}}
-                    <button onclick="document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'))"
+                    <button aria-label="Toggle Dark Mode" onclick="document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'))"
                             class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">
                         <svg class="dark:hidden w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
@@ -126,7 +128,7 @@
                     {{-- Auth --}}
                     @auth
                         <div class="hidden md:block relative" x-data="{ open: false }">
-                            <button @click="open = !open" @click.away="open = false"
+                            <button aria-label="User Menu" @click="open = !open" @click.away="open = false"
                                 class="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-sky-400 transition-colors">
                                 <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white text-xs font-black">
                                     {{ mb_substr(auth()->user()->name, 0, 1) }}
@@ -182,7 +184,7 @@
 
 
                     {{-- Mobile hamburger --}}
-                    <button @click="mobileOpen = !mobileOpen" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600">
+                    <button aria-label="Toggle Mobile Menu" @click="mobileOpen = !mobileOpen" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600">
                         <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
@@ -247,7 +249,7 @@
              class="fixed top-20 right-4 z-50 max-w-sm bg-green-500 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium animate-fade-in">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
             <span>{{ session('success') }}</span>
-            <button @click="show = false" class="ml-auto opacity-70 hover:opacity-100">✕</button>
+            <button aria-label="Close alert" @click="show = false" class="ml-auto opacity-70 hover:opacity-100">✕</button>
         </div>
     @endif
     @if(session('error'))
@@ -255,7 +257,7 @@
              class="fixed top-20 right-4 z-50 max-w-sm bg-red-500 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             <span>{{ session('error') }}</span>
-            <button @click="show = false" class="ml-auto opacity-70 hover:opacity-100">✕</button>
+            <button aria-label="Close alert" @click="show = false" class="ml-auto opacity-70 hover:opacity-100">✕</button>
         </div>
     @endif
 

@@ -19,10 +19,10 @@
         <span class="absolute top-2 right-2 text-[10px] font-bold uppercase text-gray-400 bg-white/90 backdrop-blur px-2 py-0.5 rounded shadow-sm z-10">Advertisement</span>
         @if($homeTopAd->target_url)
             <a href="{{ $homeTopAd->target_url }}" target="_blank" class="block w-full h-full flex items-center justify-center">
-                <img src="{{ asset('storage/' . $homeTopAd->image_path) }}" alt="{{ $homeTopAd->title }}" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
+                <img src="{{ asset('storage/' . $homeTopAd->image_path) }}" alt="{{ $homeTopAd->title ?? 'Advertisement' }}" fetchpriority="high" decoding="async" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
             </a>
         @else
-            <img src="{{ asset('storage/' . $homeTopAd->image_path) }}" alt="{{ $homeTopAd->title }}" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
+            <img src="{{ asset('storage/' . $homeTopAd->image_path) }}" alt="{{ $homeTopAd->title ?? 'Advertisement' }}" fetchpriority="high" decoding="async" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
         @endif
     </div>
 </div>
@@ -193,10 +193,10 @@
         <span class="absolute top-2 right-2 text-[10px] font-bold uppercase text-gray-400 bg-white/90 backdrop-blur px-2 py-0.5 rounded shadow-sm z-10">Advertisement</span>
         @if($homeMidAd->target_url)
             <a href="{{ $homeMidAd->target_url }}" target="_blank" class="block w-full h-full flex items-center justify-center">
-                <img src="{{ asset('storage/' . $homeMidAd->image_path) }}" alt="{{ $homeMidAd->title }}" class="w-full h-full max-h-[120px] md:max-h-[180px] object-contain">
+                <img src="{{ asset('storage/' . $homeMidAd->image_path) }}" alt="{{ $homeMidAd->title ?? 'Advertisement' }}" loading="lazy" decoding="async" class="w-full h-full max-h-[120px] md:max-h-[180px] object-contain">
             </a>
         @else
-            <img src="{{ asset('storage/' . $homeMidAd->image_path) }}" alt="{{ $homeMidAd->title }}" class="w-full h-full max-h-[120px] md:max-h-[180px] object-contain">
+            <img src="{{ asset('storage/' . $homeMidAd->image_path) }}" alt="{{ $homeMidAd->title ?? 'Advertisement' }}" loading="lazy" decoding="async" class="w-full h-full max-h-[120px] md:max-h-[180px] object-contain">
         @endif
     </div>
 </div>
@@ -219,7 +219,7 @@
                 {{-- Photo --}}
                 <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-100 to-indigo-100 dark:from-sky-900 dark:to-indigo-900 flex-shrink-0 overflow-hidden flex items-center justify-center text-4xl font-bold text-sky-400">
                     @if($doctor->photo)
-                        <img src="{{ asset('storage/' . $doctor->photo) }}" alt="{{ $doctor->name }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/' . $doctor->photo) }}" alt="{{ $doctor->name }}" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     @else
                         {{ mb_substr($doctor->name, 0, 1) }}
                     @endif
@@ -318,7 +318,7 @@
            class="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:-translate-y-1">
             @if($post->image)
                 <div class="h-40 w-full overflow-hidden">
-                    <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                 </div>
             @else
                 <div class="bg-gradient-to-br from-violet-100 to-purple-100 dark:from-violet-900/40 dark:to-purple-900/40 h-40 flex items-center justify-center text-5xl">📰</div>
