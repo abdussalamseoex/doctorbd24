@@ -26,7 +26,13 @@
     @yield('schema')
 
     {{-- Favicon --}}
-    <link rel="icon" type="image/png" href="{{ setting('favicon') ? asset('storage/'.setting('favicon')) : asset('favicon.ico') }}">
+    @php
+        $faviconUrl = setting('favicon') ? asset('storage/'.setting('favicon')) : asset('favicon.ico');
+    @endphp
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ $faviconUrl }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ $faviconUrl }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ $faviconUrl }}">
+    <link rel="shortcut icon" href="{{ $faviconUrl }}">
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,7 +63,7 @@
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
                     @if(setting('site_logo'))
-                        <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ setting('site_name', 'DoctorBD24') }}" class="h-9 w-auto">
+                        <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ setting('site_name', 'DoctorBD24') }}" class="h-9 w-auto brightness-0 invert">
                     @else
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,7 +267,7 @@
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-2 mb-4">
                         @if(setting('site_logo'))
-                            <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ setting('site_name', 'DoctorBD24') }}" class="h-9 w-auto">
+                            <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ setting('site_name', 'DoctorBD24') }}" class="h-9 w-auto brightness-0 invert opacity-80">
                         @else
                             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
