@@ -208,6 +208,7 @@ class AIGeneratorController extends Controller
             '{designation}' => $context['designation'] ?? '',
             '{services}' => $context['services'] ?? '',
             '{chambers}' => $context['chambers'] ?? '',
+            '{districts}' => $context['districts'] ?? '',
             '{address}' => $context['address'] ?? '',
             '{ambulanceType}' => $context['ambulanceType'] ?? '',
             '{topic}' => $context['topic'] ?? '',

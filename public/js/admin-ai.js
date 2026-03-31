@@ -28,15 +28,26 @@ function getAiContext() {
     let dobBox = document.querySelector('input[name="dob"]');
     if (dobBox) context.dob = dobBox.value;
 
-    // Chambers / Hospitals
+    // Chambers / Hospitals & Districts
     let chamberNames = [];
     document.querySelectorAll('input[name^="chambers["]').forEach(inp => {
         if (inp.name.endsWith('[name]') && inp.value.trim()) {
             chamberNames.push(inp.value.trim());
         }
     });
+    let districtNames = [];
+    document.querySelectorAll('select[name^="chambers["]').forEach(sel => {
+        if (sel.name.endsWith('[district_id]') && sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].value) {
+            let txt = sel.options[sel.selectedIndex].text;
+            if (txt && !txt.includes('--')) districtNames.push(txt);
+        }
+    });
+
     if (chamberNames.length > 0) {
         context.chambers = chamberNames.join(', ');
+    }
+    if (districtNames.length > 0) {
+        context.districts = [...new Set(districtNames)].join(', ');
     }
 
     let bioBase = document.querySelector('textarea[name="bio_excerpt"]');
