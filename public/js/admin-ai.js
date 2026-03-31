@@ -28,6 +28,17 @@ function getAiContext() {
     let dobBox = document.querySelector('input[name="dob"]');
     if (dobBox) context.dob = dobBox.value;
 
+    // Chambers / Hospitals
+    let chamberNames = [];
+    document.querySelectorAll('input[name^="chambers["]').forEach(inp => {
+        if (inp.name.endsWith('[name]') && inp.value.trim()) {
+            chamberNames.push(inp.value.trim());
+        }
+    });
+    if (chamberNames.length > 0) {
+        context.chambers = chamberNames.join(', ');
+    }
+
     let bioBase = document.querySelector('textarea[name="bio_excerpt"]');
     if (bioBase) context.bio_excerpt = bioBase.value;
 
