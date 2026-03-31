@@ -44,7 +44,7 @@ class HospitalController extends Controller
         }
 
         SEOTools::setTitle($title, false);
-        SEOTools::setDescription(Str_limit($desc, 160));
+        SEOTools::setDescription(\Illuminate\Support\Str::limit($desc, 160));
         if ($seo && $seo->keywords) {
             SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
         }

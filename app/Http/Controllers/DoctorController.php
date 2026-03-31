@@ -44,7 +44,7 @@ class DoctorController extends Controller
         }
 
         SEOTools::setTitle($title, false);
-        SEOTools::setDescription(Str_limit($desc, 160));
+        SEOTools::setDescription(\Illuminate\Support\Str::limit($desc, 160));
         if ($seo && $seo->keywords) {
             SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
         }
@@ -70,12 +70,4 @@ class DoctorController extends Controller
 
         return view('doctors.show', compact('doctor', 'related'));
     }
-}
-
-function Str_limit(string $value, int $limit): string
-{
-    if (mb_strwidth($value, 'UTF-8') <= $limit) {
-        return $value;
-    }
-    return rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8')) . '…';
 }
