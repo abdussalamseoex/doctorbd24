@@ -64,7 +64,7 @@
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
                     @if(setting('site_logo'))
-                        <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ setting('site_name', 'DoctorBD24') }}" class="h-9 w-auto brightness-0 invert">
+                        <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ setting('site_name', 'DoctorBD24') }}" class="h-9 w-auto bg-white p-1 rounded">
                     @else
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,7 +268,7 @@
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-2 mb-4">
                         @if(setting('site_logo'))
-                            <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ setting('site_name', 'DoctorBD24') }}" class="h-9 w-auto brightness-0 invert opacity-80">
+                            <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ setting('site_name', 'DoctorBD24') }}" class="h-9 w-auto bg-white p-1 rounded">
                         @else
                             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
