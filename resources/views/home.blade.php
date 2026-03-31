@@ -31,7 +31,7 @@
 {{-- ═══════════════════════════════════════
      HERO SECTION
 ═══════════════════════════════════════ --}}
-<section class="relative overflow-hidden bg-gradient-to-br from-sky-600 via-sky-500 to-indigo-600 dark:from-gray-900 dark:via-sky-950 dark:to-indigo-950">
+<section class="relative overflow-hidden bg-[#0A2540]">
     {{-- Background pattern --}}
     <div class="absolute inset-0 opacity-10">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -117,7 +117,7 @@
                     </template>
                 </select>
                 <button type="submit"
-                        class="px-8 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold hover:opacity-90 shadow-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                        class="px-8 py-3 rounded-xl bg-[#2ECC71] hover:bg-[#27AE60] text-white font-semibold shadow-lg transition-all flex items-center gap-2 whitespace-nowrap">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     {{ __("Search") }}
                 </button>
@@ -345,7 +345,7 @@
 {{-- ═══════════════════════════════════════
      STATS BAR
 ═══════════════════════════════════════ --}}
-<section class="bg-gradient-to-r from-sky-600 to-indigo-600 dark:from-sky-900 dark:to-indigo-900 mt-16 py-12">
+<section class="bg-[#0A2540] mt-16 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             <div>
@@ -375,7 +375,7 @@
         <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3">{{ __("Are you a Doctor or Hospital Authority?") }}</h2>
         <p class="text-gray-500 dark:text-gray-400 mb-6 text-sm">{{ __("List your profile or hospital today and reach thousands of patients.") }}</p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="{{ route('join.doctor') }}" class="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold hover:opacity-90 shadow-lg transition-all">
+            <a href="{{ route('join.doctor') }}" class="px-6 py-3 rounded-xl bg-[#2ECC71] hover:bg-[#27AE60] text-white font-semibold shadow-lg transition-all">
                 👨‍⚕️ {{ __("Join as Doctor") }}
             </a>
             <a href="{{ route('join.hospital') }}" class="px-6 py-3 rounded-xl border-2 border-sky-500 text-sky-600 dark:text-sky-400 font-semibold hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-all">
