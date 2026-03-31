@@ -180,12 +180,12 @@
                 <div class="md:col-span-2">
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">About Hospital</label>
-                        <button type="button" onclick="generateAiContent('hospital_bio', 'textarea[name=\'about\']', this)" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors">
+                        <button type="button" onclick="generateAiContent('hospital_bio', 'tinymce:about', this)" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors z-50 relative">
                             ✨ Auto Generate Copy
                         </button>
                     </div>
-                    <textarea name="about" rows="3" placeholder="Description of the hospital, facilities, and mission..."
-                              class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 resize-none transition-colors">{{ old('about', $hospital->about ?? '') }}</textarea>
+                    <textarea name="about" id="about" rows="8" placeholder="Description of the hospital, facilities, and mission..."
+                              class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 resize-none transition-colors">{{ old('about', $hospital->about ?? '') }}</textarea>
                 </div>
             </div>
         </div>

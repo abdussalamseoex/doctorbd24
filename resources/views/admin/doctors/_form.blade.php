@@ -150,12 +150,12 @@
                 <div class="md:col-span-2">
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Professional Bio</label>
-                        <button type="button" onclick="generateAiContent('doctor_bio', 'textarea[name=\'bio\']', this)" class="text-[10px] bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-sky-200 transition-colors">
+                        <button type="button" onclick="generateAiContent('doctor_bio', 'tinymce:bio', this)" class="text-[10px] bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-sky-200 transition-colors z-50 relative">
                             ✨ Auto Generate Bio
                         </button>
                     </div>
-                    <textarea name="bio" rows="3" placeholder="Short professional background..."
-                              class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none transition-colors">{{ old('bio', $doctor->bio ?? '') }}</textarea>
+                    <textarea name="bio" id="bio" rows="8" placeholder="Short professional background..."
+                              class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none transition-colors">{{ old('bio', $doctor->bio ?? '') }}</textarea>
                 </div>
             </div>
         </div>
@@ -225,6 +225,7 @@
                 ])->toArray() : [];
         @endphp
 
+        @include('admin.shared._tinymce')
         <script>
             const setupChamberManager = () => {
                 Alpine.data('chamberManager', () => {

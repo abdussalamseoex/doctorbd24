@@ -179,12 +179,12 @@
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Description / Notes</label>
-                                <button type="button" onclick="generateAiContent('ambulance_bio', 'textarea[name=\'notes\']', this)" class="text-[10px] bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-red-200 transition-colors">
+                                <button type="button" onclick="generateAiContent('ambulance_bio', 'tinymce:notes', this)" class="text-[10px] bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-red-200 transition-colors z-50 relative">
                                     ✨ Auto Generate Copy
                                 </button>
                             </div>
-                            <textarea name="notes" rows="6"
-                                      class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">{{ old('notes', $ambulance->notes ?? '') }}</textarea>
+                            <textarea name="notes" id="notes" rows="8"
+                                      class="tinymce-editor w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">{{ old('notes', $ambulance->notes ?? '') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -366,3 +366,4 @@
     </form>
 </div>
 
+@include('admin.shared._tinymce')
