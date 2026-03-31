@@ -19,6 +19,9 @@ foreach ($tables as $t) {
     // Clean up SQLite double quotes to MySQL backticks
     $create = preg_replace('/"([^"]+)"/', '`$1`', $create);
     
+    // Remove SQLite's inline CHECK constraints (often used for Enums) which cause syntax errors in older MySQL
+    $create = preg_replace('/check\s*\(\s*`?[a-zA-Z0-9_]+`?\s+in\s*\([^)]+\)\s*\)/i', '', $create);
+    
     // Convert autoincrement primary keys
     $create = preg_replace('/`([a-zA-Z0-9_]+)`\s+integer\s+primary\s+key\s+autoincrement\s+not\s+null/i', '`$1` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY', $create);
     $create = preg_replace('/`([a-zA-Z0-9_]+)`\s+integer\s+not\s+null\s+primary\s+key\s+autoincrement/i', '`$1` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY', $create);
