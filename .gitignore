@@ -22,7 +22,6 @@ yarn-error.log
 mysql_full_final.sql
 mysql_data_only.sql
 chk_sqlite.php
-export_mysql_v2.php
 export_data_only.php
 export_mysql_v3.php
 export_mysql_v4.php
