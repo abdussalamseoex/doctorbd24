@@ -20,7 +20,7 @@ class PageController extends Controller
         }
 
         // 1.5. Check if it's a Blog Post for automatic SEO Redirection
-        $blogPost = \App\Models\BlogPost::where('slug', $slug)->where('is_published', true)->first();
+        $blogPost = \App\Models\BlogPost::where('slug', $slug)->published()->first();
         if ($blogPost) {
             $from = request()->path();
             $to = route('blog.show', $slug, false);
