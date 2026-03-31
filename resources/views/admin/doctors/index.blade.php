@@ -112,7 +112,7 @@
                 <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell">Specialties</th>
                 <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell">Exp.</th>
                 <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Status</th>
-                <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden lg:table-cell">Dates</th>
+                <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Dates</th>
                 <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Actions</th>
             </tr>
         </thead>
@@ -160,7 +160,7 @@
                         @endif
                     </div>
                 </td>
-                <td class="px-4 py-3 hidden lg:table-cell whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                     <div class="flex flex-col gap-1">
                         <span class="text-[11px] text-gray-400 dark:text-gray-500" title="Published">P: {{ $doctor->created_at?->format('d M y, h:i a') }}</span>
                         <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium" title="Last Updated">U: {{ $doctor->updated_at?->format('d M y, h:i a') }}</span>
