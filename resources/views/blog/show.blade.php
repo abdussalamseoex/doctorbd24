@@ -24,10 +24,21 @@
         <div class="p-6 md:p-8">
             @if($post->category)<span class="text-xs font-medium text-violet-600 dark:text-violet-400 uppercase tracking-wide">{{ $post->category->name }}</span>@endif
             <h1 class="text-2xl font-extrabold text-gray-800 dark:text-gray-100 mt-2 leading-snug">{{ $post->title }}</h1>
-            <div class="flex items-center gap-4 mt-3 text-xs text-gray-400 border-b border-gray-100 dark:border-gray-700 pb-4">
-                <span>{{ $post->published_at->format('d M, Y') }}</span>
-                @if($post->author)<span>{{ __('by') }} {{ $post->author->name }}</span>@endif
-                <span>👁 {{ $post->view_count }} {{ __('views') }}</span>
+            <div class="flex flex-wrap items-center gap-4 mt-3 text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700 pb-4">
+                <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <b class="font-semibold text-gray-600 dark:text-gray-300">Published:</b> {{ $post->published_at->format('d M, Y') }}
+                </span>
+                
+                @if($post->updated_at && $post->updated_at->gt($post->published_at))
+                <span class="flex items-center gap-1" title="Article was updated recently">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <b class="font-semibold text-gray-600 dark:text-gray-300">Updated:</b> {{ $post->updated_at->format('d M, Y') }}
+                </span>
+                @endif
+                
+                @if($post->author)<span class="flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg> {{ \Str::wordCount($post->author->name) <= 2 ? $post->author->name : mb_substr($post->author->name, 0, 15).'...' }}</span>@endif
+                <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> {{ $post->view_count }} views</span>
                 {{-- Share --}}
                 <div class="ml-auto flex gap-2">
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}" target="_blank" class="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-200 transition-colors text-xs font-medium">FB</a>

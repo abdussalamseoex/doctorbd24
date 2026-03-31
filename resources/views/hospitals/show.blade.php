@@ -4,12 +4,17 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-12">
 
     {{-- Breadcrumb --}}
-    <nav class="flex items-center gap-2 text-xs text-gray-400 mb-6">
-        <a href="{{ route('home') }}" class="hover:text-sky-500">{{ __('Home') }}</a>
-        <span>›</span>
-        <a href="{{ route('hospitals.index') }}" class="hover:text-sky-500">{{ __('Hospitals') }}</a>
-        <span>›</span>
-        <span class="text-gray-600 dark:text-gray-300">{{ $hospital->name }}</span>
+    <nav class="flex items-center justify-between gap-2 mb-6 w-full">
+        <div class="flex items-center gap-2 text-xs text-gray-400">
+            <a href="{{ route('home') }}" class="hover:text-sky-500">{{ __('Home') }}</a>
+            <span>›</span>
+            <a href="{{ route('hospitals.index') }}" class="hover:text-sky-500">{{ __('Hospitals') }}</a>
+            <span>›</span>
+            <span class="text-gray-600 dark:text-gray-300">{{ $hospital->name }}</span>
+        </div>
+        <div class="text-[10px] text-gray-400 font-medium hidden sm:block" title="Profile Last Updated">
+            {{ __('Updated:') }} {{ $hospital->updated_at->format('d M, Y') }}
+        </div>
     </nav>
 
     <div class="flex flex-col lg:flex-row gap-8">

@@ -86,6 +86,7 @@ Route::post('/join/hospital', [JoinController::class, 'submitHospital'])->name('
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/sitemap/doctors.xml', [\App\Http\Controllers\SitemapController::class, 'doctors']);
 Route::get('/sitemap/hospitals.xml', [\App\Http\Controllers\SitemapController::class, 'hospitals']);
+Route::get('/sitemap/ambulances.xml', [\App\Http\Controllers\SitemapController::class, 'ambulances']);
 Route::get('/sitemap/blog.xml', [\App\Http\Controllers\SitemapController::class, 'blog']);
 
 // Robots.txt

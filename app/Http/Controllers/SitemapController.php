@@ -18,7 +18,7 @@ class SitemapController extends Controller
 
     public function doctors(): Response
     {
-        $doctors = Doctor::where('verified', true)->select('slug', 'updated_at')->get();
+        $doctors = Doctor::select('slug', 'updated_at')->get();
         $content = view('sitemap.doctors', compact('doctors'))->render();
         return response($content, 200)->header('Content-Type', 'application/xml');
     }
@@ -27,6 +27,13 @@ class SitemapController extends Controller
     {
         $hospitals = Hospital::select('slug', 'updated_at')->get();
         $content   = view('sitemap.hospitals', compact('hospitals'))->render();
+        return response($content, 200)->header('Content-Type', 'application/xml');
+    }
+
+    public function ambulances(): Response
+    {
+        $ambulances = \App\Models\Ambulance::select('slug', 'updated_at')->get();
+        $content   = view('sitemap.ambulances', compact('ambulances'))->render();
         return response($content, 200)->header('Content-Type', 'application/xml');
     }
 

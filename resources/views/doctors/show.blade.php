@@ -26,12 +26,17 @@
 <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-12">
 
     {{-- Breadcrumb --}}
-    <nav class="flex items-center gap-2 text-xs text-gray-400 mb-6">
-        <a href="{{ route('home') }}" class="hover:text-sky-500">Home</a>
-        <span>›</span>
-        <a href="{{ route('doctors.index') }}" class="hover:text-sky-500">Doctors</a>
-        <span>›</span>
-        <span class="text-gray-600 dark:text-gray-300">{{ $doctor->name }}</span>
+    <nav class="flex items-center justify-between gap-2 mb-6 w-full">
+        <div class="flex items-center gap-2 text-xs text-gray-400">
+            <a href="{{ route('home') }}" class="hover:text-sky-500">Home</a>
+            <span>›</span>
+            <a href="{{ route('doctors.index') }}" class="hover:text-sky-500">Doctors</a>
+            <span>›</span>
+            <span class="text-gray-600 dark:text-gray-300">{{ $doctor->name }}</span>
+        </div>
+        <div class="text-[10px] text-gray-400 font-medium hidden sm:block" title="Profile Last Updated">
+            {{ __('Updated:') }} {{ $doctor->updated_at->format('d M, Y') }}
+        </div>
     </nav>
 
     <div class="layout-wrapper flex flex-col w-full">
