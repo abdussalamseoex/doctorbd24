@@ -36,6 +36,40 @@ class AmbulanceController extends Controller
         $ambulance = Ambulance::where('slug', $slug)->with(['area.district.division', 'reviews.user'])->firstOrFail();
         
         $ambulance->incrementViewCount();
+
+        // ── SEO ──────────────────────────────────────
+        $title = "{$ambulance->provider_name} — Ambulance Service";
+        $desc = "{$ambulance->provider_name} provides emergency ambulance services.";
+
+        $seo = $ambulance->seoMeta;
+        if ($seo && $seo->title) {
+            $title = $seo->title;
+        } else {
+            $title = "$title | DoctorBD24";
+        }
+
+        if ($seo && $seo->description) {
+            $desc = $seo->description;
+        }
+
+        \Artesaos\SEOTools\Facades\SEOTools::setTitle($title, false);
+        \Artesaos\SEOTools\Facades\SEOTools::setDescription(\Illuminate\Support\Str::limit($desc, 160));
+        if ($seo && $seo->keywords) {
+            \Artesaos\SEOTools\Facades\SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
+        }
+
+        \Artesaos\SEOTools\Facades\SEOTools::setCanonical(route('ambulances.show', $ambulance->slug));
+        \Artesaos\SEOTools\Facades\OpenGraph::setUrl(route('ambulances.show', $ambulance->slug));
+        \Artesaos\SEOTools\Facades\OpenGraph::setType('website');
+
+        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($ambulance->gallery && count($ambulance->gallery) > 0 ? asset('storage/' . $ambulance->gallery[0]) : null);
+        if ($ogImage) \Artesaos\SEOTools\Facades\OpenGraph::addImage($ogImage);
+
+        \Artesaos\SEOTools\Facades\JsonLd::setTitle($seo->title ?? $ambulance->provider_name);
+        \Artesaos\SEOTools\Facades\JsonLd::setDescription($desc);
+        \Artesaos\SEOTools\Facades\JsonLd::addValue('url', route('ambulances.show', $ambulance->slug));
+        if ($ogImage) \Artesaos\SEOTools\Facades\JsonLd::addValue('image', $ogImage);
+        // ─────────────────────────────────────────────
         
         $related = Ambulance::where('type', $ambulance->type)
             ->where('id', '!=', $ambulance->id)

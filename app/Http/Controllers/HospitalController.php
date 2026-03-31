@@ -32,18 +32,37 @@ class HospitalController extends Controller
                  ($area ? " in $area, Bangladesh." : ' in Bangladesh.') .
                  ($hospital->about ? ' ' . mb_substr($hospital->about, 0, 100) . '…' : '');
 
-        SEOTools::setTitle("$title | DoctorBD24");
-        SEOTools::setDescription($desc);
+        $seo = $hospital->seoMeta;
+        if ($seo && $seo->title) {
+            $title = $seo->title;
+        } else {
+            $title = "$title | DoctorBD24";
+        }
+
+        if ($seo && $seo->description) {
+            $desc = $seo->description;
+        }
+
+        SEOTools::setTitle($title, false);
+        SEOTools::setDescription(Str_limit($desc, 160));
+        if ($seo && $seo->keywords) {
+            SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
+        }
+
         SEOTools::setCanonical(route('hospitals.show', $hospital->slug));
         OpenGraph::setUrl(route('hospitals.show', $hospital->slug));
         OpenGraph::setType('place');
 
+        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($hospital->logo ? asset('storage/' . $hospital->logo) : null);
+        if ($ogImage) OpenGraph::addImage($ogImage);
+
         JsonLd::setType('Hospital');
-        JsonLd::setTitle($hospital->name);
+        JsonLd::setTitle($seo->title ?? $hospital->name);
         JsonLd::setDescription($desc);
         JsonLd::addValue('url', route('hospitals.show', $hospital->slug));
         if ($hospital->phone) JsonLd::addValue('telephone', $hospital->phone);
         if ($hospital->address) JsonLd::addValue('address', $hospital->address);
+        if ($ogImage) JsonLd::addValue('image', $ogImage);
         // ─────────────────────────────────────────────
 
         // get unique doctors from chambers

@@ -32,19 +32,36 @@ class DoctorController extends Controller
                    ($spNames ? " specializing in {$spNames}" : '') .
                    ". {$doctor->experience_years} years of experience. Find chamber locations, visiting hours & contact.";
 
-        SEOTools::setTitle("$title | DoctorBD24");
+        $seo = $doctor->seoMeta;
+        if ($seo && $seo->title) {
+            $title = $seo->title;
+        } else {
+            $title = "$title | DoctorBD24";
+        }
+
+        if ($seo && $seo->description) {
+            $desc = $seo->description;
+        }
+
+        SEOTools::setTitle($title, false);
         SEOTools::setDescription(Str_limit($desc, 160));
+        if ($seo && $seo->keywords) {
+            SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
+        }
+
         SEOTools::setCanonical(route('doctors.show', $doctor->slug));
         OpenGraph::setUrl(route('doctors.show', $doctor->slug));
         OpenGraph::setType('profile');
-        if ($doctor->photo) OpenGraph::addImage(asset('storage/' . $doctor->photo));
+        
+        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($doctor->photo ? asset('storage/' . $doctor->photo) : null);
+        if ($ogImage) OpenGraph::addImage($ogImage);
 
         JsonLd::setType('Person');
-        JsonLd::setTitle("{$doctor->name}");
+        JsonLd::setTitle($seo->title ?? $doctor->name);
         JsonLd::setDescription($desc);
         JsonLd::addValue('jobTitle', $doctor->designation);
         JsonLd::addValue('url', route('doctors.show', $doctor->slug));
-        if ($doctor->photo) JsonLd::addValue('image', asset('storage/' . $doctor->photo));
+        if ($ogImage) JsonLd::addValue('image', $ogImage);
         // ─────────────────────────────────────────────
 
         $related = Doctor::whereHas('specialties', function ($q) use ($doctor) {
