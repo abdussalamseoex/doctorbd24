@@ -33,6 +33,10 @@ foreach ($tables as $t) {
     $create = preg_replace('/`uuid`\s+VARCHAR\(191\)/i', '`uuid` VARCHAR(125)', $create);
     $create = preg_replace('/(?<!`)\bdatetime\b/i', 'TIMESTAMP NULL DEFAULT NULL', $create);
     $create = preg_replace('/(?<!`)\btext\b/i', 'LONGTEXT', $create);
+    
+    // Ensure foreign key types (e.g. permission_id) match the bigint(20) PKs
+    $create = preg_replace('/`([a-zA-Z0-9_]+_id)`\s+integer/i', '`$1` bigint(20) unsigned', $create);
+    
     $create = preg_replace('/(?<!`)\binteger\b/i', 'INT(11)', $create);
     
     $out .= "DROP TABLE IF EXISTS `$table`;\n";
