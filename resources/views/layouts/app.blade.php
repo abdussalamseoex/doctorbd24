@@ -19,7 +19,7 @@
     {!! SEO::generate(true) !!}
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#0ea5e9">
+    <meta name="theme-color" content="#0A2540">
     <meta property="og:site_name" content="{{ setting('site_name', 'DoctorBD24') }}">
     <meta property="og:locale" content="{{ str_replace('-', '_', app()->getLocale() === 'bn' ? 'bn_BD' : 'en_US') }}">
     <meta name="twitter:card" content="summary_large_image">
@@ -33,6 +33,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ $faviconUrl }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ $faviconUrl }}">
     <link rel="shortcut icon" href="{{ $faviconUrl }}">
+    <link rel="manifest" href="/manifest.json">
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">

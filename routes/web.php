@@ -33,6 +33,35 @@ Route::get('/lang/{locale}', function ($locale) {
 // â”€â”€ Public Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// PWA Manifest
+Route::get('/manifest.json', function () {
+    $faviconUrl = setting('favicon') ? asset('storage/'.setting('favicon')) : asset('favicon.ico');
+    $name = setting('site_name', 'DoctorBD24');
+    
+    return response()->json([
+        'name' => $name,
+        'short_name' => $name,
+        'start_url' => '/',
+        'display' => 'standalone',
+        'background_color' => '#ffffff',
+        'theme_color' => '#0A2540',
+        'icons' => [
+            [
+                'src' => $faviconUrl,
+                'sizes' => '192x192',
+                'type' => 'image/png',
+                'purpose' => 'any maskable'
+            ],
+            [
+                'src' => $faviconUrl,
+                'sizes' => '512x512',
+                'type' => 'image/png',
+                'purpose' => 'any maskable'
+            ]
+        ]
+    ]);
+});
+
 // Contact Page
 Route::get('/contact', [\App\Http\Controllers\PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [\App\Http\Controllers\PageController::class, 'submitContact'])->name('contact.submit')->middleware('throttle:5,10');
