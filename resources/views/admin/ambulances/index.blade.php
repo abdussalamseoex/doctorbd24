@@ -110,6 +110,7 @@
                     <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Phone</th>
                     <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase hidden md:table-cell">Area</th>
                     <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase hidden lg:table-cell">Dates</th>
                     <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                 </tr>
             </thead>
@@ -128,6 +129,12 @@
                             @if($amb->active) <span class="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium">Active</span> @else <span class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs">Inactive</span> @endif
                             @if($amb->is_verified) <span class="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">✓ Verified</span> @endif
                             @if($amb->is_featured) <span class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs">⭐</span> @endif
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 hidden lg:table-cell whitespace-nowrap">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[11px] text-gray-400 dark:text-gray-500" title="Published">P: {{ $amb->created_at?->format('d M y, h:i a') }}</span>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium" title="Last Updated">U: {{ $amb->updated_at?->format('d M y, h:i a') }}</span>
                         </div>
                     </td>
                     <td class="px-4 py-3">

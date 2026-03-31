@@ -112,6 +112,7 @@
                 <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell">Specialties</th>
                 <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell">Exp.</th>
                 <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Status</th>
+                <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden lg:table-cell">Dates</th>
                 <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Actions</th>
             </tr>
         </thead>
@@ -157,6 +158,12 @@
                         @if($doctor->featured)
                             <span class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium">⭐</span>
                         @endif
+                    </div>
+                </td>
+                <td class="px-4 py-3 hidden lg:table-cell whitespace-nowrap">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[11px] text-gray-400 dark:text-gray-500" title="Published">P: {{ $doctor->created_at?->format('d M y, h:i a') }}</span>
+                        <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium" title="Last Updated">U: {{ $doctor->updated_at?->format('d M y, h:i a') }}</span>
                     </div>
                 </td>
                 <td class="px-4 py-3">
