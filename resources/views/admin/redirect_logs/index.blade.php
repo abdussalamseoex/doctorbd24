@@ -29,7 +29,7 @@
                                 <td><span class="badge badge-primary">{{ $log->hits }}</span></td>
                                 <td>{{ $log->last_hit_at ? \Carbon\Carbon::parse($log->last_hit_at)->diffForHumans() : '-' }}</td>
                                 <td>
-                                    <form action="{{ route('redirect-logs.destroy', $log) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this log entry?');">
+                                    <form action="{{ route('admin.redirect-logs.destroy', $log) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this log entry?');">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-sm bg-danger-light"><i class="feather-trash-2"></i></button>
