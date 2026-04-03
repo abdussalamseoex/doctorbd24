@@ -46,69 +46,98 @@ class DuplicateManagerController extends Controller
         $request->validate([
             'type' => 'required|in:doctor,hospital',
             'primary_id' => 'required|integer',
-            'duplicate_id' => 'required|integer',
+            'duplicate_ids' => 'required|array',
+            'duplicate_ids.*' => 'integer',
             'merged_phone' => 'nullable|string',
             'merged_bio' => 'nullable|string',
         ]);
 
         $type = $request->type;
         $primaryId = $request->primary_id;
-        $duplicateId = $request->duplicate_id;
+        $duplicateIds = $request->duplicate_ids;
 
         DB::beginTransaction();
 
         try {
             if ($type === 'doctor') {
                 $primary = Doctor::findOrFail($primaryId);
-                $duplicate = Doctor::findOrFail($duplicateId);
 
                 // Update primary data
                 if ($request->merged_phone) $primary->phone = $request->merged_phone;
                 if ($request->merged_bio) $primary->bio = $request->merged_bio;
                 $primary->save();
 
-                // Merge Chambers
-                foreach ($duplicate->chambers as $chamber) {
-                    $chamber->update(['doctor_id' => $primary->id]);
+                foreach ($duplicateIds as $duplicateId) {
+                    $duplicate = Doctor::find($duplicateId);
+                    if (!$duplicate) continue;
+
+                    // Merge Chambers
+                    foreach ($duplicate->chambers as $chamber) {
+                        $exists = $primary->chambers()
+                            ->where('name', $chamber->name)
+                            ->where('area_id', $chamber->area_id)
+                            ->where('hospital_id', $chamber->hospital_id)
+                            ->exists();
+
+                        if ($exists) {
+                            $chamber->delete();
+                        } else {
+                            $chamber->update(['doctor_id' => $primary->id]);
+                        }
+                    }
+
+                    // Merge Specialties
+                    $primarySpecialties = $primary->specialties->pluck('id')->toArray();
+                    $duplicateSpecialties = $duplicate->specialties->pluck('id')->toArray();
+                    $mergedSpecialties = array_unique(array_merge($primarySpecialties, $duplicateSpecialties));
+                    $primary->specialties()->sync($mergedSpecialties);
+
+                    // Merge Reviews
+                    foreach ($duplicate->reviews as $review) {
+                        $review->update(['reviewable_id' => $primary->id]);
+                    }
+
+                    // Delete Duplicate
+                    $duplicate->delete();
+
+                    // Record SEO Redirect
+                    \App\Models\RedirectLog::record("doctor/{$duplicate->slug}", route('doctors.show', $primary->slug, false));
                 }
-
-                // Merge Specialties
-                $primarySpecialties = $primary->specialties->pluck('id')->toArray();
-                $duplicateSpecialties = $duplicate->specialties->pluck('id')->toArray();
-                $mergedSpecialties = array_unique(array_merge($primarySpecialties, $duplicateSpecialties));
-                $primary->specialties()->sync($mergedSpecialties);
-
-                // Merge Reviews
-                foreach ($duplicate->reviews as $review) {
-                    $review->update(['reviewable_id' => $primary->id]);
-                }
-
-                // Delete Duplicate
-                $duplicate->delete();
-
-                // Record SEO Redirect (assuming URL format is /doctor/slug)
-                \App\Models\RedirectLog::record("doctor/{$duplicate->slug}", route('doctors.show', $primary->slug, false));
 
             } else {
                 $primary = Hospital::findOrFail($primaryId);
-                $duplicate = Hospital::findOrFail($duplicateId);
 
                 if ($request->merged_phone) $primary->phone = $request->merged_phone;
                 $primary->save();
 
-                // Merge Chambers (Doctors belonging to this Hospital)
-                foreach ($duplicate->chambers as $chamber) {
-                    $chamber->update(['hospital_id' => $primary->id]);
+                foreach ($duplicateIds as $duplicateId) {
+                    $duplicate = Hospital::find($duplicateId);
+                    if (!$duplicate) continue;
+
+                    // Merge Chambers (Doctors belonging to this Hospital)
+                    foreach ($duplicate->chambers as $chamber) {
+                        $exists = $primary->chambers()
+                            ->where('doctor_id', $chamber->doctor_id)
+                            ->where('name', $chamber->name)
+                            ->where('area_id', $chamber->area_id)
+                            ->exists();
+
+                        if ($exists) {
+                            $chamber->delete();
+                        } else {
+                            $chamber->update(['hospital_id' => $primary->id]);
+                        }
+                    }
+
+                    // Merge Reviews
+                    foreach ($duplicate->reviews as $review) {
+                        $review->update(['reviewable_id' => $primary->id]);
+                    }
+
+                    $duplicate->delete();
+
+                    \App\Models\RedirectLog::record("hospital/{$duplicate->slug}", route('hospitals.show', $primary->slug, false));
                 }
-
-                // Merge Reviews
-                foreach ($duplicate->reviews as $review) {
-                    $review->update(['reviewable_id' => $primary->id]);
-                }
-
-                $duplicate->delete();
-
-                \App\Models\RedirectLog::record("hospital/{$duplicate->slug}", route('hospitals.show', $primary->slug, false));
             }
 
             DB::commit();

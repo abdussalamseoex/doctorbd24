@@ -120,12 +120,16 @@
                                             </select>
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duplicate Profile (Delete)</label>
-                                            <select x-model="duplicateId" name="duplicate_id" class="w-full bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Duplicate Profiles (Merge & Delete)</label>
+                                            <div class="space-y-2 border border-red-200 dark:border-red-800 p-3 rounded-lg bg-red-50/50 dark:bg-red-900/10 max-h-48 overflow-y-auto">
                                                 <template x-for="item in currentGroup" :key="'dup-'+item.id">
-                                                    <option :value="item.id" x-show="item.id != primaryId" x-text="'ID: ' + item.id + ' - ' + item.name"></option>
+                                                    <label x-show="item.id != primaryId" class="flex items-center gap-2 cursor-pointer">
+                                                        <input type="checkbox" name="duplicate_ids[]" :value="item.id" x-model="duplicateIds" class="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600">
+                                                        <span class="text-sm font-medium text-gray-900 dark:text-gray-300" x-text="'ID: ' + item.id + ' - ' + item.name"></span>
+                                                    </label>
                                                 </template>
-                                            </select>
+                                            </div>
+                                            <p class="text-xs text-gray-400 mt-1">Checked profiles will be merged and deleted.</p>
                                         </div>
                                     </div>
 
@@ -178,19 +182,23 @@
             modalOpen: false,
             currentGroup: [],
             primaryId: '',
-            duplicateId: '',
+            duplicateIds: [],
             mergedPhone: '',
             mergedBio: '',
 
             openMergeModal(group) {
                 this.currentGroup = group;
                 this.primaryId = group[0].id;
-                this.duplicateId = group[group.length > 1 ? 1 : 0].id;
                 this.updateCombinedData();
                 this.modalOpen = true;
             },
 
             updateCombinedData() {
+                // Auto-check all duplicates except the primary
+                this.duplicateIds = this.currentGroup
+                    .filter(i => parseInt(i.id) !== parseInt(this.primaryId))
+                    .map(i => i.id);
+
                 // Collect all phones
                 let phones = this.currentGroup.map(i => i.phone).filter(p => p && p.trim() !== '');
                 // Unique phones
