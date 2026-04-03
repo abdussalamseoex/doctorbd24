@@ -2,106 +2,122 @@
 @section('title', 'Duplicate Finder')
 
 @section('content')
-<div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-    <div>
-        <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-indigo-600">
-            Detected Duplicates
-        </h2>
-        <p class="text-gray-500 text-sm mt-1">Review and merge duplicate profiles easily without data loss.</p>
-    </div>
-
-    <div class="flex gap-2">
-        <a href="{{ route('admin.duplicates.index', ['type' => 'doctor']) }}" 
-           class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $type === 'doctor' ? 'bg-indigo-600 text-white shadow' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-            Doctors
-        </a>
-        <a href="{{ route('admin.duplicates.index', ['type' => 'hospital']) }}" 
-           class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $type === 'hospital' ? 'bg-indigo-600 text-white shadow' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-            Hospitals
-        </a>
-    </div>
-</div>
-
-@if($duplicates->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 text-center">
-        <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+@php $totalProfiles = $duplicates->flatten(1)->count(); @endphp
+<div x-data="duplicateManager({{ $totalProfiles }})">
+    <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-indigo-600">
+                Detected Duplicates
+            </h2>
+            <p class="text-gray-500 text-sm mt-1">Review and merge duplicate profiles easily without data loss.</p>
         </div>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white">All Clear!</h3>
-        <p class="text-gray-500 mt-1">No duplicates detected for {{ $type }}s at this moment.</p>
-    </div>
-@else
-    <div class="space-y-6" x-data="duplicateManager()">
-        @foreach($duplicates as $name => $group)
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                <div class="bg-gray-50 dark:bg-gray-900/50 px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-                    <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        Potential Match: "{{ $name }}"
-                    </h3>
-                    <span class="text-xs font-medium px-2.5 py-1 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 rounded-full">
-                        {{ count($group) }} Profiles
-                    </span>
+
+        <div class="flex flex-wrap items-center gap-2">
+            @if(!$duplicates->isEmpty())
+                <div class="flex items-center gap-2 border-r border-gray-300 dark:border-gray-700 pr-3 mr-1">
+                    <button @click="toggleAllGlobal" type="button" class="text-sm px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                        <span x-text="globalSelectedIds.length > 0 && globalSelectedIds.length == totalProfiles ? 'Deselect All' : 'Select All'"></span>
+                    </button>
+                    <button type="submit" form="global-dismiss-form" x-show="globalSelectedIds.length > 0" style="display: none;" class="text-sm px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition shadow-sm flex items-center gap-1">
+                        Dismiss Selected (<span x-text="globalSelectedIds.length"></span>)
+                    </button>
                 </div>
-                
-                <form method="POST" action="{{ route('admin.duplicates.ignore') }}" id="form-group-{{ md5($name) }}" onsubmit="return confirm('Are you sure you want to dismiss the selected profiles? They will be removed from this list.');">
-                    @csrf
-                    <input type="hidden" name="type" value="{{ $type }}">
-                    <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        @foreach($group as $item)
-                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 relative hover:border-indigo-500 transition-colors">
-                                <label class="absolute top-2 right-2 flex items-center gap-2 cursor-pointer bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-800 transition-colors" title="Select to Dismiss from Duplicates">
-                                    <input type="checkbox" name="ids[]" value="{{ $item->id }}" class="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800">
-                                    <span class="text-xs font-medium text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">Select to Dismiss</span>
-                                </label>
-                                <div class="flex gap-4">
-                                    @if(isset($item->photo) || isset($item->logo))
-                                        <img src="{{ asset('storage/' . ($item->photo ?? $item->logo)) }}" class="w-16 h-16 rounded-lg object-cover bg-gray-100" />
-                                    @else
-                                        <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
-                                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                        </div>
-                                    @endif
-                                    <div class="pt-1">
-                                        <div class="text-xs text-gray-500">ID: #{{ $item->id }}</div>
-                                        <h4 class="font-bold text-gray-900 dark:text-gray-100 pr-24">{{ $item->name }}</h4>
-                                        
-                                        @if($type === 'doctor')
-                                            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $item->designation ?? 'N/A' }}</div>
-                                            <div class="text-sm mt-1">📱 {{ $item->phone ?? 'No Phone' }}</div>
-                                            <div class="text-xs mt-2 text-gray-500 font-medium">Chambers:</div>
-                                            <ul class="text-xs text-gray-600 dark:text-gray-400 list-disc list-inside">
-                                                @forelse($item->chambers as $ch)
-                                                    <li>{{ $ch->hospital->name ?? 'Unknown Hospital' }}</li>
-                                                @empty
-                                                    <li>No Chambers</li>
-                                                @endforelse
-                                            </ul>
+            @endif
+
+            <a href="{{ route('admin.duplicates.index', ['type' => 'doctor']) }}" 
+               class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $type === 'doctor' ? 'bg-indigo-600 text-white shadow' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                Doctors
+            </a>
+            <a href="{{ route('admin.duplicates.index', ['type' => 'hospital']) }}" 
+               class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $type === 'hospital' ? 'bg-indigo-600 text-white shadow' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                Hospitals
+            </a>
+        </div>
+    </div>
+
+    @if($duplicates->isEmpty())
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 text-center">
+            <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">All Clear!</h3>
+            <p class="text-gray-500 mt-1">No duplicates detected for {{ $type }}s at this moment.</p>
+        </div>
+    @else
+        <form method="POST" action="{{ route('admin.duplicates.ignore') }}" id="global-dismiss-form" onsubmit="return confirm('Are you sure you want to dismiss all selected profiles? They will be removed from this list.');">
+            @csrf
+            <input type="hidden" name="type" value="{{ $type }}">
+            <div class="space-y-6">
+                @foreach($duplicates as $name => $group)
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        <div class="bg-gray-50 dark:bg-gray-900/50 px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                            <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                Potential Match: "{{ $name }}"
+                            </h3>
+                            <div class="flex items-center gap-3">
+                                <button type="button" @click="toggleGroup({{ json_encode($group->pluck('id')) }})" class="text-xs font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300">
+                                    Select Group
+                                </button>
+                                <span class="text-xs font-medium px-2.5 py-1 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 rounded-full">
+                                    {{ count($group) }} Profiles
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            @foreach($group as $item)
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 relative hover:border-indigo-500 transition-colors">
+                                    <label class="absolute top-2 right-2 flex items-center gap-2 cursor-pointer bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-800 transition-colors" title="Select to Dismiss from Duplicates">
+                                        <input type="checkbox" name="ids[]" value="{{ $item->id }}" x-model="globalSelectedIds" class="dismiss-checkbox w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800">
+                                        <span class="text-xs font-medium text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">Select to Dismiss</span>
+                                    </label>
+                                    <div class="flex gap-4">
+                                        @if(isset($item->photo) || isset($item->logo))
+                                            <img src="{{ asset('storage/' . ($item->photo ?? $item->logo)) }}" class="w-16 h-16 rounded-lg object-cover bg-gray-100" />
                                         @else
-                                            <div class="text-sm mt-1">📱 {{ $item->phone ?? 'No Phone' }}</div>
-                                            <div class="text-sm text-gray-500">📍 {{ $item->address ?? 'No Address' }}</div>
+                                            <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
+                                                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                            </div>
                                         @endif
-                                        <div class="mt-2 text-xs">
-                                            <a href="{{ $type === 'doctor' ? route('doctors.show', $item->slug) : route('hospitals.show', $item->slug) }}" target="_blank" class="text-sky-500 hover:underline">View Public Profile &rarr;</a>
+                                        <div class="pt-1">
+                                            <div class="text-xs text-gray-500">ID: #{{ $item->id }}</div>
+                                            <h4 class="font-bold text-gray-900 dark:text-gray-100 pr-24">{{ $item->name }}</h4>
+                                            
+                                            @if($type === 'doctor')
+                                                <div class="text-sm text-gray-600 dark:text-gray-400">{{ $item->designation ?? 'N/A' }}</div>
+                                                <div class="text-sm mt-1">📱 {{ $item->phone ?? 'No Phone' }}</div>
+                                                <div class="text-xs mt-2 text-gray-500 font-medium">Chambers:</div>
+                                                <ul class="text-xs text-gray-600 dark:text-gray-400 list-disc list-inside">
+                                                    @forelse($item->chambers as $ch)
+                                                        <li>{{ $ch->hospital->name ?? 'Unknown Hospital' }}</li>
+                                                    @empty
+                                                        <li>No Chambers</li>
+                                                    @endforelse
+                                                </ul>
+                                            @else
+                                                <div class="text-sm mt-1">📱 {{ $item->phone ?? 'No Phone' }}</div>
+                                                <div class="text-sm text-gray-500">📍 {{ $item->address ?? 'No Address' }}</div>
+                                            @endif
+                                            <div class="mt-2 text-xs">
+                                                <a href="{{ $type === 'doctor' ? route('doctors.show', $item->slug) : route('hospitals.show', $item->slug) }}" target="_blank" class="text-sky-500 hover:underline">View Public Profile &rarr;</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
+                        
+                        <div class="px-5 py-3 bg-gray-50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
+                            <button type="button" @click="openMergeModal({{ json_encode($group) }})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2 border border-transparent">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                Review & Merge
+                            </button>
+                        </div>
                     </div>
-                </form>
-                
-                <div class="px-5 py-3 bg-gray-50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
-                    <button type="submit" form="form-group-{{ md5($name) }}" class="bg-white border border-gray-300 hover:bg-red-50 hover:text-red-600 hover:border-red-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-800">
-                        Dismiss Selected
-                    </button>
-                    <button type="button" @click="openMergeModal({{ json_encode($group) }})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2 border border-transparent">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                        Review & Merge
-                    </button>
-                </div>
+                @endforeach
             </div>
-        @endforeach
+        </form>
 
         {{-- Merge Modal --}}
         <div x-show="modalOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -181,21 +197,53 @@
                 </div>
             </div>
         </div>
-    </div>
-@endif
-
+    @endif
+</div>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.data('duplicateManager', () => ({
+        Alpine.data('duplicateManager', (total) => ({
+            totalProfiles: total || 0,
+            globalSelectedIds: [],
+            
             modalOpen: false,
             currentGroup: [],
             primaryId: '',
             duplicateIds: [],
             mergedPhone: '',
             mergedBio: '',
+
+            toggleAllGlobal() {
+                const allBoxes = Array.from(document.querySelectorAll('.dismiss-checkbox')).map(cb => cb.value);
+                if (this.globalSelectedIds.length === allBoxes.length && allBoxes.length > 0) {
+                    this.globalSelectedIds = [];
+                } else {
+                    this.globalSelectedIds = allBoxes;
+                }
+            },
+
+            toggleGroup(ids) {
+                // If all items in this group are already selected, deselect them. Otherwise, select them all.
+                let areAllSelected = true;
+                for (let id of ids) {
+                    if (!this.globalSelectedIds.includes(String(id))) {
+                        areAllSelected = false;
+                        break;
+                    }
+                }
+                
+                if (areAllSelected) {
+                    this.globalSelectedIds = this.globalSelectedIds.filter(v => !ids.map(String).includes(v));
+                } else {
+                    for (let id of ids) {
+                        if (!this.globalSelectedIds.includes(String(id))) {
+                            this.globalSelectedIds.push(String(id));
+                        }
+                    }
+                }
+            },
 
             openMergeModal(group) {
                 this.currentGroup = group;
