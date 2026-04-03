@@ -6,8 +6,13 @@
 <div x-data="duplicateManager({{ $totalProfiles }})">
     <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-indigo-600">
+            <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-indigo-600 flex items-center gap-2">
                 Detected Duplicates
+                @if($totalProfiles > 0)
+                    <span class="text-xs font-bold px-2.5 py-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-full border border-red-200 dark:border-red-800/50">
+                        {{ count($duplicates) }} Groups ({{ $totalProfiles }} Profiles)
+                    </span>
+                @endif
             </h2>
             <p class="text-gray-500 text-sm mt-1">Review and merge duplicate profiles easily without data loss.</p>
         </div>
