@@ -44,55 +44,58 @@
                     </span>
                 </div>
                 
-                <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    @foreach($group as $item)
-                        <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 relative hover:border-indigo-500 transition-colors">
-                            <form method="POST" action="{{ route('admin.duplicates.ignore') }}" class="absolute top-2 right-2" onsubmit="return confirm('Are you sure you want to mark this as NOT a duplicate? It will be removed from this list.');">
-                                @csrf
-                                <input type="hidden" name="type" value="{{ $type }}">
-                                <input type="hidden" name="id" value="{{ $item->id }}">
-                                <button type="submit" class="text-xs text-gray-400 hover:text-red-500 bg-gray-50 dark:bg-gray-800 rounded px-2 py-1 border border-gray-200 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800 transition-colors" title="Dismiss from Duplicates">
-                                    Dismiss
-                                </button>
-                            </form>
-                            <div class="flex gap-4">
-                                @if(isset($item->photo) || isset($item->logo))
-                                    <img src="{{ asset('storage/' . ($item->photo ?? $item->logo)) }}" class="w-16 h-16 rounded-lg object-cover bg-gray-100" />
-                                @else
-                                    <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
-                                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                    </div>
-                                @endif
-                                <div>
-                                    <div class="text-xs text-gray-500">ID: #{{ $item->id }}</div>
-                                    <h4 class="font-bold text-gray-900 dark:text-gray-100">{{ $item->name }}</h4>
-                                    
-                                    @if($type === 'doctor')
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ $item->designation ?? 'N/A' }}</div>
-                                        <div class="text-sm mt-1">📱 {{ $item->phone ?? 'No Phone' }}</div>
-                                        <div class="text-xs mt-2 text-gray-500 font-medium">Chambers:</div>
-                                        <ul class="text-xs text-gray-600 dark:text-gray-400 list-disc list-inside">
-                                            @forelse($item->chambers as $ch)
-                                                <li>{{ $ch->hospital->name ?? 'Unknown Hospital' }}</li>
-                                            @empty
-                                                <li>No Chambers</li>
-                                            @endforelse
-                                        </ul>
+                <form method="POST" action="{{ route('admin.duplicates.ignore') }}" id="form-group-{{ md5($name) }}" onsubmit="return confirm('Are you sure you want to dismiss the selected profiles? They will be removed from this list.');">
+                    @csrf
+                    <input type="hidden" name="type" value="{{ $type }}">
+                    <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        @foreach($group as $item)
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 relative hover:border-indigo-500 transition-colors">
+                                <label class="absolute top-2 right-2 flex items-center gap-2 cursor-pointer bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-800 transition-colors" title="Select to Dismiss from Duplicates">
+                                    <input type="checkbox" name="ids[]" value="{{ $item->id }}" class="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800">
+                                    <span class="text-xs font-medium text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">Select to Dismiss</span>
+                                </label>
+                                <div class="flex gap-4">
+                                    @if(isset($item->photo) || isset($item->logo))
+                                        <img src="{{ asset('storage/' . ($item->photo ?? $item->logo)) }}" class="w-16 h-16 rounded-lg object-cover bg-gray-100" />
                                     @else
-                                        <div class="text-sm mt-1">📱 {{ $item->phone ?? 'No Phone' }}</div>
-                                        <div class="text-sm text-gray-500">📍 {{ $item->address ?? 'No Address' }}</div>
+                                        <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
+                                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                        </div>
                                     @endif
-                                    <div class="mt-2 text-xs">
-                                        <a href="{{ $type === 'doctor' ? route('doctors.show', $item->slug) : route('hospitals.show', $item->slug) }}" target="_blank" class="text-sky-500 hover:underline">View Public Profile &rarr;</a>
+                                    <div class="pt-1">
+                                        <div class="text-xs text-gray-500">ID: #{{ $item->id }}</div>
+                                        <h4 class="font-bold text-gray-900 dark:text-gray-100 pr-24">{{ $item->name }}</h4>
+                                        
+                                        @if($type === 'doctor')
+                                            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $item->designation ?? 'N/A' }}</div>
+                                            <div class="text-sm mt-1">📱 {{ $item->phone ?? 'No Phone' }}</div>
+                                            <div class="text-xs mt-2 text-gray-500 font-medium">Chambers:</div>
+                                            <ul class="text-xs text-gray-600 dark:text-gray-400 list-disc list-inside">
+                                                @forelse($item->chambers as $ch)
+                                                    <li>{{ $ch->hospital->name ?? 'Unknown Hospital' }}</li>
+                                                @empty
+                                                    <li>No Chambers</li>
+                                                @endforelse
+                                            </ul>
+                                        @else
+                                            <div class="text-sm mt-1">📱 {{ $item->phone ?? 'No Phone' }}</div>
+                                            <div class="text-sm text-gray-500">📍 {{ $item->address ?? 'No Address' }}</div>
+                                        @endif
+                                        <div class="mt-2 text-xs">
+                                            <a href="{{ $type === 'doctor' ? route('doctors.show', $item->slug) : route('hospitals.show', $item->slug) }}" target="_blank" class="text-sky-500 hover:underline">View Public Profile &rarr;</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
+                </form>
                 
-                <div class="px-5 py-3 bg-gray-50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700 flex justify-end">
-                    <button @click="openMergeModal({{ json_encode($group) }})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2">
+                <div class="px-5 py-3 bg-gray-50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
+                    <button type="submit" form="form-group-{{ md5($name) }}" class="bg-white border border-gray-300 hover:bg-red-50 hover:text-red-600 hover:border-red-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-800">
+                        Dismiss Selected
+                    </button>
+                    <button type="button" @click="openMergeModal({{ json_encode($group) }})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2 border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                         Review & Merge
                     </button>

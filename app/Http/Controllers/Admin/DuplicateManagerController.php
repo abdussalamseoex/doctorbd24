@@ -157,15 +157,16 @@ class DuplicateManagerController extends Controller
     {
         $request->validate([
             'type' => 'required|in:doctor,hospital',
-            'id' => 'required|integer',
+            'ids' => 'required|array',
+            'ids.*' => 'integer',
         ]);
 
         if ($request->type === 'doctor') {
-            Doctor::where('id', $request->id)->update(['is_duplicate_ignored' => true]);
+            Doctor::whereIn('id', $request->ids)->update(['is_duplicate_ignored' => true]);
         } else {
-            Hospital::where('id', $request->id)->update(['is_duplicate_ignored' => true]);
+            Hospital::whereIn('id', $request->ids)->update(['is_duplicate_ignored' => true]);
         }
 
-        return redirect()->back()->with('success', 'Profile marked as not a duplicate and removed from this list.');
+        return redirect()->back()->with('success', 'Selected profiles marked as not duplicates and removed from this list.');
     }
 }
