@@ -115,7 +115,14 @@ class AdminDoctorController extends Controller
             $doctor->updateSeo($seoData);
         }
 
-        return redirect()->route('admin.doctors.index')->with('success', 'Doctor created successfully.');
+        // Check for possible duplicates
+        $hasDuplicate = Doctor::where('name', $doctor->name)->where('id', '!=', $doctor->id)->exists();
+        $message = 'Doctor created successfully.';
+        if ($hasDuplicate) {
+            $message .= ' ⚠ Warning: A Doctor with the same name already exists in the system.';
+        }
+
+        return redirect()->route('admin.doctors.index')->with('success', $message);
     }
 
     public function edit(Doctor $doctor)
@@ -222,7 +229,14 @@ class AdminDoctorController extends Controller
             $doctor->updateSeo($seoData);
         }
 
-        return redirect()->route('admin.doctors.index')->with('success', 'Doctor updated successfully.');
+        // Check for possible duplicates
+        $hasDuplicate = Doctor::where('name', $doctor->name)->where('id', '!=', $doctor->id)->exists();
+        $message = 'Doctor updated successfully.';
+        if ($hasDuplicate) {
+            $message .= ' ⚠ Warning: Another Doctor with the same name exists in the system.';
+        }
+
+        return redirect()->route('admin.doctors.index')->with('success', $message);
     }
 
     /**

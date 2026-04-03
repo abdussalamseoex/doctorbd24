@@ -21,7 +21,15 @@ class DoctorController extends Controller
     {
         $doctor = Doctor::where('slug', $slug)
             ->with(['specialties', 'chambers.hospital', 'chambers.area.district.division', 'approvedReviews.user'])
-            ->firstOrFail();
+            ->first();
+
+        if (!$doctor) {
+            $redirect = \App\Models\RedirectLog::where('from_url', 'doctor/' . $slug)->first();
+            if ($redirect) {
+                return redirect($redirect->to_url, 301);
+            }
+            abort(404);
+        }
 
         $doctor->incrementViewCount();
 

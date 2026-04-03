@@ -102,7 +102,13 @@ class AdminHospitalController extends Controller
             }
             $hospital->updateSeo($seoData);
         }
-        return redirect()->route('admin.hospitals.index')->with('success', 'Hospital added.');
+        $hasDuplicate = Hospital::where('name', $hospital->name)->where('id', '!=', $hospital->id)->exists();
+        $message = 'Hospital added successfully.';
+        if ($hasDuplicate) {
+            $message .= ' ⚠ Warning: Another Hospital with the same name exists in the system.';
+        }
+
+        return redirect()->route('admin.hospitals.index')->with('success', $message);
     }
 
     public function edit(Hospital $hospital)
@@ -197,7 +203,13 @@ class AdminHospitalController extends Controller
             }
             $hospital->updateSeo($seoData);
         }
-        return redirect()->route('admin.hospitals.index')->with('success', 'Hospital updated.');
+        $hasDuplicate = Hospital::where('name', $hospital->name)->where('id', '!=', $hospital->id)->exists();
+        $message = 'Hospital updated successfully.';
+        if ($hasDuplicate) {
+            $message .= ' ⚠ Warning: Another Hospital with the same name exists in the system.';
+        }
+
+        return redirect()->route('admin.hospitals.index')->with('success', $message);
     }
 
     public function destroy(Hospital $hospital)

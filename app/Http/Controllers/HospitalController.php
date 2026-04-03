@@ -21,7 +21,15 @@ class HospitalController extends Controller
     {
         $hospital = Hospital::where('slug', $slug)
             ->with(['area.district.division', 'approvedReviews.user', 'chambers.doctor.specialties'])
-            ->firstOrFail();
+            ->first();
+
+        if (!$hospital) {
+            $redirect = \App\Models\RedirectLog::where('from_url', 'hospital/' . $slug)->first();
+            if ($redirect) {
+                return redirect($redirect->to_url, 301);
+            }
+            abort(404);
+        }
 
         $hospital->incrementViewCount();
 

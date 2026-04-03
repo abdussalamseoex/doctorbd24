@@ -149,6 +149,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/reviews/{review}', [\App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
+// Report Duplicate (Public or Auth)
+Route::post('/report-duplicate', [\App\Http\Controllers\ReportDuplicateController::class, 'store'])->name('report-duplicate.store');
+
 
 
 
@@ -228,6 +231,11 @@ Route::prefix('admin')
 
         // Roles & Permissions
         Route::resource('roles', \App\Http\Controllers\Admin\AdminRoleController::class)->except('show')->middleware('permission:manage roles');
+
+        // Duplicates Manager
+        Route::get('duplicates', [\App\Http\Controllers\Admin\DuplicateManagerController::class, 'index'])->name('duplicates.index')->middleware('role:admin');
+        Route::post('duplicates/merge', [\App\Http\Controllers\Admin\DuplicateManagerController::class, 'merge'])->name('duplicates.merge')->middleware('role:admin');
+
 
         // Redirect Logs
         Route::resource('redirect-logs', \App\Http\Controllers\Admin\RedirectLogController::class)->only(['index', 'destroy'])->middleware('role:admin');

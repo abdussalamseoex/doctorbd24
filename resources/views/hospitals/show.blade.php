@@ -430,6 +430,44 @@
                     </div>
                 @endif
 
+                {{-- Report Duplicate Profile --}}
+                <div x-data="{ reportModal: false }" class="mt-4">
+                    <button @click="reportModal = true" class="w-full py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-500 hover:border-red-200 dark:hover:border-red-800/50 transition-all text-xs font-semibold flex justify-center items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Report Duplicate or Issue
+                    </button>
+
+                    <template x-teleport="body">
+                        <div x-show="reportModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm" x-transition.opacity>
+                            <div @click.away="reportModal = false" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                                <button @click="reportModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                                <div class="p-6 text-left">
+                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                                        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                        Report Profile
+                                    </h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                                        Did you find a duplicate of this Hospital's profile, or is there incorrect information? Let us know.
+                                    </p>
+                                    
+                                    <form method="POST" action="{{ route('report-duplicate.store') }}">
+                                        @csrf
+                                        <input type="hidden" name="reportable_id" value="{{ $hospital->id }}">
+                                        <input type="hidden" name="reportable_type" value="App\Models\Hospital">
+                                        <div class="mb-4">
+                                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Reason</label>
+                                            <textarea name="reason" rows="3" required placeholder="E.g., This is a duplicate listing. The other profile is..." class="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white"></textarea>
+                                        </div>
+                                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl shadow-sm transition-colors">Submit Report</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
                 {{-- Reviews moved to main section --}}
 
                 {{-- Ad Container 1 --}}
