@@ -16,23 +16,27 @@ class DuplicateManagerController extends Controller
 
         if ($type === 'doctor') {
             // Find duplicates by exact name or exact phone
-            $duplicateNames = Doctor::select('name')
+            $duplicateNames = Doctor::where('is_duplicate_ignored', false)
+                ->select('name')
                 ->groupBy('name')
                 ->havingRaw('COUNT(*) > 1')
                 ->pluck('name');
             
             $duplicates = Doctor::whereIn('name', $duplicateNames)
+                ->where('is_duplicate_ignored', false)
                 ->with(['chambers.hospital', 'specialties'])
                 ->get()
                 ->groupBy('name');
 
         } else {
-            $duplicateNames = Hospital::select('name')
+            $duplicateNames = Hospital::where('is_duplicate_ignored', false)
+                ->select('name')
                 ->groupBy('name')
                 ->havingRaw('COUNT(*) > 1')
                 ->pluck('name');
 
             $duplicates = Hospital::whereIn('name', $duplicateNames)
+                ->where('is_duplicate_ignored', false)
                 ->with('area')
                 ->get()
                 ->groupBy('name');
@@ -147,5 +151,21 @@ class DuplicateManagerController extends Controller
             DB::rollBack();
             return back()->with('error', 'Error merging: ' . $e->getMessage());
         }
+    }
+
+    public function ignore(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:doctor,hospital',
+            'id' => 'required|integer',
+        ]);
+
+        if ($request->type === 'doctor') {
+            Doctor::where('id', $request->id)->update(['is_duplicate_ignored' => true]);
+        } else {
+            Hospital::where('id', $request->id)->update(['is_duplicate_ignored' => true]);
+        }
+
+        return redirect()->back()->with('success', 'Profile marked as not a duplicate and removed from this list.');
     }
 }

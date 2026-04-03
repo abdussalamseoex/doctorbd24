@@ -47,6 +47,14 @@
                 <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
                     @foreach($group as $item)
                         <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 relative hover:border-indigo-500 transition-colors">
+                            <form method="POST" action="{{ route('admin.duplicates.ignore') }}" class="absolute top-2 right-2" onsubmit="return confirm('Are you sure you want to mark this as NOT a duplicate? It will be removed from this list.');">
+                                @csrf
+                                <input type="hidden" name="type" value="{{ $type }}">
+                                <input type="hidden" name="id" value="{{ $item->id }}">
+                                <button type="submit" class="text-xs text-gray-400 hover:text-red-500 bg-gray-50 dark:bg-gray-800 rounded px-2 py-1 border border-gray-200 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800 transition-colors" title="Dismiss from Duplicates">
+                                    Dismiss
+                                </button>
+                            </form>
                             <div class="flex gap-4">
                                 @if(isset($item->photo) || isset($item->logo))
                                     <img src="{{ asset('storage/' . ($item->photo ?? $item->logo)) }}" class="w-16 h-16 rounded-lg object-cover bg-gray-100" />
