@@ -81,6 +81,10 @@ class AdminDoctorController extends Controller
             \App\Models\Doctor::where('import_source', 'popular_diagnostic')->forceDelete();
             \App\Models\ReportDuplicate::where('reason', 'like', '%Popular Diagnostic%')->delete();
             \App\Models\Chamber::where('name', 'Popular Diagnostic Center')->delete();
+
+            // 3. Clean up orphaned long specialties and pivot relations
+            \Illuminate\Support\Facades\DB::table('doctor_specialty')->whereNotIn('doctor_id', \App\Models\Doctor::pluck('id'))->delete();
+            \App\Models\Specialty::doesntHave('doctors')->delete();
         }
 
         // 2. RUN CHUNK

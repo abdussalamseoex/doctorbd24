@@ -216,13 +216,16 @@ class ImportPopularDoctorsCsv extends Command
 
             // 4. Handle Specialty
             if (!empty($specialtyName)) {
-                $sSlug = Str::slug($specialtyName);
-                if (!empty($sSlug)) {
-                    $spec = Specialty::firstOrCreate(
-                        ['slug' => $sSlug],
-                        ['name' => ['en' => $specialtyName, 'bn' => $specialtyName]]
-                    );
-                    $doctor->specialties()->attach($spec->id);
+                $specialtiesList = array_map('trim', explode(',', $specialtyName));
+                foreach ($specialtiesList as $sName) {
+                    $sSlug = Str::slug($sName);
+                    if (!empty($sSlug)) {
+                        $spec = Specialty::firstOrCreate(
+                            ['slug' => $sSlug],
+                            ['name' => ['en' => $sName, 'bn' => $sName]]
+                        );
+                        $doctor->specialties()->attach($spec->id);
+                    }
                 }
             }
 
@@ -234,42 +237,48 @@ class ImportPopularDoctorsCsv extends Command
 
                 // Branch specific static data mapping
                 $branchData = [
-                    'Dhanmondi' => ['address' => 'House-16, Road- 2, Dhanmondi, Dhaka-1205', 'phone' => '09613 787801'],
-                    'English road' => ['address' => 'House-2, English Road, Dhaka', 'phone' => '09613 787802'],
-                    'Shantinagar' => ['address' => 'Unit- 01, House- 11, Shantinagar, Dhaka', 'phone' => '09613 787803'],
-                    'Badda' => ['address' => 'Cha-90/2, North Badda (Pragoti Sarani), Dhaka', 'phone' => '09613 787809'],
-                    'Mirpur' => ['address' => 'House- 67, Block- C, Section- 11, Mirpur, Dhaka', 'phone' => '09613 787807'],
-                    'Uttara Jashim Uddin (Sector-04)' => ['address' => 'House-21, Road-7, Sector-4, Jashim Uddin, Uttara, Dhaka', 'phone' => '09613 787805'],
-                    'Uttara (Sector-09)' => ['address' => 'House-47, Road- 14, Sector- 9, Uttara, Dhaka', 'phone' => '09613 787805'],
-                    'Narayangonj' => ['address' => '231/4, B.B. Road, Chashara, Narayanganj', 'phone' => '09613 787804'],
-                    'Savar' => ['address' => 'B-73/2, Talbag, Savar, Dhaka', 'phone' => '09613 787808'],
-                    'Gazipur' => ['address' => 'Chandana Chowrasta, Gazipur', 'phone' => '09613 787815'],
-                    'Narsingdi' => ['address' => '135/2, B.M. Tower, C.W. Road, Narsingdi', 'phone' => '09613 787823'],
-                    'Sylhet' => ['address' => 'Medical College Road, Rikabi Bazar, Sylhet', 'phone' => '09613 787810'],
-                    'Comilla' => ['address' => 'Jhawtola, Comilla', 'phone' => '09613 787812'],
-                    'Noakhali' => ['address' => 'Hospital Road, Maijdee Court, Noakhali', 'phone' => '09613 787817'],
-                    'Chittagong' => ['address' => '20/B, K.B. Fazlul Kader Road, Panchlaish, Chittagong', 'phone' => '09613 787810'],
-                    'Rajshahi' => ['address' => 'Laxmipur, Rajshahi', 'phone' => '09613 787811'],
-                    'Rangpur' => ['address' => 'Dhap, Jail Road, Rangpur', 'phone' => '09613 787813'],
-                    'Bogura' => ['address' => 'Thanthania, Sherpur Road, Bogura', 'phone' => '09613 787812'],
-                    'Barisal' => ['address' => 'Kalibari Road, Barisal', 'phone' => '09613 787814'],
-                    'Mymensingh' => ['address' => '171/1, Charpara, Mymensingh', 'phone' => '09613 787814'],
-                    'Dinajpur' => ['address' => 'Ganeshtola, Dinajpur', 'phone' => '09613 787816'],
-                    'Kushtia' => ['address' => 'Mazampur, Kushtia', 'phone' => '09613 787822'],
-                    'Faridpur' => ['address' => 'Goalchamot, Faridpur', 'phone' => '09613 787821'],
-                    'Pabna' => ['address' => 'Hospital Road, Pabna', 'phone' => '09613 787824']
+                    'Dhanmondi' => ['address' => 'House-16, Road- 2, Dhanmondi, Dhaka-1205', 'phone' => '09613 787801', 'area' => 'Dhanmondi'],
+                    'English road' => ['address' => 'House-2, English Road, Dhaka', 'phone' => '09613 787802', 'area' => 'Kotwali'],
+                    'Shantinagar' => ['address' => 'Unit- 01, House- 11, Shantinagar, Dhaka', 'phone' => '09613 787803', 'area' => 'Shantinagar'],
+                    'Badda' => ['address' => 'Cha-90/2, North Badda (Pragoti Sarani), Dhaka', 'phone' => '09613 787809', 'area' => 'Badda'],
+                    'Mirpur' => ['address' => 'House- 67, Block- C, Section- 11, Mirpur, Dhaka', 'phone' => '09613 787807', 'area' => 'Mirpur'],
+                    'Uttara Jashim Uddin (Sector-04)' => ['address' => 'House-21, Road-7, Sector-4, Jashim Uddin, Uttara, Dhaka', 'phone' => '09613 787805', 'area' => 'Uttara'],
+                    'Uttara (Sector-09)' => ['address' => 'House-47, Road- 14, Sector- 9, Uttara, Dhaka', 'phone' => '09613 787805', 'area' => 'Uttara'],
+                    'Narayangonj' => ['address' => '231/4, B.B. Road, Chashara, Narayanganj', 'phone' => '09613 787804', 'area' => 'Narayanganj'],
+                    'Savar' => ['address' => 'B-73/2, Talbag, Savar, Dhaka', 'phone' => '09613 787808', 'area' => 'Savar'],
+                    'Gazipur' => ['address' => 'Chandana Chowrasta, Gazipur', 'phone' => '09613 787815', 'area' => 'Gazipur'],
+                    'Narsingdi' => ['address' => '135/2, B.M. Tower, C.W. Road, Narsingdi', 'phone' => '09613 787823', 'area' => 'Narsingdi'],
+                    'Sylhet' => ['address' => 'Medical College Road, Rikabi Bazar, Sylhet', 'phone' => '09613 787810', 'area' => 'Sylhet'],
+                    'Comilla' => ['address' => 'Jhawtola, Comilla', 'phone' => '09613 787812', 'area' => 'Comilla'],
+                    'Noakhali' => ['address' => 'Hospital Road, Maijdee Court, Noakhali', 'phone' => '09613 787817', 'area' => 'Noakhali'],
+                    'Chittagong' => ['address' => '20/B, K.B. Fazlul Kader Road, Panchlaish, Chittagong', 'phone' => '09613 787810', 'area' => 'Chittagong'],
+                    'Rajshahi' => ['address' => 'Laxmipur, Rajshahi', 'phone' => '09613 787811', 'area' => 'Rajshahi'],
+                    'Rangpur' => ['address' => 'Dhap, Jail Road, Rangpur', 'phone' => '09613 787813', 'area' => 'Rangpur'],
+                    'Bogura' => ['address' => 'Thanthania, Sherpur Road, Bogura', 'phone' => '09613 787812', 'area' => 'Bogura'],
+                    'Barisal' => ['address' => 'Kalibari Road, Barisal', 'phone' => '09613 787814', 'area' => 'Barisal'],
+                    'Mymensingh' => ['address' => '171/1, Charpara, Mymensingh', 'phone' => '09613 787814', 'area' => 'Mymensingh'],
+                    'Dinajpur' => ['address' => 'Ganeshtola, Dinajpur', 'phone' => '09613 787816', 'area' => 'Dinajpur'],
+                    'Kushtia' => ['address' => 'Mazampur, Kushtia', 'phone' => '09613 787822', 'area' => 'Kushtia'],
+                    'Faridpur' => ['address' => 'Goalchamot, Faridpur', 'phone' => '09613 787821', 'area' => 'Faridpur'],
+                    'Pabna' => ['address' => 'Hospital Road, Pabna', 'phone' => '09613 787824', 'area' => 'Pabna']
                 ];
 
                 $tAddress = $branchData[$branchName]['address'] ?? "Popular Diagnostic Center, $branchName";
                 $tPhone = $branchData[$branchName]['phone'] ?? "";
+                $tAreaSearch = $branchData[$branchName]['area'] ?? $branchName;
 
-                $hospital = Hospital::firstOrCreate(
+                // Dynamically fetch the best matching area_id from DB
+                $mappedArea = \App\Models\Area::whereRaw('LOWER(name) like ?', ['%' . strtolower($tAreaSearch) . '%'])->first();
+                $areaId = $mappedArea ? $mappedArea->id : null;
+
+                $hospital = Hospital::updateOrCreate(
                     ['slug' => $hSlug],
                     [
                         'name' => $fullHospitalName,
                         'type' => 'diagnostic',
                         'address' => $tAddress,
-                        'phone' => $tPhone
+                        'phone' => $tPhone,
+                        'area_id' => $areaId
                     ]
                 );
 
@@ -286,6 +295,7 @@ class ImportPopularDoctorsCsv extends Command
                         'name' => 'Popular Diagnostic Center',
                         'address' => $tAddress,
                         'phone' => $tPhone,
+                        'area_id' => $areaId,
                         'visiting_hours' => $hoursStr,
                     ]
                 );
