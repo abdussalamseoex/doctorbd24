@@ -69,6 +69,7 @@
                 <option value="deactivate">Deactivate Selected</option>
                 <option value="verify">Verify Selected</option>
                 <option value="feature">Feature Selected</option>
+                <option value="unfeature">Remove Feature</option>
             </select>
             <button @click="confirmBulk" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Apply</button>
         </div>
