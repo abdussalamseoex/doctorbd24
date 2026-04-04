@@ -2,6 +2,7 @@
 
 <div x-data="dynamicMapComponent()"
      x-init="initMap()"
+     x-effect="reactToLocations($wire.mapLocations)"
      class="relative w-full h-full bg-slate-100 dark:bg-slate-800 rounded-[2rem] overflow-hidden"
 >
     <!-- Map Container -->
@@ -17,7 +18,7 @@
     <div x-show="apiError" style="display: none;" class="absolute inset-0 bg-white dark:bg-gray-800 flex flex-col items-center justify-center z-10 p-6 text-center border border-dashed border-red-300 dark:border-red-800 rounded-[2rem]">
         <svg class="w-12 h-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
         <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ __('Map Unavailable') }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm">{{ __('The embedded map requires a valid Google Maps API Key to render. Please check your admin settings.') }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm">{{ __('The embedded map experienced an error while loading.') }}</p>
     </div>
 </div>
 
@@ -30,6 +31,7 @@
             markers: [],
             loading: true,
             apiError: false,
+            locs: [],
 
             initMap() {
                 if (!this.apiKey || this.apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
@@ -39,19 +41,23 @@
                 }
 
                 if (!window.google || !window.google.maps) {
-                    this.loadScript().then(() => this.setupMap()).catch(e => {
+                    this.loadScript().then(() => {
+                        this.setupMap();
+                    }).catch(e => {
                         console.error('Google Maps Script Error:', e);
-                        // Make sure to stop loading indicator if it fails
                         this.loading = false;
                         this.apiError = true;
                     });
                 } else {
                     this.setupMap();
                 }
+            },
 
-                this.$watch('$wire.mapLocations', () => {
+            reactToLocations(newLocations) {
+                this.locs = newLocations || [];
+                if (this.map) {
                     this.updateMarkers();
-                }, { deep: true });
+                }
             },
 
             loadScript() {
@@ -118,8 +124,7 @@
                 this.markers.forEach(marker => marker.setMap(null));
                 this.markers = [];
 
-                const currentLocations = this.$wire ? this.$wire.mapLocations : [];
-                if (!currentLocations || currentLocations.length === 0) return;
+                if (!this.locs || this.locs.length === 0) return;
 
                 const bounds = new google.maps.LatLngBounds();
                 const infoWindow = new google.maps.InfoWindow();
@@ -136,7 +141,7 @@
                     }
                 };
 
-                currentLocations.forEach((loc, index) => {
+                this.locs.forEach((loc, index) => {
                     const createMarker = (position) => {
                         bounds.extend(position);
                         validPins = true;
@@ -175,12 +180,10 @@
                                 if (status === 'OK' && results[0]) {
                                     createMarker(results[0].geometry.location);
                                 } else if (status === 'ZERO_RESULTS' && loc.address) {
-                                    // Retry with just address
                                     geocoder.geocode({ address: `${loc.address}, Bangladesh` }, (res2, stat2) => {
                                         if (stat2 === 'OK' && res2[0]) {
                                             createMarker(res2[0].geometry.location);
                                         } else {
-                                            // Final retry with just area name
                                             geocoder.geocode({ address: `${loc.name}, Bangladesh` }, (res3, stat3) => {
                                                 if (stat3 === 'OK' && res3[0]) createMarker(res3[0].geometry.location);
                                             });
@@ -188,7 +191,7 @@
                                     });
                                 }
                             });
-                        }, index * 350); // Stagger requests safely 
+                        }, index * 350); 
                     }
                 });
             }
