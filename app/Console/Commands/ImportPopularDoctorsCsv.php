@@ -79,6 +79,10 @@ class ImportPopularDoctorsCsv extends Command
                 continue;
             }
 
+            // Save pointer IMMEDIATELY! This absolutely ensures that if the script fatals on THIS row, 
+            // the next retry will skip it, completely avoiding poison-pill infinite freeze loops!
+            \Illuminate\Support\Facades\Cache::put('popular_import_pointer', $csvLineIndex);
+
             if (count($row) !== count($headers)) {
                 $this->warn("Skipping a row due to mismatch in column counts.");
                 continue;
@@ -161,29 +165,20 @@ class ImportPopularDoctorsCsv extends Command
                 
                 if (!Storage::disk('public')->exists($filename)) {
                     try {
-                        // Context stream to bypass blocks and prevent infinitely hanging on dead image URLs
-                        $opts = [
-                            "http" => [
-                                "method" => "GET",
-                                "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n",
-                                "timeout" => 5
-                            ],
-                            "ssl" => [
-                                "verify_peer" => false,
-                                "verify_peer_name" => false, 
-                            ]
-                        ];
-                        $context = stream_context_create($opts);
+                        // Use Laravel's HTTP client with a strict timeout to avoid infinite freezes
+                        $response = \Illuminate\Support\Facades\Http::timeout(5)
+                                        ->withoutVerifying()
+                                        ->withHeaders(['User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'])
+                                        ->get($photoUrl);
 
-                        // Suppress warnings with @ so it doesn't crash the loop
-                        $contents = @file_get_contents($photoUrl, false, $context);
-
-                        if ($contents !== false) {
-                            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $contents);
+                        if ($response->successful()) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $response->body());
                             $photoPath = $filename;
+                        } else {
+                            $this->warn("Image server responded with error for $name");
                         }
                     } catch (\Exception $e) {
-                        $this->warn("Could not download image for $name: " . $e->getMessage());
+                        $this->warn("Image download timeout or error for $name. Skipping image: " . $e->getMessage());
                     }
                 }
             }
@@ -310,10 +305,6 @@ class ImportPopularDoctorsCsv extends Command
             }
 
             $processedInThisChunk++;
-
-            // Save pointer immediately after processing EACH row
-            // This guarantees that if a row crashes due to timeout later on, we survived and saved progress up to this exact line.
-            \Illuminate\Support\Facades\Cache::put('popular_import_pointer', $csvLineIndex);
 
             if ($chunkSize && $processedInThisChunk >= $chunkSize) {
                 break;
