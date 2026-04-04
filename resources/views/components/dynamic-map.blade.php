@@ -12,6 +12,13 @@
         <svg class="w-10 h-10 text-emerald-500 animate-spin mb-3 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
         <span class="text-sm font-bold text-gray-600 dark:text-gray-300 tracking-wider uppercase">{{ __('Loading Map...') }}</span>
     </div>
+
+    <!-- Error Overlay -->
+    <div x-show="apiError" style="display: none;" class="absolute inset-0 bg-white dark:bg-gray-800 flex flex-col items-center justify-center z-10 p-6 text-center border border-dashed border-red-300 dark:border-red-800 rounded-[2rem]">
+        <svg class="w-12 h-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ __('Map Unavailable') }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm">{{ __('The embedded map requires a valid Google Maps API Key to render. Please check your admin settings.') }}</p>
+    </div>
 </div>
 
 @once
@@ -22,12 +29,21 @@
             map: null,
             markers: [],
             loading: true,
+            apiError: false,
 
             initMap() {
+                if (!this.apiKey || this.apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
+                    this.loading = false;
+                    this.apiError = true;
+                    return;
+                }
+
                 if (!window.google || !window.google.maps) {
                     this.loadScript().then(() => this.setupMap()).catch(e => {
                         console.error('Google Maps Script Error:', e);
+                        // Make sure to stop loading indicator if it fails
                         this.loading = false;
+                        this.apiError = true;
                     });
                 } else {
                     this.setupMap();
