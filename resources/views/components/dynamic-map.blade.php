@@ -1,6 +1,6 @@
 @props(['locations' => []])
 
-<div x-data="dynamicMapComponent()"
+<div x-data="{ locations: @entangle('mapLocations'), ...dynamicMapComponent() }"
      x-init="initMap()"
      class="relative w-full h-full bg-slate-100 dark:bg-slate-800 rounded-[2rem] overflow-hidden"
 >
@@ -33,8 +33,8 @@
                     this.setupMap();
                 }
 
-                // Livewire v3 reactivity: watch for component data changes
-                this.$watch('$wire.mapLocations', () => {
+                // Livewire v3 reactivity: watch the entangled locations
+                this.$watch('locations', () => {
                     this.updateMarkers();
                 });
             },
@@ -50,12 +50,17 @@
                         }, 100);
                         return;
                     }
+                    window.googleMapsCallback = () => {
+                        resolve();
+                        delete window.googleMapsCallback;
+                    };
+
                     const script = document.createElement('script');
                     script.id = 'google-maps-js-api';
-                    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&libraries=places`;
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&libraries=places&callback=googleMapsCallback`;
                     script.async = true;
                     script.defer = true;
-                    script.onload = resolve;
+                    // script.onload = resolve; // Replaced by callback
                     script.onerror = reject;
                     document.head.appendChild(script);
                 });
@@ -92,13 +97,13 @@
                 this.markers.forEach(marker => marker.setMap(null));
                 this.markers = [];
 
-                const locations = this.$wire.mapLocations || [];
-                if (locations.length === 0) return;
+                const mapLocs = this.locations || [];
+                if (mapLocs.length === 0) return;
 
                 const bounds = new google.maps.LatLngBounds();
                 const infoWindow = new google.maps.InfoWindow();
 
-                locations.forEach(loc => {
+                mapLocs.forEach(loc => {
                     if (loc.lat && loc.lng) {
                         const position = { lat: parseFloat(loc.lat), lng: parseFloat(loc.lng) };
                         bounds.extend(position);
