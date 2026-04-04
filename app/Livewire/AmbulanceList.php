@@ -11,6 +11,7 @@ use App\Models\District;
 use App\Models\Area;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Artesaos\SEOTools\Facades\OpenGraph;
+use Livewire\Attributes\Computed;
 
 class AmbulanceList extends Component
 {
@@ -32,6 +33,11 @@ class AmbulanceList extends Component
     public $district = '';
     public $area = '';
     public $available24h = false;
+
+    public $userLat = null;
+    public $userLng = null;
+    public $showMapView = false;
+    public $mapLocations = [];
 
     public function queryString()
     {
@@ -143,7 +149,7 @@ class AmbulanceList extends Component
 
     public function clearFilters()
     {
-        $this->reset(['search', 'urlSearch', 'division', 'district', 'area', 'available24h']);
+        $this->reset(['search', 'urlSearch', 'division', 'district', 'area', 'available24h', 'userLat', 'userLng']);
         if (!$this->fixedType) {
             $this->type = '';
         }
@@ -194,8 +200,33 @@ class AmbulanceList extends Component
         } elseif ($this->division) {
             $query->whereHas('area.district.division', fn($q) => $q->where('slug', $this->division));
         }
+        if ($this->search) {
+            $query->where('provider_name', 'like', '%' . $this->search . '%');
+        }
 
-        $ambulances = $query->orderBy('type')->paginate(10);
+        if ($this->userLat && $this->userLng) {
+            $lat = (float) $this->userLat;
+            $lng = (float) $this->userLng;
+            $query->selectRaw("ambulances.*, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance", [$lat, $lng, $lat])
+                  ->orderBy('distance');
+        } else {
+            $query->orderBy('is_featured', 'desc')->orderBy('view_count', 'desc');
+        }
+
+        $ambulances = $query->paginate(10);
+
+        $this->mapLocations = $ambulances->getCollection()->map(function($a) {
+            return [
+                'id' => $a->id,
+                'name' => $a->provider_name,
+                'lat' => $a->latitude,
+                'lng' => $a->longitude,
+                'address' => $a->address,
+                'type' => implode(', ', $a->getTypeLabelsArray()),
+                'featured' => $a->is_featured,
+                'url' => route('ambulances.show', $a->slug)
+            ];
+        })->toArray();
 
         return view('livewire.ambulance-list', [
             'ambulances' => $ambulances,

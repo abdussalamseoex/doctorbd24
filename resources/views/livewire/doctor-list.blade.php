@@ -127,13 +127,36 @@
             </div>
         </div>
 
-        @if($search || $specialty || $division || $district || $area || $gender || $minExperience)
-        <div class="mt-4 flex justify-end">
-            <button wire:click="clearFilters" class="px-4 py-1.5 rounded-lg bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900/50 text-red-500 text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center gap-1 shadow-sm">
+        <div class="mt-4 flex justify-between items-center bg-gray-100 dark:bg-gray-900/50 p-2 rounded-xl">
+            <div class="flex items-center gap-2">
+                <button type="button" wire:click="$toggle('showMapView')" 
+                        class="px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm flex items-center gap-2"
+                        :class="@js($showMapView) ? 'bg-sky-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:bg-sky-50'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                    {{ __('Show Map') }}
+                </button>
+                <div x-data="{ loading: false, error: false }">
+                    <button type="button" 
+                            @click="loading = true; error = false; 
+                                navigator.geolocation.getCurrentPosition(
+                                    (pos) => { $wire.set('userLat', pos.coords.latitude); $wire.set('userLng', pos.coords.longitude); loading = false; }, 
+                                    (err) => { error = true; loading = false; alert('Location access denied or unavailable.'); }
+                                )"
+                            class="px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm flex items-center gap-2"
+                            :class="@js((bool)$userLat) ? 'bg-blue-500 text-white shadow-blue-500/30' : 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border border-gray-200 dark:border-gray-700'">
+                        <svg x-show="!loading" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <svg x-show="loading" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        {{ __('Near Me') }}
+                    </button>
+                </div>
+            </div>
+
+            @if($search || $specialty || $division || $district || $area || $gender || $minExperience || $userLat)
+            <button wire:click="clearFilters" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900/50 text-red-500 text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center gap-1 shadow-sm">
                 ✕ {{ __('Clear Filters') }}
             </button>
+            @endif
         </div>
-        @endif
     </div>
 </div>
 @endif
@@ -142,8 +165,8 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
     <div class="flex flex-col lg:flex-row gap-8">
         
-        {{-- Left Column: Results (75%) --}}
-        <div class="w-full lg:w-3/4 xl:w-4/5">
+        {{-- Left Column: Results --}}
+        <div class="w-full {{ $showMapView ? 'lg:w-[50%]' : 'lg:w-3/4 xl:w-4/5' }}">
             
             @if($seoTitle)
                 <div class="mb-6 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 flex items-center justify-center">
@@ -319,15 +342,21 @@
         </div>
     </div>
             
-    @if($seoBottomContent)
-        <div class="mt-8 mb-4 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8">
-            <div class="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-                {!! $seoBottomContent !!}
-            </div>
+            @if($seoBottomContent)
+                <div class="mt-8 mb-4 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8">
+                    <div class="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {!! $seoBottomContent !!}
+                    </div>
+                </div>
+            @endif
         </div>
-    @endif
-</div>
 
+        {{-- Map View Column (Conditional) --}}
+        @if($showMapView)
+        <div class="hidden lg:block w-full lg:w-[50%] h-[calc(100vh-140px)] sticky top-24 z-10 rounded-[2rem] overflow-hidden shadow-inner border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+            <x-dynamic-map :locations="$this->mapLocations" />
+        </div>
+        @else
         {{-- Right Column: Ads / Sponsors (25%) --}}
         <div class="w-full lg:w-1/4 xl:w-1/5">
             <div class="sticky top-24 space-y-6">
@@ -376,7 +405,7 @@
                 @endif
             </div>
         </div>
+        @endif
 
     </div>
-</div>
 </div>

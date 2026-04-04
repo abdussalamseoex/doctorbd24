@@ -11,6 +11,7 @@ use App\Models\District;
 use App\Models\Area;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Artesaos\SEOTools\Facades\OpenGraph;
+use Livewire\Attributes\Computed;
 
 class HospitalList extends Component
 {
@@ -30,6 +31,11 @@ class HospitalList extends Component
     public $district = '';
     public $area = '';
     public $verified = false;
+
+    public $userLat = null;
+    public $userLng = null;
+    public $showMapView = false;
+    public $mapLocations = [];
 
     public function queryString()
     {
@@ -137,7 +143,7 @@ class HospitalList extends Component
 
     public function clearFilters()
     {
-        $this->reset(['search', 'urlSearch', 'type', 'division', 'district', 'area', 'verified']);
+        $this->reset(['search', 'urlSearch', 'type', 'division', 'district', 'area', 'verified', 'userLat', 'userLng']);
         $this->districts = [];
         $this->areas = [];
         $this->resetPage();
@@ -171,10 +177,32 @@ class HospitalList extends Component
             $query->where('name', 'like', '%' . $this->search . '%');
         }
 
-        $query->orderByDesc('featured')->orderByDesc('view_count');
+        if ($this->userLat && $this->userLng) {
+            $lat = (float) $this->userLat;
+            $lng = (float) $this->userLng;
+            $query->selectRaw("hospitals.*, ( 6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(?) ) + sin( radians(?) ) * sin( radians( lat ) ) ) ) AS distance", [$lat, $lng, $lat])
+                  ->orderBy('distance');
+        } else {
+            $query->orderByDesc('featured')->orderByDesc('view_count');
+        }
+
+        $paginatedHospitals = $query->paginate(12);
+
+        $this->mapLocations = $paginatedHospitals->getCollection()->map(function($h) {
+            return [
+                'id' => $h->id,
+                'name' => $h->name,
+                'lat' => $h->lat,
+                'lng' => $h->lng,
+                'address' => $h->address,
+                'type' => $h->type,
+                'featured' => $h->featured,
+                'url' => route('hospitals.show', $h->slug)
+            ];
+        })->toArray();
 
         return view('livewire.hospital-list', [
-            'hospitals' => $query->paginate(12),
+            'hospitals' => $paginatedHospitals,
             'divisions' => Division::orderBy('id')->get(),
         ]);
     }

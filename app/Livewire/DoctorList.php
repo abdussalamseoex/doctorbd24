@@ -12,6 +12,7 @@ use App\Models\District;
 use App\Models\Area;
 use App\Models\Hospital;
 use Artesaos\SEOTools\Facades\SEOTools;
+use Livewire\Attributes\Computed;
 
 class DoctorList extends Component
 {
@@ -31,6 +32,11 @@ class DoctorList extends Component
     public $gender = '';
     public $minExperience = '';
     public $sort = 'latest';
+
+    public $userLat = null;
+    public $userLng = null;
+    public $showMapView = false;
+    public $mapLocations = [];
 
     public function queryString()
     {
@@ -138,7 +144,7 @@ class DoctorList extends Component
 
     public function clearFilters()
     {
-        $this->reset(['search', 'urlSearch', 'specialty', 'division', 'district', 'area', 'gender', 'minExperience', 'sort']);
+        $this->reset(['search', 'urlSearch', 'specialty', 'division', 'district', 'area', 'gender', 'minExperience', 'sort', 'userLat', 'userLng']);
         $this->districts = [];
         $this->areas = [];
         $this->resetPage();
@@ -183,15 +189,39 @@ class DoctorList extends Component
             $query->whereHas('chambers.area.district.division', fn($q) => $q->where('slug', $this->division));
         }
 
-        switch ($this->sort) {
-            case 'experience': $query->orderByDesc('experience_years'); break;
-            case 'rating':     $query->orderByDesc('rating_avg'); break;
-            case 'fees_low':   $query->orderBy('fee_range_min'); break;
-            default:           $query->latest(); break;
+        if ($this->userLat && $this->userLng) {
+            $lat = (float) $this->userLat;
+            $lng = (float) $this->userLng;
+            $query->selectRaw("doctors.*, (SELECT MIN(6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(?) ) + sin( radians(?) ) * sin( radians( lat ) ) )) FROM chambers WHERE chambers.doctor_id = doctors.id AND chambers.lat IS NOT NULL) AS distance", [$lat, $lng, $lat])
+                  ->orderBy('distance');
+        } else {
+            switch ($this->sort) {
+                case 'experience': $query->orderByDesc('experience_years'); break;
+                case 'rating':     $query->orderByDesc('rating_avg'); break;
+                case 'fees_low':   $query->orderBy('fee_range_min'); break;
+                default:           $query->latest(); break;
+            }
         }
 
+        $paginatedDoctors = $query->paginate(12);
+
+        $this->mapLocations = $paginatedDoctors->getCollection()->map(function($d) {
+            $chamber = $d->chambers->firstWhere(fn($c) => $c->lat && $c->lng);
+            if (!$chamber) return null;
+            return [
+                'id' => $d->id,
+                'name' => $d->name,
+                'lat' => $chamber->lat,
+                'lng' => $chamber->lng,
+                'address' => $chamber->address,
+                'type' => $d->specialties->pluck('name')->first() ?: 'Specialist',
+                'featured' => $d->featured,
+                'url' => route('doctors.show', $d->slug)
+            ];
+        })->filter()->values()->toArray();
+
         return view('livewire.doctor-list', [
-            'doctors'     => $query->paginate(12),
+            'doctors'     => $paginatedDoctors,
             'specialties' => Specialty::orderBy('name->' . app()->getLocale())->get(),
             'divisions'   => Division::orderBy('id')->get(),
         ]);
