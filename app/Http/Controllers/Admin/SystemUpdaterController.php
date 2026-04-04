@@ -97,7 +97,8 @@ class SystemUpdaterController extends Controller
 
         try {
             $outputLog .= "> Fetching latest commit details from GitHub...\n";
-            $response = Http::withToken($config['token'])
+            $response = Http::withoutVerifying()
+                ->withToken($config['token'])
                 ->withHeaders(['User-Agent' => 'DoctorBD24-Updater'])
                 ->get("https://api.github.com/repos/{$config['repo']}/commits/main");
 
@@ -119,12 +120,13 @@ class SystemUpdaterController extends Controller
 
             $outputLog .= "> Downloading update bundle ({$sha})...\n";
             
-            $zipResponse = Http::withToken($config['token'])
+            $zipResponse = Http::withoutVerifying()
+                ->withToken($config['token'])
                 ->withHeaders(['User-Agent' => 'DoctorBD24-Updater'])
                 ->get("https://api.github.com/repos/{$config['repo']}/zipball/main");
 
             if (!$zipResponse->successful()) {
-                throw new Exception("Failed to download ZIP file from GitHub.");
+                throw new Exception("Failed to download ZIP file from GitHub. Status: " . $zipResponse->status() . " Body: " . substr($zipResponse->body(), 0, 200));
             }
 
             $zipPath = $updaterDir . '/update.zip';
