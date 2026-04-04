@@ -29,9 +29,28 @@ class AdminDoctorController extends Controller
         if ($request->has('featured')) {
             $query->where('featured', true);
         }
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        } else {
+            // Default to all to show both published and draft, or handled via UI tabs
+        }
 
         $doctors = $query->latest()->paginate(20)->withQueryString();
-        return view('admin.doctors.index', compact('doctors'));
+        
+        $counts = [
+            'all' => Doctor::count(),
+            'published' => Doctor::where('status', 'published')->orWhereNull('status')->count(),
+            'draft' => Doctor::where('status', 'draft')->count(),
+        ];
+
+        return view('admin.doctors.index', compact('doctors', 'counts'));
+    }
+
+    public function publish(Request $request)
+    {
+        $request->validate(['ids' => 'required|array']);
+        Doctor::whereIn('id', $request->ids)->update(['status' => 'published']);
+        return back()->with('success', count($request->ids) . ' doctors published successfully.');
     }
 
     public function create()

@@ -20,6 +20,9 @@ class DoctorController extends Controller
     public function show(string $slug)
     {
         $doctor = Doctor::where('slug', $slug)
+            ->where(function ($q) {
+                $q->whereNull('status')->orWhere('status', '!=', 'draft');
+            })
             ->with(['specialties', 'chambers.hospital', 'chambers.area.district.division', 'approvedReviews.user'])
             ->first();
 
@@ -74,7 +77,10 @@ class DoctorController extends Controller
 
         $related = Doctor::whereHas('specialties', function ($q) use ($doctor) {
             $q->whereIn('specialties.id', $doctor->specialties->pluck('id'));
-        })->where('id', '!=', $doctor->id)->where('verified', true)->take(4)->get();
+        })->where('id', '!=', $doctor->id)
+          ->where('verified', true)
+          ->where(function($q) { $q->whereNull('status')->orWhere('status', '!=', 'draft'); })
+          ->take(4)->get();
 
         return view('doctors.show', compact('doctor', 'related'));
     }

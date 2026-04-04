@@ -23,10 +23,12 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search doctors..."
                        class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 w-56">
                 <div class="flex border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+                    <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['status' => 'draft'])) }}" 
+                       class="px-3 py-2 text-xs font-semibold hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/20 {{ request('status') === 'draft' ? 'bg-fuchsia-100 dark:bg-fuchsia-900/40 text-fuchsia-700 dark:text-fuchsia-400' : 'text-gray-500' }}">Drafts ({{ $counts['draft'] ?? 0 }})</a>
+                    <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['status' => 'published'])) }}" 
+                       class="px-3 py-2 text-xs font-semibold border-l border-gray-200 dark:border-gray-600 hover:bg-sky-50 dark:hover:bg-sky-900/20 {{ request('status') === 'published' ? 'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-400' : 'text-gray-500' }}">Published ({{ $counts['published'] ?? 0 }})</a>
                     <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['featured' => 1])) }}" 
-                       class="px-3 py-2 text-xs font-semibold hover:bg-amber-50 dark:hover:bg-amber-900/20 {{ request('featured') ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' : 'text-gray-500' }}">Featured</a>
-                    <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['verified' => 1])) }}" 
-                       class="px-3 py-2 text-xs font-semibold border-l border-gray-200 dark:border-gray-600 hover:bg-green-50 dark:hover:bg-green-900/20 {{ request('verified') == '1' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400' : 'text-gray-500' }}">Verified</a>
+                       class="px-3 py-2 text-xs font-semibold border-l border-gray-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 {{ request('featured') ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' : 'text-gray-500' }}">Featured</a>
                 </div>
                 <button type="submit" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm hover:bg-sky-700 transition-colors font-bold">Filter</button>
                 @if(request()->anyFilled(['search', 'featured', 'verified']))
@@ -66,6 +68,7 @@
         <div class="flex items-center gap-3">
             <select x-model="bulkAction" class="bg-gray-800 dark:bg-gray-100 border-gray-700 dark:border-gray-300 rounded-lg text-xs py-1.5 focus:ring-sky-500 dark:text-gray-900">
                 <option value="">Select Action</option>
+                <option value="publish">Publish Selected</option>
                 <option value="delete">Delete Selected</option>
                 <option value="verify">Verify Selected</option>
                 <option value="unverify">Unverify Selected</option>
@@ -150,13 +153,20 @@
                 <td class="px-4 py-3 hidden md:table-cell text-xs text-gray-500 dark:text-gray-400">{{ $doctor->experience_years }}y</td>
                 <td class="px-4 py-3">
                     <div class="flex gap-1 flex-wrap">
+                        @if($doctor->status === 'draft')
+                            <span class="px-2 py-0.5 rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-400 text-xs font-medium border border-fuchsia-200 dark:border-fuchsia-800">Draft</span>
+                        @else
+                            <span class="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 text-xs font-medium">Published</span>
+                        @endif
+
                         @if($doctor->verified)
                             <span class="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">✓ Verified</span>
-                        @else
-                            <span class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs">Unverified</span>
                         @endif
                         @if($doctor->featured)
                             <span class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium">⭐</span>
+                        @endif
+                        @if($doctor->import_source === 'popular_diagnostic')
+                            <span class="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-medium">Imported</span>
                         @endif
                     </div>
                 </td>

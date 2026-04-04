@@ -152,7 +152,10 @@ class DoctorList extends Component
 
     public function render()
     {
-        $query = Doctor::with(['specialties', 'chambers.area.district.division', 'reviews']);
+        $query = Doctor::with(['specialties', 'chambers.area.district.division', 'reviews'])
+            ->where(function($q) {
+                $q->whereNull('status')->orWhere('status', '!=', 'draft');
+            });
 
         // SEO Handling
         SEOTools::setTitle(__('Find Doctor') . ' | DoctorBD24');
