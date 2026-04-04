@@ -1,181 +1,149 @@
 @props(['locations' => []])
 
-<div x-data="{ locations: @entangle('mapLocations'), ...dynamicMapComponent() }"
+<div x-data="leafletMapComponent()"
      x-init="initMap()"
+     x-effect="reactToLocations($wire.mapLocations)"
      class="relative w-full h-full bg-slate-100 dark:bg-slate-800 rounded-[2rem] overflow-hidden"
 >
     <!-- Map Container -->
-    <div x-ref="mapContainer" class="w-full h-full z-0 font-sans"></div>
+    <div x-ref="mapContainer" class="w-full h-full z-0 font-sans" style="min-height: 400px;"></div>
 
     <!-- Loading Overlay -->
     <div x-show="loading" class="absolute inset-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm shadow-inner flex flex-col items-center justify-center z-10 transition-opacity">
         <svg class="w-10 h-10 text-emerald-500 animate-spin mb-3 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
         <span class="text-sm font-bold text-gray-600 dark:text-gray-300 tracking-wider uppercase">{{ __('Loading Map...') }}</span>
     </div>
-
-    <!-- Error Overlay -->
-    <div x-show="apiError" style="display: none;" class="absolute inset-0 bg-white dark:bg-gray-800 flex flex-col items-center justify-center z-10 p-6 text-center border border-dashed border-red-300 dark:border-red-800 rounded-[2rem]">
-        <svg class="w-12 h-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ __('Map Unavailable') }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm">{{ __('The embedded map requires a valid Google Maps API Key to render. Please check your admin settings.') }}</p>
-    </div>
 </div>
 
 @once
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.data('dynamicMapComponent', () => ({
-            apiKey: '{{ \App\Models\Setting::get("google_maps_api_key", env("GOOGLE_MAPS_API_KEY")) }}',
+        Alpine.data('leafletMapComponent', () => ({
             map: null,
             markers: [],
+            layerGroup: null,
             loading: true,
-            apiError: false,
+            locs: [],
 
             initMap() {
-                if (!this.apiKey || this.apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
-                    this.loading = false;
-                    this.apiError = true;
+                // Ensure leaflet loads
+                if (typeof L === 'undefined') {
+                    setTimeout(() => this.initMap(), 100);
                     return;
                 }
-
-                if (!window.google || !window.google.maps) {
-                    this.loadScript().then(() => this.setupMap()).catch(e => {
-                        console.error('Google Maps Script Error:', e);
-                        // Make sure to stop loading indicator if it fails
-                        this.loading = false;
-                        this.apiError = true;
-                    });
-                } else {
-                    this.setupMap();
-                }
-
-                // Livewire v3 reactivity: watch the entangled locations
-                this.$watch('locations', () => {
-                    this.updateMarkers();
-                });
+                this.setupMap();
             },
 
-            loadScript() {
-                return new Promise((resolve, reject) => {
-                    if (document.getElementById('google-maps-js-api')) {
-                        let interval = setInterval(() => {
-                            if (window.google && window.google.maps) {
-                                clearInterval(interval);
-                                resolve();
-                            }
-                        }, 100);
-                        return;
-                    }
-                    window.googleMapsCallback = () => {
-                        resolve();
-                        delete window.googleMapsCallback;
-                    };
-
-                    const script = document.createElement('script');
-                    script.id = 'google-maps-js-api';
-                    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&libraries=places&callback=googleMapsCallback`;
-                    script.async = true;
-                    script.defer = true;
-                    // script.onload = resolve; // Replaced by callback
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
+            reactToLocations(newLocations) {
+                this.locs = newLocations || [];
+                if (this.map) {
+                    this.updateMarkers();
+                }
             },
 
             setupMap() {
                 this.loading = false;
                 
-                // Base map style for clean UI
-                const mapOptions = {
-                    center: { lat: 23.6850, lng: 90.3563 }, // Default center to Bangladesh
-                    zoom: 7,
-                    mapTypeControl: false,
-                    streetViewControl: false,
-                    fullscreenControl: true,
-                    styles: [
-                        { featureType: "poi.business", stylers: [{ visibility: "off" }] },
-                        { featureType: "transit", elementType: "labels.icon", stylers: [{ visibility: "off" }] }
-                    ]
-                };
+                // Initialize Leaflet Map centered to Bangladesh
+                this.map = L.map(this.$refs.mapContainer).setView([23.6850, 90.3563], 7);
+                
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                    subdomains: 'abcd',
+                    maxZoom: 19
+                }).addTo(this.map);
 
-                this.map = new google.maps.Map(this.$refs.mapContainer, mapOptions);
-                this.updateMarkers();
+                this.layerGroup = L.featureGroup().addTo(this.map);
+
+                // Delay execution to ensure map sizing
+                setTimeout(() => {
+                    this.map.invalidateSize();
+                    this.updateMarkers();
+                }, 300);
             },
 
             updateMarkers() {
-                if (!this.map) return;
+                if (!this.map || !this.layerGroup) return;
                 
-                // Define the pin colors
-                const featuredIcon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
-                const defaultIcon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
-
                 // Clear existing markers
-                this.markers.forEach(marker => marker.setMap(null));
+                this.layerGroup.clearLayers();
                 this.markers = [];
 
-                const mapLocs = this.locations || [];
-                if (mapLocs.length === 0) return;
-
-                const bounds = new google.maps.LatLngBounds();
-                const infoWindow = new google.maps.InfoWindow();
-                const geocoder = new google.maps.Geocoder();
+                if (this.locs.length === 0) return;
 
                 let validPins = false;
 
                 const updateBounds = () => {
                     if (validPins) {
-                        this.map.fitBounds(bounds);
-                        if (this.markers.length === 1 || this.map.getZoom() > 15) {
-                            this.map.setZoom(15);
+                        this.map.fitBounds(this.layerGroup.getBounds(), { padding: [40, 40] });
+                        if (this.markers.length === 1 || this.map.getZoom() > 14) {
+                            this.map.setZoom(14);
                         }
                     }
                 };
 
-                mapLocs.forEach((loc, index) => {
-                    const createMarker = (position) => {
-                        bounds.extend(position);
-                        validPins = true;
+                const createMarker = (lat, lng, loc) => {
+                    validPins = true;
+                    
+                    const colorClass = loc.featured ? 'bg-yellow-500' : 'bg-emerald-500';
+                    const iconHtml = `<div class="w-5 h-5 rounded-full ${colorClass} border-2 border-white shadow-md transition-transform hover:scale-110"></div>`;
+                    
+                    const customIcon = L.divIcon({
+                        className: 'custom-leaflet-marker',
+                        html: iconHtml,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10],
+                        popupAnchor: [0, -10]
+                    });
 
-                        const marker = new google.maps.Marker({
-                            position: position,
-                            map: this.map,
-                            title: loc.name,
-                            animation: google.maps.Animation.DROP,
-                            icon: loc.featured ? featuredIcon : defaultIcon
-                        });
+                    const marker = L.marker([lat, lng], { icon: customIcon });
 
-                        marker.addListener('click', () => {
-                            const content = `
-                                <div class="px-3 py-2 min-w-[220px] font-sans">
-                                    <h3 class="font-extrabold text-[#111827] text-[15px] leading-tight mb-1">${loc.name}</h3>
-                                    ${loc.type ? `<span class="inline-block px-2 py-0.5 mt-1 rounded bg-[#ecfdf5] text-[#059669] text-[10px] uppercase font-bold tracking-wider mb-2 border border-[#a7f3d0]">${loc.type}</span>` : ''}
-                                    <p class="text-xs text-[#4b5563] mb-3">${loc.address || ''}</p>
-                                    <a href="${loc.url}" target="_blank" class="block text-center w-full bg-[#10b981] hover:bg-[#059669] text-white text-xs font-bold py-2 rounded-lg transition-colors">View Profile &rarr;</a>
-                                </div>
-                            `;
-                            infoWindow.setContent(content);
-                            infoWindow.open(this.map, marker);
-                        });
+                    const content = `
+                        <div class="px-2 py-1 min-w-[200px] font-sans">
+                            <h3 class="font-extrabold text-[#111827] text-[14px] leading-tight mb-1">${loc.name}</h3>
+                            ${loc.type ? `<span class="inline-block px-1.5 py-0.5 mt-1 rounded bg-[#ecfdf5] text-[#059669] text-[9px] uppercase font-bold tracking-wider mb-2 border border-[#a7f3d0]">${loc.type}</span>` : ''}
+                            <div class="text-xs text-[#4b5563] mb-3 leading-snug">${loc.address || ''}</div>
+                            <a href="${loc.url}" class="block text-center w-full bg-[#10b981] hover:bg-[#059669] text-white text-sm font-bold py-1.5 rounded transition-colors no-underline">View Profile &rarr;</a>
+                        </div>
+                    `;
 
-                        this.markers.push(marker);
-                        updateBounds();
-                    };
+                    marker.bindPopup(content);
+                    marker.addTo(this.layerGroup);
+                    this.markers.push(marker);
+                    
+                    updateBounds();
+                };
 
+                this.locs.forEach((loc, index) => {
                     if (loc.lat && loc.lng) {
-                        createMarker({ lat: parseFloat(loc.lat), lng: parseFloat(loc.lng) });
+                        createMarker(parseFloat(loc.lat), parseFloat(loc.lng), loc);
                     } else if (loc.name || loc.address) {
+                        // Nominatim API Geocoding fallback
                         setTimeout(() => {
                             const query = loc.address ? `${loc.name}, ${loc.address}, Bangladesh` : `${loc.name}, Bangladesh`;
-                            geocoder.geocode({ address: query }, (results, status) => {
-                                if (status === 'OK' && results[0]) {
-                                    createMarker(results[0].geometry.location);
-                                }
-                            });
-                        }, index * 250); // Stagger requests to avoid query limits
+                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data && data.length > 0) {
+                                        createMarker(parseFloat(data[0].lat), parseFloat(data[0].lon), loc);
+                                    }
+                                });
+                        }, index * 1100); // Respect nominatim strictly 1 req/sec rating
                     }
                 });
             }
         }));
     });
 </script>
+<style>
+    .custom-leaflet-marker { background: transparent; border: none; }
+    .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); padding: 0; }
+    .leaflet-popup-content { margin: 8px 10px; }
+    .leaflet-container a.leaflet-popup-close-button { color: #9ca3af; right: 4px; top: 4px; }
+    /* Hide Leaflet watermark to keep UI extremely clean */
+    .leaflet-control-attribution { display: none !important; }
+</style>
 @endonce
