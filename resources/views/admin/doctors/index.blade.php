@@ -27,6 +27,8 @@
     },
     
     checkProgress() {
+        if (!this.showProgressModal) return;
+        
         fetch('{{ route('admin.doctors.import-progress') }}')
             .then(res => res.json())
             .then(data => {
@@ -40,6 +42,17 @@
                     }, 3000);
                 }
             });
+    },
+
+    resetImport() {
+        if (!confirm('Are you sure you want to stop and reset the import process?')) return;
+        this.showProgressModal = false;
+        fetch('{{ route('admin.doctors.import-popular') }}?action=reset', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        }).then(() => {
+            window.location.reload();
+        });
     },
 
     startImport() {
@@ -56,12 +69,19 @@
         fetch('{{ route('admin.doctors.import-popular') }}', {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-        }).then(() => {
+        }).then(res => {
+            if(!res.ok) {
+                // If it crashed due to timeout (e.g. 500 error), pause then aggressively try again
+                setTimeout(() => this.processChunk(), 3000);
+                return;
+            }
             this.checkProgress();
             // If not completed, continue processing
-            if (this.importProgress.status !== 'completed') {
+            if (this.importProgress.status !== 'completed' && this.showProgressModal) {
                 setTimeout(() => this.processChunk(), 1000);
             }
+        }).catch(err => {
+            setTimeout(() => this.processChunk(), 3000);
         });
     },
 
@@ -138,7 +158,10 @@
                     <span x-text="`${importProgress.total > 0 ? Math.round((importProgress.current / importProgress.total) * 100) : 0}%`"></span>
                 </div>
                 
-                <button type="button" @click="showProgressModal = false" x-show="importProgress.status === 'completed' || importProgress.status === 'idle'" class="mt-6 px-6 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-200 transition-all text-sm">Close</button>
+                <div class="mt-6 flex justify-center gap-3">
+                    <button type="button" @click="resetImport" x-show="importProgress.status === 'running'" class="px-6 py-2 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-bold hover:bg-red-200 transition-all text-sm">Force Reset</button>
+                    <button type="button" @click="showProgressModal = false" x-show="importProgress.status === 'completed' || importProgress.status === 'idle'" class="px-6 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-200 transition-all text-sm">Close</button>
+                </div>
             </div>
         </div>
     </div>

@@ -153,18 +153,25 @@ class ImportPopularDoctorsCsv extends Command
                 
                 if (!Storage::disk('public')->exists($filename)) {
                     try {
-                        // Quick context stream to bypass some blocks just in case
+                        // Context stream to bypass blocks and prevent infinitely hanging on dead image URLs
                         $opts = [
                             "http" => [
                                 "method" => "GET",
-                                "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n"
+                                "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n",
+                                "timeout" => 5
+                            ],
+                            "ssl" => [
+                                "verify_peer" => false,
+                                "verify_peer_name" => false, 
                             ]
                         ];
                         $context = stream_context_create($opts);
-                        $contents = file_get_contents($photoUrl, false, $context);
+
+                        // Suppress warnings with @ so it doesn't crash the loop
+                        $contents = @file_get_contents($photoUrl, false, $context);
 
                         if ($contents !== false) {
-                            Storage::disk('public')->put($filename, $contents);
+                            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $contents);
                             $photoPath = $filename;
                         }
                     } catch (\Exception $e) {
@@ -243,14 +250,16 @@ class ImportPopularDoctorsCsv extends Command
 
             $processedInThisChunk++;
 
+            // Save pointer immediately after processing EACH row
+            // This guarantees that if a row crashes due to timeout later on, we survived and saved progress up to this exact line.
+            \Illuminate\Support\Facades\Cache::put('popular_import_pointer', $csvLineIndex);
+
             if ($chunkSize && $processedInThisChunk >= $chunkSize) {
                 break;
             }
         }
 
         fclose($handle);
-        
-        \Illuminate\Support\Facades\Cache::put('popular_import_pointer', $csvLineIndex);
 
         if (feof($handle) || $csvLineIndex >= $totalLines) {
             \Illuminate\Support\Facades\Cache::put('popular_import_progress', [

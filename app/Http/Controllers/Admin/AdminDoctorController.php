@@ -55,6 +55,13 @@ class AdminDoctorController extends Controller
 
     public function importPopular(Request $request)
     {
+        // Handle explicit wipe/reset from the UI
+        if ($request->query('action') === 'reset') {
+            \Illuminate\Support\Facades\Cache::put('popular_import_progress', ['status' => 'idle', 'current' => 0, 'total' => 0, 'message' => '']);
+            \Illuminate\Support\Facades\Cache::forget('popular_import_pointer');
+            return response()->json(['success' => true]);
+        }
+
         // 1. WIPE CORRUPT IMPORTS & RESET POINTER ONLY IF RUNNING FOR THE FIRST TIME
         $progress = \Illuminate\Support\Facades\Cache::get('popular_import_progress');
         if (!$progress || $progress['status'] === 'idle' || $progress['status'] === 'completed') {
@@ -77,9 +84,9 @@ class AdminDoctorController extends Controller
         }
 
         // 2. RUN CHUNK
-        // We run the Artisan command SYNCHRONOUSLY but tell it to only process 20 items at a time
-        // so it never times out.
-        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors', ['--chunk' => 30]);
+        // We run the Artisan command SYNCHRONOUSLY but tell it to only process 10 items at a time
+        // to prevent absolute maximum execution timeouts on strict cPanel environments
+        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors', ['--chunk' => 10]);
         
         return response()->json(['success' => true]);
     }
