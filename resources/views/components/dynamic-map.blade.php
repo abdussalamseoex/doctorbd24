@@ -28,8 +28,10 @@
         }
     },
 
-    reactToLocations(newLocations) {
+    reactToData(newLocations, uLat, uLng) {
         this.locs = newLocations || [];
+        this.uLat = uLat;
+        this.uLng = uLng;
         if (this.map) {
             this.updateMarkers();
         }
@@ -160,15 +162,41 @@
                                     });
                                 }
                             });
+                        } else if (status === 'REQUEST_DENIED' || status === 'OVER_QUERY_LIMIT') {
+                            console.error('Geocoding blocked:', status, '. Ensure Google Cloud billing is active.');
                         }
                     });
                 }, index * 350); 
             }
         });
+
+        // Always show the user's location if 'Near Me' was clicked
+        if (this.uLat && this.uLng) {
+            const userPos = { lat: parseFloat(this.uLat), lng: parseFloat(this.uLng) };
+            bounds.extend(userPos);
+            validPins = true;
+
+            const userMarkerObj = new google.maps.Marker({
+                position: userPos,
+                map: this.map,
+                title: 'You are here',
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 9,
+                    fillColor: '#3b82f6',
+                    fillOpacity: 1,
+                    strokeWeight: 2,
+                    strokeColor: '#ffffff'
+                },
+                zIndex: 9999
+            });
+            this.markers.push(userMarkerObj);
+            updateBounds();
+        }
     }
 }"
      x-init="initMap()"
-     x-effect="reactToLocations($wire.mapLocations)"
+     x-effect="reactToData($wire.mapLocations, $wire.userLat, $wire.userLng)"
      class="relative w-full h-full bg-slate-100 dark:bg-slate-800 rounded-[2rem] overflow-hidden"
 >
     <!-- Map Container -->
