@@ -40,6 +40,12 @@ class ImportPopularDoctorsCsv extends Command
         }
 
         $this->info("Starting Popular Doctors CSV import...");
+        \Illuminate\Support\Facades\Cache::put('popular_import_progress', [
+            'status' => 'running',
+            'current' => 0,
+            'total' => 0,
+            'message' => 'Initializing...'
+        ]);
 
         // Auto-Repair: Previous imports might have been mistakenly published due to mass-assignment exception.
         // We will force them into draft status.
@@ -57,6 +63,8 @@ class ImportPopularDoctorsCsv extends Command
         }
 
         $handle = fopen($filePath, 'r');
+        $totalLines = count(file($filePath, FILE_SKIP_EMPTY_LINES)) - 1; // subtract header
+        
         $headers = fgetcsv($handle);
 
         if (!$headers) {
@@ -82,6 +90,15 @@ class ImportPopularDoctorsCsv extends Command
 
             $name = trim($data['Name'] ?? '');
             if (empty($name)) continue;
+
+            if ($count % 5 === 0) {
+                \Illuminate\Support\Facades\Cache::put('popular_import_progress', [
+                    'status' => 'running',
+                    'current' => $count,
+                    'total' => $totalLines,
+                    'message' => "Processing: $name"
+                ]);
+            }
 
             $this->info("Processing: $name");
 
@@ -225,6 +242,14 @@ class ImportPopularDoctorsCsv extends Command
         }
 
         fclose($handle);
+        
+        \Illuminate\Support\Facades\Cache::put('popular_import_progress', [
+            'status' => 'completed',
+            'current' => $count,
+            'total' => $totalLines,
+            'message' => "Import completed successfully! Total Processed: $count. Total Flagged as Duplicates: $duplicateCount."
+        ]);
+
         $this->info("Import completed successfully! Total Processed: $count. Total Flagged as Duplicates: $duplicateCount.");
     }
 }

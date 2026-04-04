@@ -8,6 +8,55 @@
     openImportModal: false,
     showBulkConfirm: false,
     bulkAction: '',
+    importProgress: {
+        status: 'idle',
+        current: 0,
+        total: 0,
+        message: ''
+    },
+    showProgressModal: false,
+    pollingInterval: null,
+    
+    init() {
+        this.checkProgress();
+        this.pollingInterval = setInterval(() => {
+            if (this.showProgressModal && this.importProgress.status === 'running') {
+                this.checkProgress();
+            }
+        }, 2000);
+    },
+    
+    checkProgress() {
+        fetch('{{ route('admin.doctors.import-progress') }}')
+            .then(res => res.json())
+            .then(data => {
+                this.importProgress = data;
+                if (data.status === 'running') {
+                    this.showProgressModal = true;
+                } else if (data.status === 'completed' && this.showProgressModal) {
+                    setTimeout(() => {
+                        this.showProgressModal = false;
+                        window.location.reload();
+                    }, 3000);
+                }
+            });
+    },
+
+    startImport() {
+        if (!confirm('Do you want to import Popular Diagnostic doctors from the CSV file? This may take a few minutes.')) return;
+        
+        this.showProgressModal = true;
+        this.importProgress.status = 'running';
+        this.importProgress.message = 'Starting Background Process...';
+        
+        fetch('{{ route('admin.doctors.import-popular') }}', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        });
+        
+        this.checkProgress();
+    },
+
     toggleAll() { 
         this.selectedIds = this.selectAll ? [{{ $doctors->pluck('id')->join(',') }}] : []; 
     },
@@ -37,13 +86,10 @@
             </form>
         </div>
         <div class="flex items-center gap-3">
-            <form action="{{ route('admin.doctors.import-popular') }}" method="POST" class="inline" onsubmit="return confirm('Do you want to import Popular Diagnostic doctors from the CSV file? This may take a few minutes.')">
-                @csrf
-                <button type="submit" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-indigo-100 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-sm font-bold hover:bg-indigo-50 transition-all shadow-sm">
-                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    (Run) Import Popular
-                </button>
-            </form>
+            <button type="button" @click="startImport" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-indigo-100 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-sm font-bold hover:bg-indigo-50 transition-all shadow-sm">
+                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                (Run) Import Popular
+            </button>
             <button @click="openImportModal = true" type="button" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-sky-100 dark:border-sky-900/30 text-sky-700 dark:text-sky-400 text-sm font-bold hover:bg-sky-50 transition-all shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                 Bulk Import
@@ -58,6 +104,33 @@
         <div x-show="openImportModal" style="display: none;" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div @click.away="openImportModal = false" class="transform transition-all w-full max-w-lg">
                 <livewire:admin.bulk-importer type="doctor" />
+            </div>
+        </div>
+
+        {{-- Import Progress Modal --}}
+        <div x-show="showProgressModal" style="display: none;" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 backdrop-blur-md">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-gray-100 dark:border-gray-700 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-sky-500/10 pointer-events-none"></div>
+                
+                <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight flex justify-center items-center gap-2">
+                    <svg x-show="importProgress.status === 'running'" class="animate-spin text-indigo-600 h-6 w-6" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <svg x-show="importProgress.status === 'completed'" class="text-green-500 h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    Live Import Progress
+                </h3>
+                
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium" x-text="importProgress.message"></p>
+
+                <div class="mt-6 bg-gray-100 dark:bg-gray-900 rounded-full h-4 w-full overflow-hidden border border-gray-200 dark:border-gray-700">
+                    <div class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out" 
+                         :style="`width: ${importProgress.total > 0 ? Math.round((importProgress.current / importProgress.total) * 100) : 0}%`"></div>
+                </div>
+                
+                <div class="mt-2 flex justify-between text-xs font-bold text-gray-500 dark:text-gray-400">
+                    <span><span x-text="importProgress.current"></span> / <span x-text="importProgress.total"></span> Processed</span>
+                    <span x-text="`${importProgress.total > 0 ? Math.round((importProgress.current / importProgress.total) * 100) : 0}%`"></span>
+                </div>
+                
+                <button type="button" @click="showProgressModal = false" x-show="importProgress.status === 'completed' || importProgress.status === 'idle'" class="mt-6 px-6 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-200 transition-all text-sm">Close</button>
             </div>
         </div>
     </div>

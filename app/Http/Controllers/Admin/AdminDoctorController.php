@@ -63,6 +63,16 @@ class AdminDoctorController extends Controller
         return back()->with('success', 'Import has started in the background! Please wait a few minutes and refresh this page to see the drafts.');
     }
 
+    public function importProgress()
+    {
+        return response()->json(\Illuminate\Support\Facades\Cache::get('popular_import_progress', [
+            'status' => 'idle',
+            'current' => 0,
+            'total' => 0,
+            'message' => ''
+        ]));
+    }
+
     public function create()
     {
         $specialties = Specialty::orderBy('name->en')->get();
