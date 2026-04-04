@@ -261,6 +261,12 @@
                         <input type="text" name="google_search_console" value="{{ old('google_search_console', $settings['google_search_console'] ?? '') }}" placeholder="<meta name='google-site-verification' content='...' />"
                                class="w-full font-mono rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm focus:ring-red-500 focus:border-red-500 transition-all">
                     </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Google Maps API Key</label>
+                        <p class="text-xs text-gray-500 mb-2">API key used to display interactive maps for hospital and doctor locations.</p>
+                        <input type="text" name="google_maps_api_key" value="{{ old('google_maps_api_key', $settings['google_maps_api_key'] ?? '') }}" placeholder="AIzaSy..."
+                               class="w-full font-mono rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm focus:ring-red-500 focus:border-red-500 transition-all">
+                    </div>
                 </div>
             </div>
 

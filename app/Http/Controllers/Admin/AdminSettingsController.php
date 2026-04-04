@@ -16,7 +16,7 @@ class AdminSettingsController extends Controller
             'youtube_url', 'footer_text', 'review_auto_approve',
             'homepage_hero_title', 'homepage_hero_subtitle', 'homepage_seo_title',
             'homepage_seo_description', 'homepage_seo_keywords', 'robots_txt',
-            'google_analytics', 'google_search_console'
+            'google_analytics', 'google_search_console', 'google_maps_api_key'
         ];
 
         $settings = [];

@@ -342,7 +342,7 @@
                        class="text-xs px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 hover:bg-sky-100 transition-colors border border-sky-200 dark:border-sky-800">Open in Maps →</a>
                 </div>
                 <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600 h-56">
-                    <iframe src="https://www.google.com/maps/embed/v1/place?key={{ env('GOOGLE_MAPS_API_KEY') }}&q={{ $hospital->lat }},{{ $hospital->lng }}"
+                    <iframe src="https://www.google.com/maps/embed/v1/place?key={{ \App\Models\Setting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}&q={{ $hospital->lat }},{{ $hospital->lng }}"
                         class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
