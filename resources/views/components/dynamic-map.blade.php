@@ -1,6 +1,6 @@
 @props(['locations' => []])
 
-<div x-data="dynamicMapComponent(@entangle('mapLocations'))"
+<div x-data="dynamicMapComponent()"
      x-init="initMap()"
      class="relative w-full h-full bg-slate-100 dark:bg-slate-800 rounded-[2rem] overflow-hidden"
 >
@@ -24,13 +24,12 @@
 @once
 <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.data('dynamicMapComponent', (livewireLocs) => ({
+        Alpine.data('dynamicMapComponent', () => ({
             apiKey: '{{ \App\Models\Setting::get("google_maps_api_key", env("GOOGLE_MAPS_API_KEY")) }}',
             map: null,
             markers: [],
             loading: true,
             apiError: false,
-            locs: livewireLocs,
 
             initMap() {
                 if (!this.apiKey || this.apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
@@ -50,7 +49,7 @@
                     this.setupMap();
                 }
 
-                this.$watch('locs', () => {
+                this.$watch('$wire.mapLocations', () => {
                     this.updateMarkers();
                 }, { deep: true });
             },
@@ -76,9 +75,15 @@
                     script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&libraries=places&callback=googleMapsCallback`;
                     script.async = true;
                     script.defer = true;
-                    // script.onload = resolve; // Replaced by callback
-                    script.onerror = reject;
+                    script.onerror = () => reject(new Error('Network error loading map'));
                     document.head.appendChild(script);
+
+                    // Timeout fallback for unresponsive script
+                    setTimeout(() => {
+                        if (!window.google || !window.google.maps) {
+                            reject(new Error('Google Maps script timeout'));
+                        }
+                    }, 10000);
                 });
             },
 
@@ -113,7 +118,8 @@
                 this.markers.forEach(marker => marker.setMap(null));
                 this.markers = [];
 
-                if (this.locs.length === 0) return;
+                const currentLocations = this.$wire ? this.$wire.mapLocations : [];
+                if (!currentLocations || currentLocations.length === 0) return;
 
                 const bounds = new google.maps.LatLngBounds();
                 const infoWindow = new google.maps.InfoWindow();
@@ -130,7 +136,7 @@
                     }
                 };
 
-                this.locs.forEach((loc, index) => {
+                currentLocations.forEach((loc, index) => {
                     const createMarker = (position) => {
                         bounds.extend(position);
                         validPins = true;
