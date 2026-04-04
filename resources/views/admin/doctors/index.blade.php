@@ -45,13 +45,17 @@
     },
 
     resetImport() {
-        if (!confirm('Are you sure you want to stop and reset the import process?')) return;
-        this.showProgressModal = false;
-        fetch('{{ route('admin.doctors.import-popular') }}?action=reset', {
+        if(!confirm('Are you sure you want to completely WIPE all Popular drafts and reset the system?')) return;
+        fetch('/admin/doctors/import-popular?action=reset', {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-        }).then(() => {
-            window.location.reload();
+        }).then(res => res.json()).then(data => {
+            if(data.success) {
+                this.importProgress.status = 'idle';
+                this.importProgress.message = 'System completely reset and cleaned.';
+                this.showProgressModal = false;
+                alert('System successfully wiped! You can now start a fresh import.');
+            }
         });
     },
 
@@ -114,9 +118,13 @@
             </form>
         </div>
         <div class="flex items-center gap-3">
+            <button type="button" @click="resetImport" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/40 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Force Reset
+            </button>
             <button type="button" @click="startImport" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-indigo-100 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-sm font-bold hover:bg-indigo-50 transition-all shadow-sm">
                 <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                (Run) Import Popular
+                (Run) Import
             </button>
             <button @click="openImportModal = true" type="button" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-sky-100 dark:border-sky-900/30 text-sky-700 dark:text-sky-400 text-sm font-bold hover:bg-sky-50 transition-all shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
@@ -159,8 +167,7 @@
                 </div>
                 
                 <div class="mt-6 flex justify-center gap-3">
-                    <button type="button" @click="resetImport" x-show="importProgress.status === 'running'" class="px-6 py-2 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-bold hover:bg-red-200 transition-all text-sm">Force Reset</button>
-                    <button type="button" @click="showProgressModal = false" x-show="importProgress.status === 'completed' || importProgress.status === 'idle'" class="px-6 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-200 transition-all text-sm">Close</button>
+                    <button type="button" @click="showProgressModal = false" x-show="importProgress.status === 'completed' || importProgress.status === 'idle' || importProgress.status === 'running'" class="px-6 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-200 transition-all text-sm">Close</button>
                 </div>
             </div>
         </div>
