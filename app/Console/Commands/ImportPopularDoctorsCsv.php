@@ -216,8 +216,13 @@ class ImportPopularDoctorsCsv extends Command
 
             // 4. Handle Specialty
             if (!empty($specialtyName)) {
-                $specialtiesList = array_map('trim', explode(',', $specialtyName));
+                // Split by comma, slash, and ampersand to prevent long compound specialties
+                $sString = str_replace(['&', '/', '|'], ',', $specialtyName);
+                $specialtiesList = array_filter(array_map('trim', explode(',', $sString)));
+                
                 foreach ($specialtiesList as $sName) {
+                    if (strlen($sName) < 3) continue; // Skip extremely short acronyms accidentally generated
+
                     $sSlug = Str::slug($sName);
                     if (!empty($sSlug)) {
                         $spec = Specialty::firstOrCreate(

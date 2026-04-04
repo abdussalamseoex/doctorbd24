@@ -83,7 +83,7 @@ class AdminDoctorController extends Controller
             \App\Models\Chamber::where('name', 'Popular Diagnostic Center')->delete();
 
             // 3. Clean up orphaned long specialties and pivot relations
-            \Illuminate\Support\Facades\DB::table('doctor_specialty')->whereNotIn('doctor_id', \App\Models\Doctor::pluck('id'))->delete();
+            \Illuminate\Support\Facades\DB::statement('DELETE FROM doctor_specialty WHERE doctor_id NOT IN (SELECT id FROM doctors)');
             \App\Models\Specialty::doesntHave('doctors')->delete();
         }
 
