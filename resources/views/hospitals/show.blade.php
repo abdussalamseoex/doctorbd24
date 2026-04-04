@@ -334,15 +334,28 @@
             </div>
 
             {{-- Map --}}
-            @if($hospital->lat && $hospital->lng)
+            @if($hospital->address || ($hospital->lat && $hospital->lng))
+            @php
+                // Build a smart query to show the place details (Name, Reviews, etc.) instead of just a generic pin
+                $mapQuery = urlencode($hospital->name . ($hospital->address ? ', ' . $hospital->address : ''));
+                if (!$hospital->address && $hospital->lat && $hospital->lng) {
+                    $mapQuery = $hospital->lat . ',' . $hospital->lng;
+                }
+                
+                // Intelligent external link
+                $mapsLink = $hospital->google_maps_url ?: "https://www.google.com/maps/search/?api=1&query=" . $mapQuery;
+                if (!$hospital->google_maps_url && $hospital->lat && $hospital->lng) {
+                    $mapsLink = "https://www.google.com/maps?q={$hospital->lat},{$hospital->lng}";
+                }
+            @endphp
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="font-bold text-gray-800 dark:text-gray-100">📍 {{ __('Location') }}</h2>
-                    <a href="https://www.google.com/maps?q={{ $hospital->lat }},{{ $hospital->lng }}" target="_blank"
+                    <a href="{{ $mapsLink }}" target="_blank"
                        class="text-xs px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 hover:bg-sky-100 transition-colors border border-sky-200 dark:border-sky-800">Open in Maps →</a>
                 </div>
                 <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600 h-56">
-                    <iframe src="https://www.google.com/maps/embed/v1/place?key={{ \App\Models\Setting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}&q={{ $hospital->lat }},{{ $hospital->lng }}"
+                    <iframe src="https://www.google.com/maps/embed/v1/place?key={{ \App\Models\Setting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}&q={{ $mapQuery }}"
                         class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
