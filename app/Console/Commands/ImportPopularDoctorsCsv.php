@@ -67,14 +67,8 @@ class ImportPopularDoctorsCsv extends Command
         $totalLines = count(file($filePath, FILE_SKIP_EMPTY_LINES)) - 1; // subtract header
         $headers = fgetcsv($handle);
 
-        $currentIndex = \Illuminate\Support\Facades\Cache::get('popular_import_pointer', 0);
-        $count = $currentIndex;
+        $currentIndex = (int) \Illuminate\Support\Facades\Cache::get('popular_import_pointer', 0);
         $processedInThisChunk = 0;
-
-        // Fast-forward file pointer to the correct row
-        for ($i = 0; $i < $currentIndex; $i++) {
-            fgetcsv($handle);
-        }
 
         if (!$headers) {
             $this->error("CSV file is empty or missing headers.");
@@ -86,10 +80,17 @@ class ImportPopularDoctorsCsv extends Command
         $headers[0] = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $headers[0]);
         $headers = array_map('trim', $headers);
 
-        $count = 0;
         $duplicateCount = 0;
+        $csvLineIndex = 0;
 
         while (($row = fgetcsv($handle)) !== false) {
+            $csvLineIndex++;
+
+            // Fast forward past already imported lines
+            if ($csvLineIndex <= $currentIndex) {
+                continue;
+            }
+
             if (count($row) !== count($headers)) {
                 $this->warn("Skipping a row due to mismatch in column counts.");
                 continue;
@@ -100,23 +101,16 @@ class ImportPopularDoctorsCsv extends Command
             $name = trim($data['Name'] ?? '');
             if (empty($name)) continue;
 
-            if ($count % 5 === 0) {
+            if ($csvLineIndex % 5 === 0) {
                 \Illuminate\Support\Facades\Cache::put('popular_import_progress', [
                     'status' => 'running',
-                    'current' => $count,
+                    'current' => $csvLineIndex,
                     'total' => $totalLines,
                     'message' => "Processing: $name"
                 ]);
             }
 
             $this->info("Processing: $name");
-
-            // Prevent duplicating rows if script is run multiple times (e.g. after a timeout)
-            $alreadyImported = Doctor::where('name', $name)->where('import_source', 'popular_diagnostic')->first();
-            if ($alreadyImported) {
-                $this->info("   -> Already imported previously. Skipping...");
-                continue;
-            }
 
             // 1. Duplicate Detection Check
             // We search for an existing doctor with a highly similar name
@@ -247,7 +241,6 @@ class ImportPopularDoctorsCsv extends Command
                 $this->warn("   -> Flagged as potential duplicate of ID: {$existingDuplicate->id}");
             }
 
-            $count++;
             $processedInThisChunk++;
 
             if ($chunkSize && $processedInThisChunk >= $chunkSize) {
@@ -257,19 +250,19 @@ class ImportPopularDoctorsCsv extends Command
 
         fclose($handle);
         
-        \Illuminate\Support\Facades\Cache::put('popular_import_pointer', $count);
+        \Illuminate\Support\Facades\Cache::put('popular_import_pointer', $csvLineIndex);
 
-        if ($count >= $totalLines) {
+        if (feof($handle) || $csvLineIndex >= $totalLines) {
             \Illuminate\Support\Facades\Cache::put('popular_import_progress', [
                 'status' => 'completed',
-                'current' => $count,
+                'current' => $totalLines,
                 'total' => $totalLines,
-                'message' => "Import completed successfully! Total Processed: $count. Total Flagged as Duplicates: $duplicateCount."
+                'message' => "Import completed successfully! Total Processed: $totalLines. Total Flagged as Duplicates: $duplicateCount."
             ]);
             // Reset pointer
             \Illuminate\Support\Facades\Cache::forget('popular_import_pointer');
         }
 
-        $this->info("Import completed successfully! Total Processed: $count. Total Flagged as Duplicates: $duplicateCount.");
+        $this->info("Import completed successfully! Pointer is at $csvLineIndex.");
     }
 }

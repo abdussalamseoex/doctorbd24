@@ -55,20 +55,31 @@ class AdminDoctorController extends Controller
 
     public function importPopular(Request $request)
     {
-        // Emergency Fix: Force all previously imported into draft before doing anything else
-        \App\Models\Doctor::where('photo', 'like', 'popular/%')
-            ->where(function($q) {
-                $q->where('status', '!=', 'draft')->orWhereNull('status');
-            })
-            ->update([
-                'status' => 'draft',
-                'import_source' => 'popular_diagnostic'
-            ]);
+        // 1. WIPE CORRUPT IMPORTS & RESET POINTER ONLY IF RUNNING FOR THE FIRST TIME
+        $progress = \Illuminate\Support\Facades\Cache::get('popular_import_progress');
+        if (!$progress || $progress['status'] === 'idle' || $progress['status'] === 'completed') {
+            \Illuminate\Support\Facades\Cache::forget('popular_import_pointer');
+            
+            // 1. Emergency catch-all to move any rogue published doctors from today into the deletion pool
+            \App\Models\Doctor::where('created_at', '>=', now()->startOfDay())
+                ->where('status', '!=', 'draft')
+                ->where('verified', false)
+                ->where('view_count', 0)
+                ->update([
+                    'status' => 'draft',
+                    'import_source' => 'popular_diagnostic' // Make them identifiable for deletion
+                ]);
 
-        // Instead of background processes which get blocked by cPanel,
-        // we run the Artisan command SYNCHRONOUSLY but tell it to only process 20 items at a time
+            // 2. Delete ALL previously imported drafts to ensure a clean slate
+            \App\Models\Doctor::where('import_source', 'popular_diagnostic')->forceDelete();
+            \App\Models\ReportDuplicate::where('reason', 'like', '%Popular Diagnostic%')->delete();
+            \App\Models\Chamber::where('name', 'Popular Diagnostic Center')->delete();
+        }
+
+        // 2. RUN CHUNK
+        // We run the Artisan command SYNCHRONOUSLY but tell it to only process 20 items at a time
         // so it never times out.
-        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors', ['--chunk' => 20]);
+        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors', ['--chunk' => 30]);
         
         return response()->json(['success' => true]);
     }
