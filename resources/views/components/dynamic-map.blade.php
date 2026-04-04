@@ -1,8 +1,7 @@
 @props(['locations' => []])
 
-<div x-data="dynamicMapComponent()"
+<div x-data="dynamicMapComponent(@entangle('mapLocations'))"
      x-init="initMap()"
-     x-effect="reactToLocations($wire.mapLocations)"
      class="relative w-full h-full bg-slate-100 dark:bg-slate-800 rounded-[2rem] overflow-hidden"
 >
     <!-- Map Container -->
@@ -25,13 +24,13 @@
 @once
 <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.data('dynamicMapComponent', () => ({
+        Alpine.data('dynamicMapComponent', (livewireLocs) => ({
             apiKey: '{{ \App\Models\Setting::get("google_maps_api_key", env("GOOGLE_MAPS_API_KEY")) }}',
             map: null,
             markers: [],
             loading: true,
             apiError: false,
-            locs: [],
+            locs: livewireLocs,
 
             initMap() {
                 if (!this.apiKey || this.apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
@@ -50,13 +49,10 @@
                 } else {
                     this.setupMap();
                 }
-            },
 
-            reactToLocations(newLocations) {
-                this.locs = newLocations || [];
-                if (this.map) {
+                this.$watch('locs', () => {
                     this.updateMarkers();
-                }
+                }, { deep: true });
             },
 
             loadScript() {
@@ -110,8 +106,8 @@
                 if (!this.map) return;
                 
                 // Define the pin colors
-                const featuredIcon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
-                const defaultIcon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                const featuredIcon = 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+                const defaultIcon = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
 
                 // Clear existing markers
                 this.markers.forEach(marker => marker.setMap(null));
