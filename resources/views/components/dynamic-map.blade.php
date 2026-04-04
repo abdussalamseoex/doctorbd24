@@ -118,11 +118,23 @@
 
                 const bounds = new google.maps.LatLngBounds();
                 const infoWindow = new google.maps.InfoWindow();
+                const geocoder = new google.maps.Geocoder();
 
-                mapLocs.forEach(loc => {
-                    if (loc.lat && loc.lng) {
-                        const position = { lat: parseFloat(loc.lat), lng: parseFloat(loc.lng) };
+                let validPins = false;
+
+                const updateBounds = () => {
+                    if (validPins) {
+                        this.map.fitBounds(bounds);
+                        if (this.markers.length === 1 || this.map.getZoom() > 15) {
+                            this.map.setZoom(15);
+                        }
+                    }
+                };
+
+                mapLocs.forEach((loc, index) => {
+                    const createMarker = (position) => {
                         bounds.extend(position);
+                        validPins = true;
 
                         const marker = new google.maps.Marker({
                             position: position,
@@ -146,20 +158,22 @@
                         });
 
                         this.markers.push(marker);
+                        updateBounds();
+                    };
+
+                    if (loc.lat && loc.lng) {
+                        createMarker({ lat: parseFloat(loc.lat), lng: parseFloat(loc.lng) });
+                    } else if (loc.name || loc.address) {
+                        setTimeout(() => {
+                            const query = loc.address ? `${loc.name}, ${loc.address}, Bangladesh` : `${loc.name}, Bangladesh`;
+                            geocoder.geocode({ address: query }, (results, status) => {
+                                if (status === 'OK' && results[0]) {
+                                    createMarker(results[0].geometry.location);
+                                }
+                            });
+                        }, index * 250); // Stagger requests to avoid query limits
                     }
                 });
-
-                if (this.markers.length > 0) {
-                    this.map.fitBounds(bounds);
-                    
-                    // Don't zoom in too much if there's only one marker or points are too close
-                    if (this.map.getZoom() > 15) {
-                        this.map.setZoom(15);
-                    }
-                    if (this.markers.length === 1) {
-                        this.map.setZoom(14);
-                    }
-                }
             }
         }));
     });
