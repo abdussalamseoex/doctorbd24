@@ -145,6 +145,7 @@ class AdminHospitalController extends Controller
 
         $validated['verified'] = $request->boolean('verified');
         $validated['opening_hours'] = $this->parseJsonField($request->input('opening_hours'));
+        $validated['services'] = $this->parseJsonField($request->input('services'));
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(4);

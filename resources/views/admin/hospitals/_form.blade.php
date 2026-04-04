@@ -232,7 +232,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6"
              x-data="{
                 days: ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'],
-                hours: {{ json_encode(isset($hospital) && $hospital->opening_hours ? $hospital->opening_hours : []) }}
+                hours: {{ empty(isset($hospital) ? $hospital->opening_hours : []) ? '{}' : json_encode($hospital->opening_hours) }}
              }">
             <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                 <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
