@@ -55,12 +55,18 @@ class AdminDoctorController extends Controller
 
     public function importPopular(Request $request)
     {
-        // Execute in background to prevent 504 Internal Server Timeout on long cPanel requests
-        $process = \Symfony\Component\Process\Process::fromShellCommandline('php artisan import:popular-doctors');
-        $process->setWorkingDirectory(base_path());
-        $process->start();
+        // Find the absolute path to the PHP executable to match the web server's version
+        $php = (new \Symfony\Component\Process\PhpExecutableFinder)->find() ?: 'php';
+        $artisan = base_path('artisan');
         
-        return back()->with('success', 'Import has started in the background! Please wait a few minutes and refresh this page to see the drafts.');
+        // Run completely detached so it survives the HTTP request termination
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            pclose(popen("start /B \"\" \"{$php}\" \"{$artisan}\" import:popular-doctors", "r"));
+        } else {
+            exec("{$php} {$artisan} import:popular-doctors > /dev/null 2>&1 &");
+        }
+        
+        return back()->with('success', 'Import has started in the background!');
     }
 
     public function importProgress()
