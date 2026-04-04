@@ -6,7 +6,7 @@
      class="relative w-full h-full bg-slate-100 dark:bg-slate-800 rounded-[2rem] overflow-hidden"
 >
     <!-- Map Container -->
-    <div x-ref="mapContainer" class="w-full h-full z-0 font-sans"></div>
+    <div x-ref="mapContainer" class="w-full h-full z-0 font-sans" style="min-height: 400px;"></div>
 
     <!-- Loading Overlay -->
     <div x-show="loading" class="absolute inset-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm shadow-inner flex flex-col items-center justify-center z-10 transition-opacity">
@@ -172,9 +172,21 @@
                             geocoder.geocode({ address: query }, (results, status) => {
                                 if (status === 'OK' && results[0]) {
                                     createMarker(results[0].geometry.location);
+                                } else if (status === 'ZERO_RESULTS' && loc.address) {
+                                    // Retry with just address
+                                    geocoder.geocode({ address: `${loc.address}, Bangladesh` }, (res2, stat2) => {
+                                        if (stat2 === 'OK' && res2[0]) {
+                                            createMarker(res2[0].geometry.location);
+                                        } else {
+                                            // Final retry with just area name
+                                            geocoder.geocode({ address: `${loc.name}, Bangladesh` }, (res3, stat3) => {
+                                                if (stat3 === 'OK' && res3[0]) createMarker(res3[0].geometry.location);
+                                            });
+                                        }
+                                    });
                                 }
                             });
-                        }, index * 250); // Stagger requests to avoid query limits
+                        }, index * 350); // Stagger requests safely 
                     }
                 });
             }
