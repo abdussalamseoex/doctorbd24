@@ -69,21 +69,20 @@
     },
 
     processChunk() {
+        if (!this.showProgressModal) return;
+        
         fetch('{{ route('admin.doctors.import-popular') }}', {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
         }).then(res => {
-            if(!res.ok) {
-                // If it crashed due to timeout (e.g. 500 error), pause then aggressively try again
-                setTimeout(() => this.processChunk(), 3000);
-                return;
-            }
-            this.checkProgress();
-            // If not completed, continue processing
-            if (this.importProgress.status !== 'completed' && this.showProgressModal) {
+            if(!res.ok) throw new Error('Timeout or 500 error');
+            return res.json();
+        }).then(data => {
+            if (data.status === 'running' && this.showProgressModal) {
                 setTimeout(() => this.processChunk(), 1000);
             }
         }).catch(err => {
+            // If crashed (timeout), aggressively retry sequentially without causing concurrent loops
             setTimeout(() => this.processChunk(), 3000);
         });
     },

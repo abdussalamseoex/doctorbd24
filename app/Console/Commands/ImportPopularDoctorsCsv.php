@@ -47,20 +47,8 @@ class ImportPopularDoctorsCsv extends Command
             'message' => 'Initializing...'
         ]);
 
-        // Auto-Repair: Previous imports might have been mistakenly published due to mass-assignment exception.
-        // We will force them into draft status.
-        $repairedCount = Doctor::where('photo', 'like', 'popular/%')
-            ->where(function($q) {
-                $q->where('status', '!=', 'draft')->orWhereNull('status');
-            })
-            ->update([
-                'status' => 'draft',
-                'import_source' => 'popular_diagnostic'
-            ]);
+
             
-        if ($repairedCount > 0) {
-            $this->info("Repaired $repairedCount previously imported doctors and moved them to Draft.");
-        }
 
         $chunkSize = $this->option('chunk') ? (int) $this->option('chunk') : null;
         $handle = fopen($filePath, 'r');

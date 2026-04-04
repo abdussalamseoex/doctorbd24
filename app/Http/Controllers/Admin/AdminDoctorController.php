@@ -64,15 +64,7 @@ class AdminDoctorController extends Controller
             \Illuminate\Support\Facades\Cache::put('popular_import_progress', ['status' => 'idle', 'current' => 0, 'total' => 0, 'message' => '']);
             \Illuminate\Support\Facades\Cache::forget('popular_import_pointer');
             
-            // 1. Emergency catch-all to move any rogue published doctors from today into the deletion pool
-            \App\Models\Doctor::where('created_at', '>=', now()->startOfDay())
-                ->where('status', '!=', 'draft')
-                ->where('verified', false)
-                ->where('view_count', 0)
-                ->update([
-                    'status' => 'draft',
-                    'import_source' => 'popular_diagnostic'
-                ]);
+
 
             // 2. Delete ALL previously imported drafts to ensure a clean slate
             \App\Models\Doctor::where('import_source', 'popular_diagnostic')->forceDelete();
@@ -89,11 +81,10 @@ class AdminDoctorController extends Controller
         }
 
         // 2. RUN CHUNK
-        // We run the Artisan command SYNCHRONOUSLY but tell it to only process 10 items at a time
-        // to prevent absolute maximum execution timeouts on strict cPanel environments
         \Illuminate\Support\Facades\Artisan::call('import:popular-doctors', ['--chunk' => 10]);
         
-        return response()->json(['success' => true]);
+        $newProgress = \Illuminate\Support\Facades\Cache::get('popular_import_progress');
+        return response()->json(['success' => true, 'status' => $newProgress['status'] ?? 'completed']);
     }
 
     public function importProgress()
