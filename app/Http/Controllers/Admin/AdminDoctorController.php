@@ -81,7 +81,7 @@ class AdminDoctorController extends Controller
         }
 
         // 2. RUN CHUNK
-        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors', ['--chunk' => 10]);
+        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors', ['--chunk' => 3]);
         
         $newProgress = \Illuminate\Support\Facades\Cache::get('popular_import_progress');
         return response()->json(['success' => true, 'status' => $newProgress['status'] ?? 'completed']);

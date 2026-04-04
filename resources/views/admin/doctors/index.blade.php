@@ -82,7 +82,8 @@
                 setTimeout(() => this.processChunk(), 1000);
             }
         }).catch(err => {
-            // If crashed (timeout), aggressively retry sequentially without causing concurrent loops
+            // If crashed (timeout), progressively retry while informing the user
+            this.importProgress.message = 'Network timeout resolving images. Auto-recovering...';
             setTimeout(() => this.processChunk(), 3000);
         });
     },

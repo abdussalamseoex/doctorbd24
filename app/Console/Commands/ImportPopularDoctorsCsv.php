@@ -189,15 +189,16 @@ class ImportPopularDoctorsCsv extends Command
             }
 
             // 3. Create Draft Doctor
-            $doctor = Doctor::create([
-                'name' => $name,
-                'slug' => $slug,
-                'gender' => $gender,
-                'designation' => $designation,
-                'qualifications' => $qualifications,
-                'photo' => $photoPath,
-                'status' => 'draft', // User requested draft mode!
-                'import_source' => 'popular_diagnostic',
+            $doctor = Doctor::updateOrCreate(
+                ['slug' => $slug],
+                [
+                    'name' => $name,
+                    'gender' => $gender,
+                    'designation' => $designation,
+                    'qualifications' => $qualifications,
+                    'photo' => $photoPath,
+                    'status' => 'draft',
+                    'import_source' => 'popular_diagnostic',
                 'verified' => false,
                 'view_count' => 0
             ]);
