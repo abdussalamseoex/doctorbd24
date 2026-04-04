@@ -56,15 +56,12 @@ class AdminDoctorController extends Controller
     public function importPopular(Request $request)
     {
         // Handle explicit wipe/reset from the UI
-        if ($request->query('action') === 'reset') {
-            \Illuminate\Support\Facades\Cache::put('popular_import_progress', ['status' => 'idle', 'current' => 0, 'total' => 0, 'message' => '']);
-            \Illuminate\Support\Facades\Cache::forget('popular_import_pointer');
-            return response()->json(['success' => true]);
-        }
-
-        // 1. WIPE CORRUPT IMPORTS & RESET POINTER ONLY IF RUNNING FOR THE FIRST TIME
+        $isReset = $request->query('action') === 'reset';
         $progress = \Illuminate\Support\Facades\Cache::get('popular_import_progress');
-        if (!$progress || $progress['status'] === 'idle' || $progress['status'] === 'completed') {
+
+        // WIPE CORRUPT IMPORTS & RESET POINTER IF RUNNING FOR THE FIRST TIME OR IF FORCED RESET
+        if ($isReset || !$progress || $progress['status'] === 'idle' || $progress['status'] === 'completed') {
+            \Illuminate\Support\Facades\Cache::put('popular_import_progress', ['status' => 'idle', 'current' => 0, 'total' => 0, 'message' => '']);
             \Illuminate\Support\Facades\Cache::forget('popular_import_pointer');
             
             // 1. Emergency catch-all to move any rogue published doctors from today into the deletion pool
@@ -74,7 +71,7 @@ class AdminDoctorController extends Controller
                 ->where('view_count', 0)
                 ->update([
                     'status' => 'draft',
-                    'import_source' => 'popular_diagnostic' // Make them identifiable for deletion
+                    'import_source' => 'popular_diagnostic'
                 ]);
 
             // 2. Delete ALL previously imported drafts to ensure a clean slate
@@ -85,6 +82,10 @@ class AdminDoctorController extends Controller
             // 3. Clean up orphaned long specialties and pivot relations
             \Illuminate\Support\Facades\DB::statement('DELETE FROM doctor_specialty WHERE doctor_id NOT IN (SELECT id FROM doctors)');
             \App\Models\Specialty::doesntHave('doctors')->delete();
+            
+            if ($isReset) {
+                return response()->json(['success' => true]);
+            }
         }
 
         // 2. RUN CHUNK
