@@ -166,6 +166,7 @@ Route::prefix('admin')
 
 
         // Doctors
+        Route::post('doctors/import-popular', [\App\Http\Controllers\Admin\AdminDoctorController::class, 'importPopular'])->name('doctors.import-popular')->middleware('permission:manage doctors');
         Route::post('doctors/import', \App\Http\Controllers\Admin\DoctorImportController::class)->name('doctors.import')->middleware('permission:manage doctors');
         Route::post('doctors/bulk-action', [\App\Http\Controllers\Admin\AdminDoctorController::class, 'bulkAction'])->name('doctors.bulk-action')->middleware('permission:manage doctors');
         Route::resource('doctors', \App\Http\Controllers\Admin\AdminDoctorController::class)->middleware('permission:manage doctors');

@@ -37,6 +37,13 @@
             </form>
         </div>
         <div class="flex items-center gap-3">
+            <form action="{{ route('admin.doctors.import-popular') }}" method="POST" class="inline" onsubmit="return confirm('Do you want to import Popular Diagnostic doctors from the CSV file? This may take a few minutes.')">
+                @csrf
+                <button type="submit" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-indigo-100 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-sm font-bold hover:bg-indigo-50 transition-all shadow-sm">
+                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    (Run) Import Popular
+                </button>
+            </form>
             <button @click="openImportModal = true" type="button" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-sky-100 dark:border-sky-900/30 text-sky-700 dark:text-sky-400 text-sm font-bold hover:bg-sky-50 transition-all shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                 Bulk Import

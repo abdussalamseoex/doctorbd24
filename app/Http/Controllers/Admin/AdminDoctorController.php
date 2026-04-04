@@ -53,6 +53,14 @@ class AdminDoctorController extends Controller
         return back()->with('success', count($request->ids) . ' doctors published successfully.');
     }
 
+    public function importPopular(Request $request)
+    {
+        // Execute the command synchronously for simpler flow, or background
+        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors');
+        
+        return back()->with('success', 'Popular Doctors have been successfully imported into Drafts!');
+    }
+
     public function create()
     {
         $specialties = Specialty::orderBy('name->en')->get();
