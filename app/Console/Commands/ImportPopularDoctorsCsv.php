@@ -18,7 +18,7 @@ class ImportPopularDoctorsCsv extends Command
      *
      * @var string
      */
-    protected $signature = 'import:popular-doctors';
+    protected $signature = 'import:popular-doctors {--chunk= : Number of rows to process}';
 
     /**
      * The console command description.
@@ -62,10 +62,19 @@ class ImportPopularDoctorsCsv extends Command
             $this->info("Repaired $repairedCount previously imported doctors and moved them to Draft.");
         }
 
+        $chunkSize = $this->option('chunk') ? (int) $this->option('chunk') : null;
         $handle = fopen($filePath, 'r');
         $totalLines = count(file($filePath, FILE_SKIP_EMPTY_LINES)) - 1; // subtract header
-        
         $headers = fgetcsv($handle);
+
+        $currentIndex = \Illuminate\Support\Facades\Cache::get('popular_import_pointer', 0);
+        $count = $currentIndex;
+        $processedInThisChunk = 0;
+
+        // Fast-forward file pointer to the correct row
+        for ($i = 0; $i < $currentIndex; $i++) {
+            fgetcsv($handle);
+        }
 
         if (!$headers) {
             $this->error("CSV file is empty or missing headers.");
@@ -239,16 +248,27 @@ class ImportPopularDoctorsCsv extends Command
             }
 
             $count++;
+            $processedInThisChunk++;
+
+            if ($chunkSize && $processedInThisChunk >= $chunkSize) {
+                break;
+            }
         }
 
         fclose($handle);
         
-        \Illuminate\Support\Facades\Cache::put('popular_import_progress', [
-            'status' => 'completed',
-            'current' => $count,
-            'total' => $totalLines,
-            'message' => "Import completed successfully! Total Processed: $count. Total Flagged as Duplicates: $duplicateCount."
-        ]);
+        \Illuminate\Support\Facades\Cache::put('popular_import_pointer', $count);
+
+        if ($count >= $totalLines) {
+            \Illuminate\Support\Facades\Cache::put('popular_import_progress', [
+                'status' => 'completed',
+                'current' => $count,
+                'total' => $totalLines,
+                'message' => "Import completed successfully! Total Processed: $count. Total Flagged as Duplicates: $duplicateCount."
+            ]);
+            // Reset pointer
+            \Illuminate\Support\Facades\Cache::forget('popular_import_pointer');
+        }
 
         $this->info("Import completed successfully! Total Processed: $count. Total Flagged as Duplicates: $duplicateCount.");
     }

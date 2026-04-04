@@ -55,18 +55,22 @@ class AdminDoctorController extends Controller
 
     public function importPopular(Request $request)
     {
-        // Find the absolute path to the PHP executable to match the web server's version
-        $php = (new \Symfony\Component\Process\PhpExecutableFinder)->find() ?: 'php';
-        $artisan = base_path('artisan');
+        // Emergency Fix: Force all previously imported into draft before doing anything else
+        \App\Models\Doctor::where('photo', 'like', 'popular/%')
+            ->where(function($q) {
+                $q->where('status', '!=', 'draft')->orWhereNull('status');
+            })
+            ->update([
+                'status' => 'draft',
+                'import_source' => 'popular_diagnostic'
+            ]);
+
+        // Instead of background processes which get blocked by cPanel,
+        // we run the Artisan command SYNCHRONOUSLY but tell it to only process 20 items at a time
+        // so it never times out.
+        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors', ['--chunk' => 20]);
         
-        // Run completely detached so it survives the HTTP request termination
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            pclose(popen("start /B \"\" \"{$php}\" \"{$artisan}\" import:popular-doctors", "r"));
-        } else {
-            exec("{$php} {$artisan} import:popular-doctors > /dev/null 2>&1 &");
-        }
-        
-        return back()->with('success', 'Import has started in the background!');
+        return response()->json(['success' => true]);
     }
 
     public function importProgress()

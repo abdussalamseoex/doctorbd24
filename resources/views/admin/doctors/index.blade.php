@@ -47,14 +47,22 @@
         
         this.showProgressModal = true;
         this.importProgress.status = 'running';
-        this.importProgress.message = 'Starting Background Process...';
+        this.importProgress.message = 'Starting Process...';
         
+        this.processChunk();
+    },
+
+    processChunk() {
         fetch('{{ route('admin.doctors.import-popular') }}', {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        }).then(() => {
+            this.checkProgress();
+            // If not completed, continue processing
+            if (this.importProgress.status !== 'completed') {
+                setTimeout(() => this.processChunk(), 1000);
+            }
         });
-        
-        this.checkProgress();
     },
 
     toggleAll() { 
