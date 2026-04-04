@@ -20,5 +20,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \App\Models\Review::observe(\App\Observers\ReviewObserver::class);
+
+        // Auto-heal broken storage symlinks usually caused by cPanel/GitHub deployments
+        if (!file_exists(public_path('storage'))) {
+            try {
+                if (is_link(public_path('storage'))) {
+                    @unlink(public_path('storage'));
+                }
+                \Illuminate\Support\Facades\Artisan::call('storage:link');
+            } catch (\Exception $e) {}
+        }
     }
 }
