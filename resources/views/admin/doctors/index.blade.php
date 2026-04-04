@@ -46,15 +46,14 @@
 
     resetImport() {
         if(!confirm('Are you sure you want to completely WIPE all Popular drafts and reset the system?')) return;
+        this.importProgress.message = 'Wiping database... please wait.';
         fetch('/admin/doctors/import-popular?action=reset', {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
         }).then(res => res.json()).then(data => {
             if(data.success) {
-                this.importProgress.status = 'idle';
-                this.importProgress.message = 'System completely reset and cleaned.';
-                this.showProgressModal = false;
-                alert('System successfully wiped! You can now start a fresh import.');
+                alert('System successfully wiped! The page will now reload.');
+                window.location.reload();
             }
         });
     },
