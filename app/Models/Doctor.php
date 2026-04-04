@@ -29,7 +29,8 @@ class Doctor extends Model
         'bio', 'experience_years', 'verified', 'featured', 'view_count',
         'rating_avg', 'rating_count',
         'phone', 'email', 'bmdc_number', 'language', 'user_id',
-        'facebook_url', 'twitter_url', 'instagram_url', 'linkedin_url', 'youtube_url'
+        'facebook_url', 'twitter_url', 'instagram_url', 'linkedin_url', 'youtube_url',
+        'status', 'import_source'
     ];
 
     protected $casts = [

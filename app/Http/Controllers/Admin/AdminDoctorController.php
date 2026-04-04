@@ -55,10 +55,12 @@ class AdminDoctorController extends Controller
 
     public function importPopular(Request $request)
     {
-        // Execute the command synchronously for simpler flow, or background
-        \Illuminate\Support\Facades\Artisan::call('import:popular-doctors');
+        // Execute in background to prevent 504 Internal Server Timeout on long cPanel requests
+        $process = \Symfony\Component\Process\Process::fromShellCommandline('php artisan import:popular-doctors');
+        $process->setWorkingDirectory(base_path());
+        $process->start();
         
-        return back()->with('success', 'Popular Doctors have been successfully imported into Drafts!');
+        return back()->with('success', 'Import has started in the background! Please wait a few minutes and refresh this page to see the drafts.');
     }
 
     public function create()

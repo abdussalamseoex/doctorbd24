@@ -41,6 +41,21 @@ class ImportPopularDoctorsCsv extends Command
 
         $this->info("Starting Popular Doctors CSV import...");
 
+        // Auto-Repair: Previous imports might have been mistakenly published due to mass-assignment exception.
+        // We will force them into draft status.
+        $repairedCount = Doctor::where('photo', 'like', 'popular/%')
+            ->where(function($q) {
+                $q->where('status', '!=', 'draft')->orWhereNull('status');
+            })
+            ->update([
+                'status' => 'draft',
+                'import_source' => 'popular_diagnostic'
+            ]);
+            
+        if ($repairedCount > 0) {
+            $this->info("Repaired $repairedCount previously imported doctors and moved them to Draft.");
+        }
+
         $handle = fopen($filePath, 'r');
         $headers = fgetcsv($handle);
 
@@ -69,6 +84,13 @@ class ImportPopularDoctorsCsv extends Command
             if (empty($name)) continue;
 
             $this->info("Processing: $name");
+
+            // Prevent duplicating rows if script is run multiple times (e.g. after a timeout)
+            $alreadyImported = Doctor::where('name', $name)->where('import_source', 'popular_diagnostic')->first();
+            if ($alreadyImported) {
+                $this->info("   -> Already imported previously. Skipping...");
+                continue;
+            }
 
             // 1. Duplicate Detection Check
             // We search for an existing doctor with a highly similar name
