@@ -20,6 +20,9 @@
             <form action="{{ route('admin.ambulances.index') }}" method="GET" class="flex gap-2">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search ambulances..."
                        class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 w-56">
+                
+                <x-admin.location-filter :showHospital="false" />
+
                 <div class="flex border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
                     <a href="{{ route('admin.ambulances.index', array_merge(request()->query(), ['featured' => 1])) }}" 
                        class="px-3 py-2 text-xs font-semibold hover:bg-amber-50 dark:hover:bg-amber-900/20 {{ request('featured') ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' : 'text-gray-500' }}">Featured</a>

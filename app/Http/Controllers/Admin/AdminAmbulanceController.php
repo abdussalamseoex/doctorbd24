@@ -27,6 +27,18 @@ class AdminAmbulanceController extends Controller
             $query->where('is_featured', true);
         }
 
+        if ($request->filled('area_id')) {
+            $query->where('area_id', $request->area_id);
+        } elseif ($request->filled('district_id')) {
+            $query->whereHas('area', function($q) use ($request) {
+                $q->where('district_id', $request->district_id);
+            });
+        } elseif ($request->filled('division_id')) {
+            $query->whereHas('area.district', function($q) use ($request) {
+                $q->where('division_id', $request->division_id);
+            });
+        }
+
         $ambulances = $query->latest()->paginate(20)->withQueryString();
         return view('admin.ambulances.index', compact('ambulances'));
     }

@@ -31,8 +31,27 @@ class AdminDoctorController extends Controller
         }
         if ($request->has('status')) {
             $query->where('status', $request->status);
-        } else {
-            // Default to all to show both published and draft, or handled via UI tabs
+        }
+
+        // Location & Hospital Filters via Chambers
+        if ($request->filled('area_id')) {
+            $query->whereHas('chambers', function ($q) use ($request) {
+                $q->where('area_id', $request->area_id);
+            });
+        } elseif ($request->filled('district_id')) {
+            $query->whereHas('chambers.area', function ($q) use ($request) {
+                $q->where('district_id', $request->district_id);
+            });
+        } elseif ($request->filled('division_id')) {
+            $query->whereHas('chambers.area.district', function ($q) use ($request) {
+                $q->where('division_id', $request->division_id);
+            });
+        }
+
+        if ($request->filled('hospital_id')) {
+            $query->whereHas('chambers', function ($q) use ($request) {
+                $q->where('hospital_id', $request->hospital_id);
+            });
         }
 
         $doctors = $query->latest()->paginate(20)->withQueryString();
@@ -43,7 +62,10 @@ class AdminDoctorController extends Controller
             'draft' => Doctor::where('status', 'draft')->count(),
         ];
 
-        return view('admin.doctors.index', compact('doctors', 'counts'));
+        // For the location filter hospital dropdown
+        $hospitals = Hospital::select('id', 'name')->orderBy('name')->get();
+
+        return view('admin.doctors.index', compact('doctors', 'counts', 'hospitals'));
     }
 
     public function publish(Request $request)

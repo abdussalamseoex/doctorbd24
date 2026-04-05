@@ -25,6 +25,19 @@ class AdminHospitalController extends Controller
         if ($request->has('featured')) {
             $query->where('featured', true);
         }
+
+        if ($request->filled('area_id')) {
+            $query->where('area_id', $request->area_id);
+        } elseif ($request->filled('district_id')) {
+            $query->whereHas('area', function($q) use ($request) {
+                $q->where('district_id', $request->district_id);
+            });
+        } elseif ($request->filled('division_id')) {
+            $query->whereHas('area.district', function($q) use ($request) {
+                $q->where('division_id', $request->division_id);
+            });
+        }
+
         $hospitals = $query->latest()->paginate(20)->withQueryString();
         return view('admin.hospitals.index', compact('hospitals'));
     }

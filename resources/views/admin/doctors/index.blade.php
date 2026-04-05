@@ -102,6 +102,8 @@
             <form action="{{ route('admin.doctors.index') }}" method="GET" class="flex gap-2">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search doctors..."
                        class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 w-56">
+                
+                <x-admin.location-filter :showHospital="true" :hospitals="$hospitals ?? []" />
                 <div class="flex border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
                     <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['status' => 'draft'])) }}" 
                        class="px-3 py-2 text-xs font-semibold hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/20 {{ request('status') === 'draft' ? 'bg-fuchsia-100 dark:bg-fuchsia-900/40 text-fuchsia-700 dark:text-fuchsia-400' : 'text-gray-500' }}">Drafts ({{ $counts['draft'] ?? 0 }})</a>
