@@ -154,8 +154,10 @@ class HospitalList extends Component
         $query = Hospital::with('area.district.division');
 
         // SEO Handling
-        SEOTools::setTitle(__('Hospitals & Diagnostic Centers') . ' | DoctorBD24');
-        OpenGraph::setType('website');
+        if (!$this->seoTitle) {
+            SEOTools::setTitle(__('Hospitals & Diagnostic Centers') . ' | DoctorBD24');
+            OpenGraph::setType('website');
+        }
 
         if ($this->type) {
             $query->where('type', $this->type);

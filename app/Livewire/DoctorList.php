@@ -158,8 +158,10 @@ class DoctorList extends Component
             });
 
         // SEO Handling
-        SEOTools::setTitle(__('Find Doctor') . ' | DoctorBD24');
-        SEOTools::setDescription('বাংলাদেশের সেরা বিশেষজ্ঞ ডাক্তারদের তালিকা। এলাকা ও বিশেষজ্ঞতা অনুযায়ী সহজে খুঁজুন।');
+        if (!$this->seoTitle) {
+            SEOTools::setTitle(__('Find Doctor') . ' | DoctorBD24');
+            SEOTools::setDescription('বাংলাদেশের সেরা বিশেষজ্ঞ ডাক্তারদের তালিকা। এলাকা ও বিশেষজ্ঞতা অনুযায়ী সহজে খুঁজুন।');
+        }
 
         if ($this->search) {
             $searchTerm = "%{$this->search}%";

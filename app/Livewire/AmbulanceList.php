@@ -176,12 +176,14 @@ class AmbulanceList extends Component
         $query = Ambulance::with('area.district')->where('active', true);
 
         // SEO Handling
-        if ($this->fixedType) {
-            SEOTools::setTitle($this->fixedType->name . ' | DoctorBD24');
-        } else {
-            SEOTools::setTitle(__('Ambulance Service') . ' | DoctorBD24');
+        if (!$this->seoTitle) {
+            if ($this->fixedType) {
+                SEOTools::setTitle($this->fixedType->name . ' | DoctorBD24');
+            } else {
+                SEOTools::setTitle(__('Ambulance Service') . ' | DoctorBD24');
+            }
+            OpenGraph::setType('website');
         }
-        OpenGraph::setType('website');
 
         if ($this->fixedType) {
             $query->whereJsonContains('type', $this->fixedType->slug);
