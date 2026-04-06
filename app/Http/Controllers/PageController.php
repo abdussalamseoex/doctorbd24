@@ -16,6 +16,18 @@ class PageController extends Controller
             ->first();
             
         if ($seoPage) {
+            \SEO::setTitle($seoPage->meta_title ?: $seoPage->title);
+            if ($seoPage->meta_description) {
+                \SEO::setDescription($seoPage->meta_description);
+            }
+            
+            \SEO::opengraph()->setTitle($seoPage->meta_title ?: $seoPage->title);
+            if ($seoPage->meta_description) {
+                \SEO::opengraph()->setDescription($seoPage->meta_description);
+            }
+            \SEO::opengraph()->setUrl(url()->current());
+            \SEO::opengraph()->setType('website');
+
             return view('pages.seo-show', compact('seoPage'));
         }
 

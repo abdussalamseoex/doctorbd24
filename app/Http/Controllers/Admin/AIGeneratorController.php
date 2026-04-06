@@ -177,26 +177,44 @@ class AIGeneratorController extends Controller
             }
         }
 
+        // Capture section before overriding $type for SEO Landing Pages
+        $sectionDesc = 'General Content';
+        $label = strtolower($context['field_label'] ?? '');
+        if ($type === 'seo_page_content_top' || str_contains($label, 'top') || str_contains($label, 'intro')) {
+            $sectionDesc = 'Top Introduction Content (Hook the reader, introduce the topic)';
+        } elseif ($type === 'seo_page_content_bottom' || str_contains($label, 'bottom') || str_contains($label, 'conclusion') || str_contains($label, 'faq')) {
+            $sectionDesc = 'Bottom Conclusion & FAQ Information (Summarize, answer questions)';
+        }
+
+        // Ensure inline generateAiContent calls correctly map back to the unified type
+        if ($type === 'seo_page_content_top' || $type === 'seo_page_content_bottom') {
+            $type = 'seo_landing_page';
+        }
+
         // Fetch user-defined DB template or fallback to default
         $baseText = Setting::get('ai_prompt_' . $type, $defaults[$type] ?? '');
         if (!$baseText) {
             return null; // Invalid prompt type
         }
 
-        // Determine Section for Single SEO prompt
-        $sectionDesc = 'General Content';
-        $label = strtolower($context['field_label'] ?? '');
-        if (str_contains($label, 'top') || str_contains($label, 'intro')) {
-            $sectionDesc = 'Top Introduction Content (Hook the reader, introduce the topic)';
-        } elseif (str_contains($label, 'bottom') || str_contains($label, 'conclusion') || str_contains($label, 'faq')) {
-            $sectionDesc = 'Bottom Conclusion & FAQ Information (Summarize, answer questions)';
-        }
-        
-        // Ensure inline generateAiContent calls correctly map back to the unified type
-        if ($type === 'seo_page_content_top' || $type === 'seo_page_content_bottom') {
-            $type = 'seo_landing_page';
-            // update base text
-            $baseText = Setting::get('ai_prompt_' . $type, $defaults[$type] ?? '');
+        // Inject Programmatic SEO Context dynamically for related types
+        if (in_array($type, ['seo_landing_page', 'seo_title', 'seo_desc', 'seo_faq_schema'])) {
+            $lpType = $context['landing_page_type'] ?? '';
+            $lpSpec = $context['landing_page_specialty'] ?? '';
+            $lpDiv = $context['landing_page_division'] ?? '';
+            $lpDist = $context['landing_page_district'] ?? '';
+            $lpArea = $context['landing_page_area'] ?? '';
+            
+            $lpContextParams = [];
+            if ($lpType && $lpType !== 'General Landing Page') $lpContextParams[] = "Target Directory Type: $lpType";
+            if ($lpSpec && !str_contains($lpSpec, 'Any')) $lpContextParams[] = "Target Specialty: $lpSpec";
+            if ($lpDiv && !str_contains($lpDiv, 'Any')) $lpContextParams[] = "Target Division (State): $lpDiv";
+            if ($lpDist && !str_contains($lpDist, 'Any')) $lpContextParams[] = "Target District (City): $lpDist";
+            if ($lpArea && !str_contains($lpArea, 'Any')) $lpContextParams[] = "Target Area (Local): $lpArea";
+            
+            if (!empty($lpContextParams)) {
+                $baseText .= "\n\nPlease heavily focus and optimize for the following localized context parameters:\n- " . implode("\n- ", $lpContextParams);
+            }
         }
 
         // Replace Variables securely

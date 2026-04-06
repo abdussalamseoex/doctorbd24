@@ -58,7 +58,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Meta Title</label>
-                        <button type="button" onclick="generateAiContent('seo_meta_title', 'input[name=\'meta_title\']', this)" class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-blue-200 transition-colors">✨ Auto Generate</button>
+                        <button type="button" onclick="generateAiContent('seo_title', 'input[name=\'meta_title\']', this)" class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-blue-200 transition-colors">✨ Auto Generate</button>
                     </div>
                     <input type="text" name="meta_title" value="{{ old('meta_title', $page->meta_title ?? '') }}" maxlength="60"
                            class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
@@ -66,7 +66,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Meta Description</label>
-                        <button type="button" onclick="generateAiContent('seo_meta_description', 'textarea[name=\'meta_description\']', this)" class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-blue-200 transition-colors">✨ Auto Generate</button>
+                        <button type="button" onclick="generateAiContent('seo_desc', 'textarea[name=\'meta_description\']', this)" class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-blue-200 transition-colors">✨ Auto Generate</button>
                     </div>
                     <textarea name="meta_description" rows="3" maxlength="160" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">{{ old('meta_description', $page->meta_description ?? '') }}</textarea>
                 </div>

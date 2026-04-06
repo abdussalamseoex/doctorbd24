@@ -69,6 +69,32 @@ function getAiContext() {
         context.ambulanceType = Array.from(ambTypes).map(opt => opt.parentNode.innerText.trim()).join(', ');
     }
 
+    // Programmatic SEO Landing Page contexts
+    let seoTypeSelect = document.querySelector('select[name="type"]');
+    if (seoTypeSelect && !seoTypeSelect.multiple && seoTypeSelect.options[seoTypeSelect.selectedIndex] && seoTypeSelect.options[seoTypeSelect.selectedIndex].value) {
+        context.landing_page_type = seoTypeSelect.options[seoTypeSelect.selectedIndex].text;
+    }
+    
+    let specialtySelect = document.querySelector('select[name="specialty_id"]');
+    if (specialtySelect && specialtySelect.options[specialtySelect.selectedIndex] && specialtySelect.options[specialtySelect.selectedIndex].value) {
+        context.landing_page_specialty = specialtySelect.options[specialtySelect.selectedIndex].text;
+    }
+
+    let divisionSelect = document.querySelector('select[name="division_id"]');
+    if (divisionSelect && divisionSelect.options[divisionSelect.selectedIndex] && divisionSelect.options[divisionSelect.selectedIndex].value) {
+        context.landing_page_division = divisionSelect.options[divisionSelect.selectedIndex].text;
+    }
+
+    let districtSelect = document.querySelector('select[name="district_id"]');
+    if (districtSelect && districtSelect.options[districtSelect.selectedIndex] && districtSelect.options[districtSelect.selectedIndex].value) {
+        context.landing_page_district = districtSelect.options[districtSelect.selectedIndex].text;
+    }
+
+    let areaSelect = document.querySelector('select[name="area_id"]');
+    if (areaSelect && areaSelect.options[areaSelect.selectedIndex] && areaSelect.options[areaSelect.selectedIndex].value) {
+        context.landing_page_area = areaSelect.options[areaSelect.selectedIndex].text;
+    }
+
     // fallback content for SEO from tinyMCE if available
     let tinymceContent = '';
     if (typeof tinymce !== 'undefined' && tinymce.activeEditor) {
