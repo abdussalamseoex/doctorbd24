@@ -618,7 +618,7 @@
 
                 {{-- SILO Links (Programmatic SEO) --}}
                 @php
-                    $siloLinks = \App\Models\SeoLandingPage::where('is_active', true)
+                    $siloLinks = \App\Models\SeoLandingPage::published()
                         ->where('type', 'doctor')
                         ->where(function($query) use ($doctor) {
                             $specialtyIds = $doctor->specialties->pluck('id')->toArray();
