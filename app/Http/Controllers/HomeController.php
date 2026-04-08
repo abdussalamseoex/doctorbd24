@@ -42,13 +42,13 @@ class HomeController extends Controller
         ]);
         // ─────────────────────────────────────────────
 
-        $featuredDoctors = Doctor::where('verified', true)
+        $featuredDoctors = Doctor::published()->where('verified', true)
             ->where('featured', true)
             ->with('specialties', 'chambers')
             ->take(6)
             ->get();
 
-        $featuredHospitals = Hospital::where('verified', true)
+        $featuredHospitals = Hospital::published()->where('verified', true)
             ->where('featured', true)
             ->take(4)
             ->get();

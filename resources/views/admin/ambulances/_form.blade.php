@@ -333,6 +333,8 @@
             </div>
         </div>
 
+        @include('admin.components.publish-status', ['status' => $ambulance->status ?? 'draft', 'publishedAt' => $ambulance->published_at ?? null])
+
         <div class="bg-gradient-to-r from-red-600 to-rose-600 rounded-2xl shadow-lg p-6 sticky bottom-6 z-20">
             <div class="flex flex-col md:flex-row justify-between items-center text-white">
                 <div>

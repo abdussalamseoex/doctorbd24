@@ -18,14 +18,14 @@ class SitemapController extends Controller
 
     public function doctors(): Response
     {
-        $doctors = Doctor::select('slug', 'updated_at')->get();
+        $doctors = Doctor::published()->select('slug', 'updated_at')->get();
         $content = view('sitemap.doctors', compact('doctors'))->render();
         return response($content, 200)->header('Content-Type', 'application/xml');
     }
 
     public function hospitals(): Response
     {
-        $hospitals = Hospital::select('slug', 'updated_at')->get();
+        $hospitals = Hospital::published()->select('slug', 'updated_at')->get();
         $content   = view('sitemap.hospitals', compact('hospitals'))->render();
         return response($content, 200)->header('Content-Type', 'application/xml');
     }

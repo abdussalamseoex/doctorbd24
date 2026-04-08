@@ -71,11 +71,7 @@
             @error('content') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
         </div>
 
-        <div class="flex items-center gap-3 mt-4">
-            <input type="checkbox" id="is_active" name="is_active" value="1" checked
-                   class="w-5 h-5 text-sky-600 border-gray-300 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-900 focus:ring-sky-500">
-            <label for="is_active" class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">Published / Active</label>
-        </div>
+        @include('admin.components.publish-status', ['status' => 'draft', 'publishedAt' => null])
 
         <div class="pt-6 border-t border-gray-100 dark:border-gray-700 flex gap-4">
             <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold rounded-xl text-sm hover:opacity-90 shadow-sm transition-all">Save Page</button>

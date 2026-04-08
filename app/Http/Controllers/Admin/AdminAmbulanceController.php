@@ -79,7 +79,7 @@ class AdminAmbulanceController extends Controller
             'gallery.*'       => ['image','mimes:jpeg,png,webp','max:2048'],
         ]);
         $validated['available_24h'] = $request->boolean('available_24h');
-        $validated['active']        = $request->boolean('active', true);
+        
         $validated['is_verified']   = $request->boolean('is_verified');
         $validated['is_featured']   = $request->boolean('is_featured');
         if (empty($request->slug)) {
@@ -110,7 +110,39 @@ class AdminAmbulanceController extends Controller
             unset($validated['gallery']);
         }
 
-        $ambulance = Ambulance::create($validated);
+
+        $validated['status'] = $request->input('status', 'draft');
+
+
+        if ($validated['status'] === 'published') {
+
+
+            $validated['published_at'] = now();
+
+
+        } elseif ($validated['status'] === 'scheduled') {
+
+
+            $validated['published_at'] = $request->input('published_at');
+
+
+        } else {
+
+
+            $validated['published_at'] = null;
+
+
+        }
+
+        $ambulance =
+ $validated['status'] = $request->input('status', 'draft');
+ if ($validated['status'] === 'published') {
+     $validated['published_at'] = now();
+ } elseif ($validated['status'] === 'scheduled') {
+     $validated['published_at'] = $request->input('published_at');
+ } else {
+     $validated['published_at'] = null;
+ } Ambulance::create($validated);
 
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
@@ -158,7 +190,7 @@ class AdminAmbulanceController extends Controller
             'gallery.*'       => ['image','mimes:jpeg,png,webp','max:2048'],
         ]);
         $validated['available_24h'] = $request->boolean('available_24h');
-        $validated['active']        = $request->boolean('active');
+        
         $validated['is_verified']   = $request->boolean('is_verified');
         $validated['is_featured']   = $request->boolean('is_featured');
 
@@ -210,6 +242,30 @@ class AdminAmbulanceController extends Controller
             $validated['gallery'] = $existingGallery;
         } elseif (!isset($validated['gallery'])) {
             unset($validated['gallery']);
+        }
+
+
+        $validated['status'] = $request->input('status', 'draft');
+
+
+        if ($validated['status'] === 'published') {
+
+
+            $validated['published_at'] = now();
+
+
+        } elseif ($validated['status'] === 'scheduled') {
+
+
+            $validated['published_at'] = $request->input('published_at');
+
+
+        } else {
+
+
+            $validated['published_at'] = null;
+
+
         }
 
         $ambulance->update($validated);

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\Publishable;
+
 use App\Traits\HasSeo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +14,7 @@ use Spatie\Activitylog\LogOptions;
 
 class Ambulance extends Model
 {
-    use HasSeo, LogsActivity;
+    use HasSeo, LogsActivity, Publishable;
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -23,13 +25,14 @@ class Ambulance extends Model
     }
 
     protected $fillable = [
-        'user_id', 'provider_name', 'slug', 'type', 'logo', 'cover_image', 'gallery', 'phone', 'whatsapp', 'backup_phone', 'address', 'latitude', 'longitude', 'area_id', 'available_24h', 'features', 'summary', 'notes', 'meta_title', 'meta_description', 'active', 'is_verified', 'is_featured', 'view_count',
+        'status', 'published_at',
+        'user_id', 'provider_name', 'slug', 'type', 'logo', 'cover_image', 'gallery', 'phone', 'whatsapp', 'backup_phone', 'address', 'latitude', 'longitude', 'area_id', 'available_24h', 'features', 'summary', 'notes', 'meta_title', 'meta_description', 'is_verified', 'is_featured', 'view_count',
         'rating_avg', 'rating_count',
     ];
 
     protected $casts = [
+        'published_at' => 'datetime',
         'available_24h' => 'boolean',
-        'active' => 'boolean',
         'is_verified' => 'boolean',
         'is_featured' => 'boolean',
         'features' => 'array',
@@ -51,7 +54,7 @@ class Ambulance extends Model
 
     public static function typeMap(): array
     {
-        return \App\Models\AmbulanceType::where('is_active', true)->pluck('name', 'slug')->toArray();
+        return \App\Models\AmbulanceType::where(true)->pluck('name', 'slug')->toArray();
     }
 
     public function getTypeLabelsArray(): array

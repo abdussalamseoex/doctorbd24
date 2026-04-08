@@ -19,7 +19,8 @@ class HospitalController extends Controller
 
     public function show(string $slug)
     {
-        $hospital = Hospital::where('slug', $slug)
+        $hospital = Hospital::published()
+            ->where('slug', $slug)
             ->with(['area.district.division', 'approvedReviews.user', 'chambers.doctor.specialties'])
             ->first();
 

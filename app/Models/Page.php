@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
+use App\Traits\Publishable;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Page extends Model
 {
+    use Publishable;
+
     protected $fillable = [
+        'status', 'published_at',
         'title',
         'slug',
         'content',
-        'is_active',
-    ];
+        ];
 
     protected $casts = [
-        'is_active' => 'boolean',
-    ];
+        'published_at' => 'datetime',
+        ];
 }

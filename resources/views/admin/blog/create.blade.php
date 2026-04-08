@@ -93,11 +93,7 @@
                     @endforeach
                 </select>
             </div>
-            <label class="flex items-center gap-2 cursor-pointer">
-                <input type="hidden" name="published" value="0">
-                <input type="checkbox" name="published" value="1" @checked(old('published', $blogPost->published ?? false)) class="rounded border-gray-300 text-violet-600 focus:ring-violet-300 w-4 h-4">
-                <span class="text-sm text-gray-600 dark:text-gray-300 font-medium">Publish immediately</span>
-            </label>
+        @include('admin.components.publish-status', ['status' => $blogPost->status ?? 'draft', 'publishedAt' => $blogPost->published_at ?? null])
             @include('admin.shared._seo_fields', ['model' => $blogPost ?? null])
 
             <div class="flex gap-3 pt-2">

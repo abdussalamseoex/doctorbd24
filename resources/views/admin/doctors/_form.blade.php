@@ -581,7 +581,8 @@
             </div>
         </div>
 
-        {{-- ════ CARD: PUBLISH STATUS & SUBMIT ════ --}}
+        @include('admin.components.publish-status', ['status' => $doctor->status ?? 'draft', 'publishedAt' => $doctor->published_at ?? null])
+
         {{-- ════ CARD: PUBLISH STATUS & SUBMIT ════ --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">

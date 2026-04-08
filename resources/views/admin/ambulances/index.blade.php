@@ -130,7 +130,9 @@
                     <td class="px-4 py-3 hidden md:table-cell text-xs text-gray-500 dark:text-gray-400">{{ $amb->area?->getTranslation('name', 'en') ?? '—' }}</td>
                     <td class="px-4 py-3">
                         <div class="flex gap-1 flex-wrap">
-                            @if($amb->active) <span class="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium">Active</span> @else <span class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs">Inactive</span> @endif
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $amb->status === 'published' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : ($amb->status === 'scheduled' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300') }}">
+                                {{ $amb->status }}
+                            </span>
                             @if($amb->is_verified) <span class="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">✓ Verified</span> @endif
                             @if($amb->is_featured) <span class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs">⭐</span> @endif
                         </div>

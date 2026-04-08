@@ -53,7 +53,39 @@ class AdminBlogController extends Controller
             $validated['image'] = $request->file('image')->store('blog', 'public');
         }
 
-        $post = BlogPost::create($validated);
+
+        $validated['status'] = $request->input('status', 'draft');
+
+
+        if ($validated['status'] === 'published') {
+
+
+            $validated['published_at'] = now();
+
+
+        } elseif ($validated['status'] === 'scheduled') {
+
+
+            $validated['published_at'] = $request->input('published_at');
+
+
+        } else {
+
+
+            $validated['published_at'] = null;
+
+
+        }
+
+        $post =
+ $validated['status'] = $request->input('status', 'draft');
+ if ($validated['status'] === 'published') {
+     $validated['published_at'] = now();
+ } elseif ($validated['status'] === 'scheduled') {
+     $validated['published_at'] = $request->input('published_at');
+ } else {
+     $validated['published_at'] = null;
+ } BlogPost::create($validated);
 
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
@@ -107,6 +139,30 @@ class AdminBlogController extends Controller
         } elseif ($request->boolean('remove_image') && $blogPost->image) {
             Storage::disk('public')->delete($blogPost->image);
             $validated['image'] = null;
+        }
+
+
+        $validated['status'] = $request->input('status', 'draft');
+
+
+        if ($validated['status'] === 'published') {
+
+
+            $validated['published_at'] = now();
+
+
+        } elseif ($validated['status'] === 'scheduled') {
+
+
+            $validated['published_at'] = $request->input('published_at');
+
+
+        } else {
+
+
+            $validated['published_at'] = null;
+
+
         }
 
         $blogPost->update($validated);

@@ -182,6 +182,15 @@ class AdminDoctorController extends Controller
             unset($validated['gallery']);
         }
 
+        $validated['status'] = $request->input('status', 'draft');
+        if ($validated['status'] === 'published') {
+            $validated['published_at'] = now();
+        } elseif ($validated['status'] === 'scheduled') {
+            $validated['published_at'] = $request->input('published_at');
+        } else {
+            $validated['published_at'] = null;
+        }
+
         $doctor = Doctor::create($validated);
 
         if (!empty($validated['specialties'])) {
@@ -297,6 +306,15 @@ class AdminDoctorController extends Controller
             $validated['gallery'] = $existingGallery;
         } elseif (!isset($validated['gallery'])) {
             unset($validated['gallery']);
+        }
+
+        $validated['status'] = $request->input('status', 'draft');
+        if ($validated['status'] === 'published') {
+            $validated['published_at'] = now();
+        } elseif ($validated['status'] === 'scheduled') {
+            $validated['published_at'] = $request->input('published_at');
+        } else {
+            $validated['published_at'] = null;
         }
 
         $doctor->update($validated);

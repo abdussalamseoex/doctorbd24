@@ -11,8 +11,8 @@ class PageController extends Controller
     public function show($slug)
     {
         // 1. Check for programmatic SEO landing page
-        $seoPage = \App\Models\SeoLandingPage::where('slug', $slug)
-            ->where('is_active', true)
+        $seoPage = \App\Models\SeoLandingPage::published()
+            ->where('slug', $slug)
             ->first();
             
         if ($seoPage) {
@@ -43,7 +43,7 @@ class PageController extends Controller
         }
 
         // 2. Fallback to standard static Page
-        $page = Page::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $page = Page::published()->where('slug', $slug)->firstOrFail();
         return view('pages.show', compact('page'));
     }
 

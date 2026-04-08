@@ -141,15 +141,10 @@
                     </select>
                 </div>
                 
-                <hr class="border-gray-100 dark:border-gray-700">
-                
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="hidden" name="is_active" value="0">
-                    <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $page->is_active ?? true)) class="w-4 h-4 text-violet-600 bg-gray-100 border-gray-300 rounded focus:ring-violet-500 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <span class="text-sm font-medium text-gray-900 dark:text-gray-300">Publish Page</span>
-                </label>
             </div>
         </div>
+        
+        @include('admin.components.publish-status', ['status' => $page->status ?? 'draft', 'publishedAt' => $page->published_at ?? null])
 
         <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 shadow border border-transparent transition-all mb-4">
             {{ isset($page) ? 'Update Landing Page' : 'Create Landing Page' }}

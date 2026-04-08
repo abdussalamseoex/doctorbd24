@@ -33,16 +33,8 @@
                         <div class="text-xs text-gray-500">{{ $page->title }}</div>
                     </td>
                     <td class="px-4 py-3 capitalize">
-                        <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-400">
-                            {{ $page->type }}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 font-mono text-xs">
-                        <a href="/{{ $page->slug }}" target="_blank" class="text-violet-500 hover:text-violet-600 hover:underline">/{{ $page->slug }}</a>
-                    </td>
-                    <td class="px-4 py-3">
-                        <span class="px-2 py-1 text-[10px] font-bold uppercase rounded-full {{ $page->is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300' }}">
-                            {{ $page->is_active ? 'Active' : 'Draft' }}
+                        <span class="px-2 py-1 text-[10px] font-bold uppercase rounded-full {{ $page->status === 'published' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : ($page->status === 'scheduled' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300') }}">
+                            {{ $page->status }}
                         </span>
                     </td>
                     <td class="px-4 py-3 flex justify-end gap-2">

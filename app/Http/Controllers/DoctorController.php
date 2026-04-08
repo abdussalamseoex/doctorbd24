@@ -19,10 +19,7 @@ class DoctorController extends Controller
 
     public function show(string $slug)
     {
-        $doctor = Doctor::where('slug', $slug)
-            ->where(function ($q) {
-                $q->whereNull('status')->orWhere('status', '!=', 'draft');
-            })
+        $doctor = Doctor::published()->where('slug', $slug)
             ->with(['specialties', 'chambers.hospital', 'chambers.area.district.division', 'approvedReviews.user'])
             ->first();
 
@@ -75,7 +72,7 @@ class DoctorController extends Controller
         if ($ogImage) JsonLd::addValue('image', $ogImage);
         // ─────────────────────────────────────────────
 
-        $related = Doctor::whereHas('specialties', function ($q) use ($doctor) {
+        $related = Doctor::published()->whereHas('specialties', function ($q) use ($doctor) {
             $q->whereIn('specialties.id', $doctor->specialties->pluck('id'));
         })->where('id', '!=', $doctor->id)
           ->where('verified', true)

@@ -47,8 +47,32 @@ class SeoLandingPageController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        $data['is_active'] = $request->has('is_active');
+        
         $data['slug'] = Str::slug($data['slug']);
+
+
+        $data['status'] = $request->input('status', 'draft');
+
+
+        if ($data['status'] === 'published') {
+
+
+            $data['published_at'] = now();
+
+
+        } elseif ($data['status'] === 'scheduled') {
+
+
+            $data['published_at'] = $request->input('published_at');
+
+
+        } else {
+
+
+            $data['published_at'] = null;
+
+
+        }
 
         SeoLandingPage::create($data);
 
@@ -83,8 +107,32 @@ class SeoLandingPageController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        $data['is_active'] = $request->has('is_active');
+        
         $data['slug'] = Str::slug($data['slug']);
+
+
+        $data['status'] = $request->input('status', 'draft');
+
+
+        if ($data['status'] === 'published') {
+
+
+            $data['published_at'] = now();
+
+
+        } elseif ($data['status'] === 'scheduled') {
+
+
+            $data['published_at'] = $request->input('published_at');
+
+
+        } else {
+
+
+            $data['published_at'] = null;
+
+
+        }
 
         $seoLandingPage->update($data);
 

@@ -28,11 +28,9 @@
                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $page->title }}</td>
                 <td class="px-6 py-4 hidden md:table-cell text-gray-500 dark:text-gray-400 font-mono text-xs">/{{ $page->slug }}</td>
                 <td class="px-6 py-4">
-                    @if($page->is_active)
-                        <span class="px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">Active</span>
-                    @else
-                        <span class="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-medium">Inactive</span>
-                    @endif
+                    <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $page->status === 'published' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : ($page->status === 'scheduled' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300') }}">
+                        {{ ucfirst($page->status) }}
+                    </span>
                 </td>
                 <td class="px-6 py-4 text-right">
                     <div class="flex justify-end gap-2">

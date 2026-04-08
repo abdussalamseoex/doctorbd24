@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\Publishable;
+
 use App\Traits\HasSeo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,7 +16,7 @@ use Spatie\Activitylog\LogOptions;
 
 class Hospital extends Model
 {
-    use SoftDeletes, HasSeo, LogsActivity;
+    use SoftDeletes, HasSeo, LogsActivity, Publishable;
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -25,6 +27,7 @@ class Hospital extends Model
     }
 
     protected $fillable = [
+        'status', 'published_at',
         'user_id', 'name', 'slug', 'type', 'logo', 'banner', 'gallery', 'about',
         'phone', 'email', 'website', 'address', 'area_id',
         'lat', 'lng', 'google_maps_url', 'verified', 'featured', 'view_count',
@@ -33,6 +36,7 @@ class Hospital extends Model
     ];
 
     protected $casts = [
+        'published_at' => 'datetime',
         'verified'      => 'boolean',
         'featured'      => 'boolean',
         'view_count'    => 'integer',

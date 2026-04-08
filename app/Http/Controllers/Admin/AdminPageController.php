@@ -40,7 +40,31 @@ class AdminPageController extends Controller
         ]);
 
         $validated['slug'] = $validated['slug'] ? Str::slug($validated['slug']) : Str::slug($validated['title']);
-        $validated['is_active'] = $request->has('is_active');
+        
+
+        
+        $validated['status'] = $request->input('status', 'draft');
+
+        
+        if ($validated['status'] === 'published') {
+
+        
+            $validated['published_at'] = now();
+
+        
+        } elseif ($validated['status'] === 'scheduled') {
+
+        
+            $validated['published_at'] = $request->input('published_at');
+
+        
+        } else {
+
+        
+            $validated['published_at'] = null;
+
+        
+        }
         
         Page::create($validated);
 
@@ -79,7 +103,31 @@ class AdminPageController extends Controller
         ]);
 
         $validated['slug'] = $validated['slug'] ? Str::slug($validated['slug']) : Str::slug($validated['title']);
-        $validated['is_active'] = $request->has('is_active');
+        
+
+        
+        $validated['status'] = $request->input('status', 'draft');
+
+        
+        if ($validated['status'] === 'published') {
+
+        
+            $validated['published_at'] = now();
+
+        
+        } elseif ($validated['status'] === 'scheduled') {
+
+        
+            $validated['published_at'] = $request->input('published_at');
+
+        
+        } else {
+
+        
+            $validated['published_at'] = null;
+
+        
+        }
         
         $page->update($validated);
 

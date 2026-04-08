@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\Publishable;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SeoLandingPage extends Model
 {
-    use HasFactory;
+    use HasFactory, Publishable;
 
     protected $fillable = [
+        'status', 'published_at',
         'type',
         'specialty_id',
         'division_id',
@@ -23,13 +26,12 @@ class SeoLandingPage extends Model
         'content_top',
         'content_bottom',
         'faq_schema',
-        'is_active',
-    ];
+        ];
 
     protected $casts = [
+        'published_at' => 'datetime',
         'faq_schema' => 'array',
-        'is_active' => 'boolean',
-    ];
+        ];
 
     public function specialty()
     {

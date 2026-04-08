@@ -33,7 +33,7 @@ class AmbulanceController extends Controller
 
     public function show(string $slug)
     {
-        $ambulance = Ambulance::where('slug', $slug)->with(['area.district.division', 'reviews.user'])->firstOrFail();
+        $ambulance = Ambulance::published()->where('slug', $slug)->with(['area.district.division', 'reviews.user'])->firstOrFail();
         
         $ambulance->incrementViewCount();
 
@@ -71,7 +71,7 @@ class AmbulanceController extends Controller
         if ($ogImage) \Artesaos\SEOTools\Facades\JsonLd::addValue('image', $ogImage);
         // ─────────────────────────────────────────────
         
-        $related = Ambulance::where('type', $ambulance->type)
+        $related = Ambulance::published()->where('type', $ambulance->type)
             ->where('id', '!=', $ambulance->id)
             ->take(4)
             ->get();

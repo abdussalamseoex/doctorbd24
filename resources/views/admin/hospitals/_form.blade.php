@@ -352,7 +352,8 @@
             </div>
         </div>
 
-        {{-- ════ CARD: SUBMIT ════ --}}
+        @include('admin.components.publish-status', ['status' => $hospital->status ?? 'draft', 'publishedAt' => $hospital->published_at ?? null])
+
         {{-- ════ CARD: SUBMIT ════ --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">

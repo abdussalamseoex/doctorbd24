@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\Publishable;
+
 use App\Traits\HasSeo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +14,7 @@ use Spatie\Activitylog\LogOptions;
 
 class BlogPost extends Model
 {
-    use SoftDeletes, HasSeo, LogsActivity;
+    use SoftDeletes, HasSeo, LogsActivity, Publishable;
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -23,6 +25,7 @@ class BlogPost extends Model
     }
 
     protected $fillable = [
+        'status',
         'blog_category_id', 'user_id', 'title', 'slug', 'excerpt',
         'body', 'image', 'meta_title', 'meta_description', 'published_at', 'view_count',
     ];
