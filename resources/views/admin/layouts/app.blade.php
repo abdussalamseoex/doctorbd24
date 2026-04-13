@@ -264,7 +264,7 @@ document.addEventListener('alpine:init', () => {
 });
 </script>
 @include('admin.shared._ai_assistant')
-<script src="{{ asset('js/admin-ai.js') }}"></script>
+<script src="{{ asset('js/admin-ai.js') }}?v={{ filemtime(public_path('js/admin-ai.js')) }}"></script>
 @livewireScripts
 @stack('scripts')
 </body>

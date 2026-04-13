@@ -405,3 +405,4 @@
         </div>
     </form>
 </div>
+@include('admin.shared._tinymce')

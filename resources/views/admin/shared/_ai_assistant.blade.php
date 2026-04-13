@@ -170,19 +170,19 @@
                     
                     <div>
                         <label class="block text-[10px] font-bold text-indigo-500 uppercase mb-1">Doctor Profile Base</label>
-                        <textarea id="ai-tmpl-doctor" rows="2" class="w-full text-[11px] px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-indigo-300 focus:outline-none resize-none">{{ \App\Models\Setting::get('ai_prompt_doctor_bio', "Write an SEO-friendly, engaging biography for {name}. They are a {specialties} specialist. Their qualifications are: {qualifications}.") }}</textarea>
+                        <textarea id="ai-tmpl-doctor" rows="2" class="w-full text-[11px] px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-indigo-300 focus:outline-none resize-none">{{ \App\Models\Setting::get('ai_prompt_doctor_bio', "Write an SEO-friendly, engaging biography for {name}. They are a {specialties} specialist. Their qualifications are: {qualifications}. Write in the third person.") }}</textarea>
                         <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-1">Vars: {name}, {specialties}, {qualifications}</p>
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-bold text-indigo-500 uppercase mb-1">Hospital Profile Base</label>
-                        <textarea id="ai-tmpl-hospital" rows="2" class="w-full text-[11px] px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-indigo-300 focus:outline-none resize-none">{{ \App\Models\Setting::get('ai_prompt_hospital_bio', "Write an SEO-friendly, engaging description for {name} located at {address}. Highlight that it provides top medical services and compassionate care.") }}</textarea>
+                        <textarea id="ai-tmpl-hospital" rows="2" class="w-full text-[11px] px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-indigo-300 focus:outline-none resize-none">{{ \App\Models\Setting::get('ai_prompt_hospital_bio', "Write an SEO-friendly, engaging description for the hospital/clinic named '{name}' located at '{address}'. Write in the third person (do NOT use 'we' or 'our'). Highlight their medical services and care.") }}</textarea>
                         <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-1">Vars: {name}, {address}</p>
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-bold text-indigo-500 uppercase mb-1">Ambulance Base</label>
-                        <textarea id="ai-tmpl-ambulance" rows="2" class="w-full text-[11px] px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-indigo-300 focus:outline-none resize-none">{{ \App\Models\Setting::get('ai_prompt_ambulance_bio', "Write an SEO-friendly, engaging description for {name}, an {ambulanceType} service located at {address}. Highlight 24/7 availability and rapid response.") }}</textarea>
+                        <textarea id="ai-tmpl-ambulance" rows="2" class="w-full text-[11px] px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-indigo-300 focus:outline-none resize-none">{{ \App\Models\Setting::get('ai_prompt_ambulance_bio', "Write an SEO-friendly, engaging description for {name}, an {ambulanceType} service located at {address}. Write in the third person (do NOT use 'we' or 'our'). Highlight 24/7 availability and rapid response.") }}</textarea>
                         <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-1">Vars: {name}, {ambulanceType}, {address}</p>
                     </div>
 

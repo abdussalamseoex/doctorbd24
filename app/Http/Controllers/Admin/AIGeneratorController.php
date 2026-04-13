@@ -111,9 +111,9 @@ class AIGeneratorController extends Controller
 
         // Define default base prompts
         $defaults = [
-            'doctor_bio' => "Write an SEO-friendly, engaging biography for {name}. They are a {specialties} specialist. Their qualifications are: {qualifications}.",
-            'hospital_bio' => "Write an SEO-friendly, engaging description for {name} located at {address}. Highlight that it provides top medical services and compassionate care.",
-            'ambulance_bio' => "Write an SEO-friendly, engaging description for {name}, an {ambulanceType} service located at {address}. Highlight 24/7 availability and rapid response.",
+            'doctor_bio' => "Write an SEO-friendly, engaging biography for {name}. They are a {specialties} specialist. Their qualifications are: {qualifications}. Write in the third person.",
+            'hospital_bio' => "Write an SEO-friendly, engaging description for the hospital/clinic named '{name}' located at '{address}'. Write in the third person (do NOT use 'we' or 'our'). Highlight their medical services and care.",
+            'ambulance_bio' => "Write an SEO-friendly, engaging description for {name}, an {ambulanceType} service located at {address}. Write in the third person (do NOT use 'we' or 'our'). Highlight 24/7 availability and rapid response.",
             'blog_post' => "Write an in-depth, highly informative, and SEO-optimized blog post about: '{topic}'. Include an introduction, structured body paragraphs with H2 and H3 headings, and a conclusion.",
             'page_builder' => "Write highly engaging and informative website content for a custom page titled '{title}'. Structure it with compelling headings, informative paragraphs, and appropriate calls to action.",
             'seo_title' => "Generate a highly-clickable SEO Meta Title (maximum 60 characters) based on the following text/topic: '{content}'. Return ONLY the title text, no quotes or additional text. Just the raw text.",
