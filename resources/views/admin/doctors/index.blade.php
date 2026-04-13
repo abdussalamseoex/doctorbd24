@@ -112,6 +112,13 @@
                     <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['featured' => 1])) }}" 
                        class="px-3 py-2 text-xs font-semibold border-l border-gray-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 {{ request('featured') ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' : 'text-gray-500' }}">Featured</a>
                 </div>
+                <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300">
+                    <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20 per page</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 per page</option>
+                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 per page</option>
+                    <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200 per page</option>
+                    <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500 per page</option>
+                </select>
                 <button type="submit" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm hover:bg-sky-700 transition-colors font-bold">Filter</button>
                 @if(request()->anyFilled(['search', 'featured', 'verified']))
                     <a href="{{ route('admin.doctors.index') }}" class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Clear</a>

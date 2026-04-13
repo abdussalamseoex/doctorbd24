@@ -47,7 +47,10 @@ class AdminHospitalController extends Controller
             'draft'     => Hospital::where('status', 'draft')->count(),
         ];
 
-        $hospitals = $query->latest()->paginate(20)->withQueryString();
+        $perPage = $request->input('per_page', 20);
+        if (!in_array($perPage, [20, 50, 100, 200, 500])) $perPage = 20;
+
+        $hospitals = $query->latest()->paginate($perPage)->withQueryString();
         return view('admin.hospitals.index', compact('hospitals', 'counts'));
     }
 
