@@ -3,13 +3,13 @@
 @section('title', 'Media Manager')
 
 @section('content')
-<div x-data="mediaManager" class="max-w-7xl mx-auto space-y-6">
+<div x-data="mediaManager" class="max-w-7xl mx-auto space-y-6 pb-20">
 
     {{-- Header & Top Actions --}}
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
         <div>
             <h1 class="text-2xl font-bold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">Media Library</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage and optimize your media assets across the platform.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">View, manage, and rename images for SEO.</p>
         </div>
 
         <div class="flex items-center gap-3 w-full md:w-auto">
@@ -44,31 +44,26 @@
     @else
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             @foreach($paginatedFiles as $index => $file)
-                <div class="relative group cursor-pointer aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200"
-                     :class="selected.includes('{{ $file['path'] }}') ? 'border-sky-500 scale-95 shadow-md shadow-sky-500/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500'">
+                {{-- Card Click Opens the Modal --}}
+                <div class="relative group aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 bg-gray-100 dark:bg-gray-800 flex items-center justify-center cursor-zoom-in"
+                     :class="selected.includes('{{ $file['path'] }}') ? 'border-sky-500 scale-95 shadow-md shadow-sky-500/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500'"
+                     @click="openMediaModal('{{ $file['path'] }}', '{{ $file['name'] }}', '{{ $file['url'] }}', '{{ number_format($file['size'] / 1024, 0) }}', '{{ \Carbon\Carbon::createFromTimestamp($file['last_modified'])->format('d M Y') }}')">
                     
                     <img src="{{ Str::endsWith($file['name'], '.svg') ? $file['url'] : $file['url'].'?w=300&h=300&fit=crop' }}" 
                          alt="{{ $file['name'] }}" 
                          loading="lazy" 
-                         class="w-full h-full object-cover bg-gray-50 dark:bg-gray-800"
-                         @click="toggleSelect('{{ $file['path'] }}')">
+                         class="max-w-full max-h-full object-contain">
                          
-                    {{-- Overlay Details --}}
-                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-900/90 to-transparent p-3 pt-8 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end"
-                         :class="selected.includes('{{ $file['path'] }}') ? 'opacity-100' : ''">
-                        <p class="text-xs text-white truncate font-medium" title="{{ $file['name'] }}">{{ $file['name'] }}</p>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="text-[10px] text-gray-300">{{ number_format($file['size'] / 1024, 0) }} KB</span>
-                            <button @click.stop="openRenameModal('{{ $file['path'] }}', '{{ $file['name'] }}', '{{ $file['url'] }}')" 
-                                    class="text-sky-300 hover:text-white text-xs bg-black/40 px-2 py-0.5 rounded">Rename</button>
-                        </div>
+                    {{-- File Name Bar --}}
+                    <div class="absolute inset-x-0 bottom-0 bg-gray-900/80 p-2 flex flex-col justify-end pointer-events-none">
+                        <p class="text-xs text-white truncate font-medium text-center" title="{{ $file['name'] }}">{{ Str::limit($file['name'], 20) }}</p>
                     </div>
 
-                    {{-- Checkbox Indicator --}}
-                    <div class="absolute top-2 left-2 w-5 h-5 rounded-full border-2 bg-white flex items-center justify-center transition-opacity"
-                         :class="selected.includes('{{ $file['path'] }}') ? 'border-sky-500 opacity-100' : 'border-gray-300 opacity-0 group-hover:opacity-100'"
+                    {{-- Checkbox (Stop Propagation to select) --}}
+                    <div class="absolute top-2 left-2 w-7 h-7 rounded border-2 bg-white/90 dark:bg-gray-800/90 flex items-center justify-center transition-colors shadow-sm cursor-pointer z-10"
+                         :class="selected.includes('{{ $file['path'] }}') ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30' : 'border-gray-300 dark:border-gray-600'"
                          @click.stop="toggleSelect('{{ $file['path'] }}')">
-                        <svg x-show="selected.includes('{{ $file['path'] }}')" class="w-3 h-3 text-sky-500" viewBox="0 0 12 12" fill="currentColor"><path fill-rule="evenodd" d="M10.28 2.28a.75.75 0 010 1.06l-5.5 5.5a.75.75 0 01-1.06 0l-2.5-2.5a.75.75 0 011.06-1.06L4.25 7.19l4.97-4.97a.75.75 0 011.06 0z" clip-rule="evenodd" /></svg>
+                        <svg x-show="selected.includes('{{ $file['path'] }}')" class="w-4 h-4 text-sky-500" viewBox="0 0 12 12" fill="currentColor"><path fill-rule="evenodd" d="M10.28 2.28a.75.75 0 010 1.06l-5.5 5.5a.75.75 0 01-1.06 0l-2.5-2.5a.75.75 0 011.06-1.06L4.25 7.19l4.97-4.97a.75.75 0 011.06 0z" clip-rule="evenodd" /></svg>
                     </div>
                 </div>
             @endforeach
@@ -79,38 +74,69 @@
         </div>
     @endif
 
-    {{-- Custom Alpine Modal for Renaming --}}
-    <div x-show="isRenameModalOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="isRenameModalOpen" x-transition.opacity class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" @click="closeRenameModal"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div x-show="isRenameModalOpen" x-transition class="relative inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-100 dark:border-gray-700">
-                <div class="px-6 pt-6 pb-4">
-                    <div class="flex items-start gap-4">
-                        <div class="w-24 h-24 flex-shrink-0 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                            <img :src="renameData.url" class="w-full h-full object-cover">
+    {{-- File View & Detail Modal --}}
+    <div x-show="isMediaModalOpen" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
+            <div x-show="isMediaModalOpen" x-transition.opacity class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm transition-opacity" @click="closeMediaModal"></div>
+            
+            <div x-show="isMediaModalOpen" x-transition class="relative inline-block bg-white dark:bg-gray-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 align-middle w-full max-w-4xl border border-gray-100 dark:border-gray-800">
+                
+                {{-- Close Button --}}
+                <button @click="closeMediaModal" class="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-full transition z-10">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+
+                <div class="flex flex-col md:flex-row">
+                    {{-- Image Preview Side --}}
+                    <div class="w-full md:w-3/5 bg-gray-100 dark:bg-black/50 p-6 flex items-center justify-center min-h-[300px]">
+                        <img :src="activeMedia.url" class="max-w-full max-h-[60vh] object-contain rounded drop-shadow-lg">
+                    </div>
+                    
+                    {{-- Details & Actions Side --}}
+                    <div class="w-full md:w-2/5 p-6 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Media Details</h3>
+                            
+                            {{-- Info List --}}
+                            <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400 mb-6">
+                                <div class="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
+                                    <span class="font-medium text-gray-500">File Size:</span>
+                                    <span x-text="activeMedia.size + ' KB'"></span>
+                                </div>
+                                <div class="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
+                                    <span class="font-medium text-gray-500">Uploaded On:</span>
+                                    <span x-text="activeMedia.date"></span>
+                                </div>
+                                <div>
+                                    <span class="font-medium text-gray-500 block mb-1">File URL:</span>
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" readonly :value="activeMedia.url" class="flex-1 rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-xs py-1.5 focus:ring-0">
+                                        <button @click="navigator.clipboard.writeText(activeMedia.url); alert('Copied!')" class="p-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded text-gray-700 dark:text-gray-200" title="Copy URL">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Rename Block --}}
+                            <div class="bg-sky-50 dark:bg-sky-900/10 p-4 rounded-xl border border-sky-100 dark:border-sky-800/30">
+                                <label class="block text-sm font-semibold text-sky-900 dark:text-sky-300 mb-2">Change File Name</label>
+                                <p class="text-xs text-sky-700 dark:text-sky-400 mb-3">Renaming ensures the new name is updated in the database automatically. No broken links!</p>
+                                <div class="flex gap-2">
+                                    <input type="text" x-model="activeMedia.newName" class="w-full text-sm rounded-lg border-sky-200 dark:border-sky-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-sky-500 focus:ring-sky-500 py-2">
+                                </div>
+                                <button type="button" @click="submitRename" :disabled="isSubmitting" class="mt-3 w-full px-4 py-2 text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                    <svg x-show="isSubmitting" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    <span x-text="isSubmitting ? 'Updating Links...' : 'Save New Name'"></span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex-1 w-full">
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="modal-title">Rename File for SEO</h3>
-                            <div class="mt-4">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Filename <span class="text-xs font-normal text-gray-500">(with extension)</span></label>
-                                <input type="text" x-model="renameData.newName" class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-sky-500" placeholder="e.g. best-heart-specialist.webp">
-                            </div>
-                            <div class="mt-3 p-3 bg-sky-50 dark:bg-sky-900/20 rounded-lg relative">
-                                <p class="text-xs text-sky-800 dark:text-sky-300 font-medium leading-relaxed">
-                                    <span class="block mb-1">✨ Smart Update Active:</span>
-                                    Renaming this file will automatically search through all Doctors, Hospitals, Ambulances, and Blog posts and securely update their links to this new name. No broken images!
-                                </p>
-                            </div>
+                        
+                        {{-- Delete Quick Action --}}
+                        <div class="mt-8 text-center border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <button @click="deleteSingle" class="text-sm font-medium text-red-500 hover:text-red-600 transition-colors">Permanently Delete File</button>
                         </div>
                     </div>
-                </div>
-                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3 rounded-b-2xl">
-                    <button type="button" @click="closeRenameModal" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors">Cancel</button>
-                    <button type="button" @click="submitRename" class="px-5 py-2 text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 flex items-center gap-2">
-                        <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <span x-text="isSubmitting ? 'Updating...' : 'Rename & Update Links'"></span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -122,12 +148,15 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('mediaManager', () => ({
         files: @json($paginatedFiles->pluck('path')),
         selected: [],
-        isRenameModalOpen: false,
+        
+        isMediaModalOpen: false,
         isSubmitting: false,
-        renameData: {
+        activeMedia: {
             oldPath: '',
             newName: '',
-            url: ''
+            url: '',
+            size: '',
+            date: ''
         },
         
         toggleSelect(path) {
@@ -146,19 +175,21 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        openRenameModal(path, name, url) {
-            this.renameData.oldPath = path;
-            this.renameData.newName = name;
-            this.renameData.url = url;
-            this.isRenameModalOpen = true;
+        openMediaModal(path, name, url, size, date) {
+            this.activeMedia.oldPath = path;
+            this.activeMedia.newName = name;
+            this.activeMedia.url = url;
+            this.activeMedia.size = size;
+            this.activeMedia.date = date;
+            this.isMediaModalOpen = true;
         },
 
-        closeRenameModal() {
-            this.isRenameModalOpen = false;
+        closeMediaModal() {
+            this.isMediaModalOpen = false;
         },
 
         submitRename() {
-            if (!this.renameData.newName) return alert('Filename is required.');
+            if (!this.activeMedia.newName) return alert('Filename is required.');
             this.isSubmitting = true;
 
             fetch("{{ route('admin.media.rename') }}", {
@@ -169,8 +200,8 @@ document.addEventListener('alpine:init', () => {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    old_path: this.renameData.oldPath,
-                    new_name: this.renameData.newName
+                    old_path: this.activeMedia.oldPath,
+                    new_name: this.activeMedia.newName
                 })
             })
             .then(res => res.json())
@@ -189,10 +220,33 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
+        deleteSingle() {
+            if (!confirm('Are you sure you want to permanently delete this file? This will break any links pointing to it!')) return;
+            
+            fetch("{{ route('admin.media.bulk-delete') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    paths: [this.activeMedia.oldPath]
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Something went wrong.');
+                }
+            })
+            .catch(err => console.error(err));
+        },
+
         bulkDelete() {
-            if (!confirm(`Are you sure you want to permanently delete ${this.selected.length} items? This action cannot be undone and may break links if files are actively used.`)) {
-                return;
-            }
+            if (!confirm(`Are you sure you want to permanently delete ${this.selected.length} items? This action cannot be undone.`)) return;
 
             fetch("{{ route('admin.media.bulk-delete') }}", {
                 method: 'POST',
@@ -213,10 +267,7 @@ document.addEventListener('alpine:init', () => {
                     alert(data.message || 'Something went wrong.');
                 }
             })
-            .catch(err => {
-                alert('Request failed');
-                console.error(err);
-            });
+            .catch(err => console.error(err));
         }
     }));
 });
