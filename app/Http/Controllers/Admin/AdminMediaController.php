@@ -207,11 +207,11 @@ class AdminMediaController extends Controller
             $updates = [];
             $baseSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($hospital->name, 50, ''));
             
-            if ($hospital->logo && !str_ends_with($hospital->logo, '.webp')) {
+            if ($hospital->logo) {
                 $n = $this->runOpt($manager, $hospital->logo, 'hospitals', 800, $baseSlug . '-logo');
                 if ($n) { $updates['logo'] = $n; $processed++; $logs[] = "Optimized Hospital Logo: " . $hospital->name; }
             }
-            if ($processed < $limit && $hospital->banner && !str_ends_with($hospital->banner, '.webp')) {
+            if ($processed < $limit && $hospital->banner) {
                 $n = $this->runOpt($manager, $hospital->banner, 'hospitals/covers', 1200, $baseSlug . '-cover');
                 if ($n) { $updates['banner'] = $n; $processed++; $logs[] = "Optimized Hospital Banner: " . $hospital->name; }
             }
@@ -224,19 +224,16 @@ class AdminMediaController extends Controller
                         $newGallery[] = $img;
                         continue;
                     }
-                    if (!str_ends_with($img, '.webp')) {
-                        $n = $this->runOpt($manager, $img, 'hospitals/gallery', 1200, $baseSlug . '-gallery-' . $gCount);
-                        if ($n) {
-                            $newGallery[] = $n;
-                            $changed = true;
-                            $processed++;
-                            $logs[] = "Optimized Hospital Gallery Image: " . $hospital->name . " ($gCount)";
-                            $gCount++;
-                            continue;
-                        }
+                    $n = $this->runOpt($manager, $img, 'hospitals/gallery', 1200, $baseSlug . '-gallery-' . $gCount);
+                    if ($n) {
+                        $newGallery[] = $n;
+                        $changed = true;
+                        $processed++;
+                        $logs[] = "Optimized Hospital Gallery Image: " . $hospital->name . " ($gCount)";
+                    } else {
+                        $newGallery[] = $img;
                     }
                     $gCount++;
-                    $newGallery[] = $img;
                 }
                 if ($changed) $updates['gallery'] = $newGallery;
             }
@@ -251,11 +248,11 @@ class AdminMediaController extends Controller
                 $updates = [];
                 $baseSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($doctor->name, 50, ''));
 
-                if ($doctor->photo && !str_ends_with($doctor->photo, '.webp')) {
+                if ($doctor->photo) {
                     $n = $this->runOpt($manager, $doctor->photo, 'doctors', 800, $baseSlug . '-photo');
                     if ($n) { $updates['photo'] = $n; $processed++; $logs[] = "Optimized Doctor Photo: " . $doctor->name; }
                 }
-                if ($processed < $limit && $doctor->cover_image && !str_ends_with($doctor->cover_image, '.webp')) {
+                if ($processed < $limit && $doctor->cover_image) {
                     $n = $this->runOpt($manager, $doctor->cover_image, 'doctors/covers', 1200, $baseSlug . '-cover');
                     if ($n) { $updates['cover_image'] = $n; $processed++; $logs[] = "Optimized Doctor Cover: " . $doctor->name; }
                 }
@@ -268,19 +265,16 @@ class AdminMediaController extends Controller
                             $newGallery[] = $img;
                             continue;
                         }
-                        if (!str_ends_with($img, '.webp')) {
-                            $n = $this->runOpt($manager, $img, 'doctors/gallery', 1200, $baseSlug . '-gallery-' . $gCount);
-                            if ($n) {
-                                $newGallery[] = $n;
-                                $changed = true;
-                                $processed++;
-                                $logs[] = "Optimized Doctor Gallery Image: " . $doctor->name . " ($gCount)";
-                                $gCount++;
-                                continue;
-                            }
+                        $n = $this->runOpt($manager, $img, 'doctors/gallery', 1200, $baseSlug . '-gallery-' . $gCount);
+                        if ($n) {
+                            $newGallery[] = $n;
+                            $changed = true;
+                            $processed++;
+                            $logs[] = "Optimized Doctor Gallery Image: " . $doctor->name . " ($gCount)";
+                        } else {
+                            $newGallery[] = $img;
                         }
                         $gCount++;
-                        $newGallery[] = $img;
                     }
                     if ($changed) $updates['gallery'] = $newGallery;
                 }
@@ -296,11 +290,11 @@ class AdminMediaController extends Controller
                 $updates = [];
                 $baseSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($ambulance->name, 50, ''));
 
-                if ($ambulance->logo && !str_ends_with($ambulance->logo, '.webp')) {
+                if ($ambulance->logo) {
                     $n = $this->runOpt($manager, $ambulance->logo, 'ambulances', 800, $baseSlug . '-logo');
                     if ($n) { $updates['logo'] = $n; $processed++; $logs[] = "Optimized Ambulance Logo: " . $ambulance->name; }
                 }
-                if ($processed < $limit && $ambulance->cover_image && !str_ends_with($ambulance->cover_image, '.webp')) {
+                if ($processed < $limit && $ambulance->cover_image) {
                     $n = $this->runOpt($manager, $ambulance->cover_image, 'ambulances/covers', 1200, $baseSlug . '-cover');
                     if ($n) { $updates['cover_image'] = $n; $processed++; $logs[] = "Optimized Ambulance Cover: " . $ambulance->name; }
                 }
@@ -313,19 +307,16 @@ class AdminMediaController extends Controller
                             $newGallery[] = $img;
                             continue;
                         }
-                        if (!str_ends_with($img, '.webp')) {
-                            $n = $this->runOpt($manager, $img, 'ambulances/gallery', 1200, $baseSlug . '-gallery-' . $gCount);
-                            if ($n) {
-                                $newGallery[] = $n;
-                                $changed = true;
-                                $processed++;
-                                $logs[] = "Optimized Ambulance Gallery Image: " . $ambulance->name . " ($gCount)";
-                                $gCount++;
-                                continue;
-                            }
+                        $n = $this->runOpt($manager, $img, 'ambulances/gallery', 1200, $baseSlug . '-gallery-' . $gCount);
+                        if ($n) {
+                            $newGallery[] = $n;
+                            $changed = true;
+                            $processed++;
+                            $logs[] = "Optimized Ambulance Gallery Image: " . $ambulance->name . " ($gCount)";
+                        } else {
+                            $newGallery[] = $img;
                         }
                         $gCount++;
-                        $newGallery[] = $img;
                     }
                     if ($changed) $updates['gallery'] = $newGallery;
                 }
@@ -341,7 +332,7 @@ class AdminMediaController extends Controller
                 $updates = [];
                 $baseSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($blog->title, 50, ''));
 
-                if ($blog->image && !str_ends_with($blog->image, '.webp')) {
+                if ($blog->image) {
                     $n = $this->runOpt($manager, $blog->image, 'blog', 1200, $baseSlug . '-thumbnail');
                     if ($n) { $updates['image'] = $n; $processed++; $logs[] = "Optimized Blog Image: " . $blog->title; }
                 }
@@ -362,27 +353,44 @@ class AdminMediaController extends Controller
             return null;
         }
 
+        $isWebP = str_ends_with($path, '.webp');
+        
+        if ($seoSlug) {
+            // Check if it already has the perfect name!
+            // Example: $seoSlug is "dr-karim-photo". If $path contains "dr-karim-photo", it's good!
+            // We use contains to allow -1, -2 suffixes gracefully.
+            if ($isWebP && \Illuminate\Support\Str::contains($path, $seoSlug)) {
+                return null;
+            }
+            $filename = $seoSlug . '.webp';
+        } else {
+            // Original logic just WebP encoding
+            if ($isWebP) return null; 
+            $oldFilenameBase = pathinfo($path, PATHINFO_FILENAME);
+            $filename = $oldFilenameBase . '.webp';
+        }
+            
+        $newRelativePath = $directory . '/' . $filename;
+        
+        // Handle duplicate names gracefully
+        $counter = 1;
+        while (Storage::disk('public')->exists($newRelativePath) && $newRelativePath !== $path) {
+            $fallbackSlug = $seoSlug ? $seoSlug : pathinfo($path, PATHINFO_FILENAME);
+            $filename = $fallbackSlug . '-' . $counter . '.webp';
+            $newRelativePath = $directory . '/' . $filename;
+            $counter++;
+        }
+
+        // If it's already a WebP, we don't need to re-encode it, just rename it instantly!
+        if ($isWebP) {
+            Storage::disk('public')->makeDirectory($directory);
+            Storage::disk('public')->move($path, $newRelativePath);
+            return $newRelativePath;
+        }
+
         try {
             $absolutePath = Storage::disk('public')->path($path);
             $image = $manager->decode($absolutePath);
-
-            if ($seoSlug) {
-                $filename = $seoSlug . '.webp';
-            } else {
-                $oldFilenameBase = pathinfo($path, PATHINFO_FILENAME);
-                $filename = $oldFilenameBase . '.webp';
-            }
-            
-            $newRelativePath = $directory . '/' . $filename;
-            
-            // Handle duplicate names (e.g. multiple doctors with same name)
-            $counter = 1;
-            while (Storage::disk('public')->exists($newRelativePath) && $newRelativePath !== $path) {
-                $fallbackSlug = $seoSlug ? $seoSlug : pathinfo($path, PATHINFO_FILENAME);
-                $filename = $fallbackSlug . '-' . $counter . '.webp';
-                $newRelativePath = $directory . '/' . $filename;
-                $counter++;
-            }
 
             $newAbsolutePath = Storage::disk('public')->path($newRelativePath);
 
