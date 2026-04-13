@@ -336,6 +336,53 @@
     </footer>
 
     @livewireScripts
+    
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('locationPicker', (initialDiv, initialDist, initialArea) => ({
+            divisionId: initialDiv ? String(initialDiv) : '',
+            districtId: initialDist ? String(initialDist) : '',
+            areaId:     initialArea ? String(initialArea) : '',
+            districts: [],
+            areas: [],
+            async init() {
+                if (this.divisionId) {
+                    await this.fetchDistricts(true);
+                    if (this.districtId) await this.fetchAreas(true);
+                }
+            },
+            async fetchDistricts(isInit = false) {
+                this.districts = []; 
+                if (!isInit) this.areas = [];
+                const keep = this.districtId;
+                this.districtId = ''; 
+                if (!isInit) this.areaId = '';
+                if (!this.divisionId) return;
+                try {
+                    let res = await fetch(`/api/districts?division_id=${this.divisionId}`);
+                    this.districts = await res.json();
+                } catch (err) {
+                    console.error('fetchDistricts() ERROR:', err);
+                }
+                if (keep && this.districts.some(d => String(d.id) === keep)) this.districtId = keep;
+            },
+            async fetchAreas(isInit = false) {
+                this.areas = [];
+                const keep = this.areaId;
+                this.areaId = '';
+                if (!this.districtId) return;
+                try {
+                    let res = await fetch(`/api/areas?district_id=${this.districtId}`);
+                    this.areas = await res.json();
+                } catch (err) {
+                    console.error('fetchAreas() ERROR:', err);
+                }
+                if (keep && this.areas.some(a => String(a.id) === keep)) this.areaId = keep;
+            }
+        }));
+    });
+    </script>
+
     @stack('scripts')
 
 </body>

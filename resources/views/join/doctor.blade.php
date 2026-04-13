@@ -97,14 +97,4 @@
     </div>
 </div>
 
-@push('scripts')
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('locationPicker', (initialDiv, initialDist, initialArea) => ({
-            divisionId: initialDiv,
-            districtId: initialDist,
-            areaId: initialArea,
-            districts: [],
-            areas: [],
-
 @endsection
