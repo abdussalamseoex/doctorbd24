@@ -62,6 +62,10 @@ Route::get('/manifest.json', function () {
     ]);
 });
 
+// AI and LLM indexing files
+Route::get('/llms.txt', [\App\Http\Controllers\LlmsController::class, 'index'])->name('llms.txt');
+Route::get('/llms-full.txt', [\App\Http\Controllers\LlmsController::class, 'full'])->name('llms.full.txt');
+
 // Contact Page
 Route::get('/contact', [\App\Http\Controllers\PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [\App\Http\Controllers\PageController::class, 'submitContact'])->name('contact.submit')->middleware('throttle:5,10');
