@@ -21,8 +21,8 @@
 
     # ─── TURBO BOOST: Bad Bot & Scraper Blocker ───
     # This completely blocks malicious/resource-draining bots at the Apache level!
-    # Allowed: Googlebot, Bingbot, ChatGPT (OAI-SearchBot), ClaudeBot, PerplexityBot
-    RewriteCond %{HTTP_USER_AGENT} (AhrefsBot|SemrushBot|MJ12bot|DotBot|PetalBot|Bytespider|Baiduspider|BLEXBot|MegaIndex|TurnitinBot|YandexBot|Barkrowler|AwarioBot|MauiBot|DataForSeoBot|DotBot|CensysInspect|Crawlson|ZoominfoBot|SeznamBot) [NC]
+    # Allowed: Googlebot, Bingbot, ChatGPT (OAI-SearchBot), ClaudeBot, PerplexityBot, AhrefsBot, SemrushBot, etc.
+    RewriteCond %{HTTP_USER_AGENT} (PetalBot|Bytespider|Baiduspider|BLEXBot|MegaIndex|TurnitinBot|YandexBot|Barkrowler|AwarioBot|MauiBot|DataForSeoBot|CensysInspect|Crawlson|ZoominfoBot|SeznamBot) [NC]
     RewriteRule .* - [F,L]
 # ─── TURBO BOOST: Browser Caching (mod_expires) ───
 <IfModule mod_expires.c>
