@@ -32,7 +32,7 @@ class SitemapController extends Controller
 
     public function ambulances(): Response
     {
-        $ambulances = \App\Models\Ambulance::select('slug', 'updated_at')->get();
+        $ambulances = \App\Models\Ambulance::where('active', true)->select('slug', 'updated_at')->get();
         $content   = view('sitemap.ambulances', compact('ambulances'))->render();
         return response($content, 200)->header('Content-Type', 'application/xml');
     }

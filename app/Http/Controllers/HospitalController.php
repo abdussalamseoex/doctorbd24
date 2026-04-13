@@ -75,7 +75,7 @@ class HospitalController extends Controller
         // ─────────────────────────────────────────────
 
         // get unique doctors from chambers
-        $doctors = $hospital->chambers->map(fn($c) => $c->doctor)->filter()->unique('id');
+        $doctors = $hospital->chambers->map(fn($c) => $c->doctor)->filter(fn($d) => $d && $d->is_live)->unique('id');
 
         $specialtyFilter = request('specialty');
         if ($specialtyFilter) {

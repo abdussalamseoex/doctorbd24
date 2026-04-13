@@ -66,8 +66,8 @@ class HomeController extends Controller
         $heroSubtitle = Setting::get('homepage_hero_subtitle', 'Over :doctors+ doctors, :hospitals+ hospitals and complete healthcare information in one place in Bangladesh.');
 
         $stats = [
-            'doctors'     => Doctor::count(),
-            'hospitals'   => Hospital::count(),
+            'doctors'     => Doctor::published()->count(),
+            'hospitals'   => Hospital::published()->count(),
             'areas'       => \App\Models\Area::count(),
             'specialties' => Specialty::count(),
         ];

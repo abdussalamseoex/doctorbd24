@@ -80,7 +80,8 @@ class HospitalList extends Component
     public function updatedSearch()
     {
         if (strlen($this->search) > 1) {
-            $this->suggestions = Hospital::where('name', 'like', "%{$this->search}%")
+            $this->suggestions = Hospital::published()
+                ->where('name', 'like', "%{$this->search}%")
                 ->limit(5)
                 ->pluck('name')
                 ->toArray();
@@ -151,7 +152,7 @@ class HospitalList extends Component
 
     public function render()
     {
-        $query = Hospital::with('area.district.division');
+        $query = Hospital::published()->with('area.district.division');
 
         // SEO Handling
         if (!$this->seoTitle) {

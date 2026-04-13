@@ -81,7 +81,8 @@ class DoctorList extends Component
     public function updatedSearch()
     {
         if (strlen($this->search) > 1) {
-            $this->suggestions = Doctor::where('name', 'like', "%{$this->search}%")
+            $this->suggestions = Doctor::published()
+                ->where('name', 'like', "%{$this->search}%")
                 ->limit(5)
                 ->pluck('name')
                 ->toArray();
@@ -152,10 +153,7 @@ class DoctorList extends Component
 
     public function render()
     {
-        $query = Doctor::with(['specialties', 'chambers.area.district.division', 'reviews'])
-            ->where(function($q) {
-                $q->whereNull('status')->orWhere('status', '!=', 'draft');
-            });
+        $query = Doctor::published()->with(['specialties', 'chambers.area.district.division', 'reviews']);
 
         // SEO Handling
         if (!$this->seoTitle) {
