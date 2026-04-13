@@ -60,7 +60,7 @@
                     </div>
 
                     {{-- Checkbox (Stop Propagation to select) --}}
-                    <div class="absolute top-2 left-2 w-7 h-7 rounded border-2 bg-white/90 dark:bg-gray-800/90 flex items-center justify-center transition-colors shadow-sm cursor-pointer z-10"
+                    <div class="absolute top-2 left-2 w-7 h-7 rounded border-2 bg-white/90 dark:bg-gray-800/90 flex items-center justify-center transition-colors shadow-sm cursor-pointer"
                          :class="selected.includes('{{ $file['path'] }}') ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30' : 'border-gray-300 dark:border-gray-600'"
                          @click.stop="toggleSelect('{{ $file['path'] }}')">
                         <svg x-show="selected.includes('{{ $file['path'] }}')" class="w-4 h-4 text-sky-500" viewBox="0 0 12 12" fill="currentColor"><path fill-rule="evenodd" d="M10.28 2.28a.75.75 0 010 1.06l-5.5 5.5a.75.75 0 01-1.06 0l-2.5-2.5a.75.75 0 011.06-1.06L4.25 7.19l4.97-4.97a.75.75 0 011.06 0z" clip-rule="evenodd" /></svg>
@@ -76,11 +76,11 @@
 
     {{-- File View & Detail Modal --}}
     <template x-teleport="body">
-        <div x-show="isMediaModalOpen" style="display: none;" class="fixed inset-0 z-[999] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div x-show="isMediaModalOpen" style="display: none; z-index: 99999;" class="fixed inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
-            <div x-show="isMediaModalOpen" x-transition.opacity class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm transition-opacity" @click="closeMediaModal"></div>
+            <div x-show="isMediaModalOpen" x-transition.opacity class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm transition-opacity" style="z-index: 99999;" @click="closeMediaModal"></div>
             
-            <div x-show="isMediaModalOpen" x-transition class="relative inline-block bg-white dark:bg-gray-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 align-middle w-full max-w-4xl border border-gray-100 dark:border-gray-800">
+            <div x-show="isMediaModalOpen" x-transition class="relative inline-block bg-white dark:bg-gray-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 align-middle w-full max-w-4xl border border-gray-100 dark:border-gray-800" style="z-index: 100000;">
                 
                 {{-- Close Button --}}
                 <button @click="closeMediaModal" class="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-full transition z-10">
