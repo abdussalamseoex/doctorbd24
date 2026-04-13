@@ -33,7 +33,18 @@ class AmbulanceController extends Controller
 
     public function show(string $slug)
     {
-        $ambulance = Ambulance::published()->where('slug', $slug)->with(['area.district.division', 'reviews.user'])->firstOrFail();
+        $ambulance = Ambulance::published()->where('slug', $slug)->with(['area.district.division', 'reviews.user'])->first();
+        
+        if (!$ambulance) {
+            $redirect = \App\Models\RedirectLog::where('from_url', 'ambulance/' . $slug)->first();
+            if ($redirect) {
+                if ($redirect->to_url === '410') {
+                    abort(410, 'Gone');
+                }
+                return redirect($redirect->to_url, 301);
+            }
+            abort(404);
+        }
         
         $ambulance->incrementViewCount();
 

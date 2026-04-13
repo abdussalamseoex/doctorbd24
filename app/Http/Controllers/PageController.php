@@ -43,7 +43,17 @@ class PageController extends Controller
         }
 
         // 2. Fallback to standard static Page
-        $page = Page::published()->where('slug', $slug)->firstOrFail();
+        $page = Page::published()->where('slug', $slug)->first();
+        if (!$page) {
+            $redirect = \App\Models\RedirectLog::where('from_url', $slug)->first();
+            if ($redirect) {
+                if ($redirect->to_url === '410') {
+                    abort(410, 'Gone');
+                }
+                return redirect($redirect->to_url, 301);
+            }
+            abort(404);
+        }
         return view('pages.show', compact('page'));
     }
 

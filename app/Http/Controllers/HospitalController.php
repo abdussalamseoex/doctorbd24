@@ -27,6 +27,9 @@ class HospitalController extends Controller
         if (!$hospital) {
             $redirect = \App\Models\RedirectLog::where('from_url', 'hospital/' . $slug)->first();
             if ($redirect) {
+                if ($redirect->to_url === '410') {
+                    abort(410, 'Gone');
+                }
                 return redirect($redirect->to_url, 301);
             }
             abort(404);
