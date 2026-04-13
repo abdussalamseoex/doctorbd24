@@ -37,6 +37,11 @@
                class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $type === 'hospital' ? 'bg-indigo-600 text-white shadow' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                 Hospitals
             </a>
+            
+            <button type="button" @click="openManualMergeModal" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                Manual Search & Merge
+            </button>
         </div>
     </div>
 
@@ -200,9 +205,94 @@
                         </div>
                     </div>
                 </div>
+    @endif
+
+    {{-- Manual Merge Modal --}}
+    <div x-show="manualMergeModalOpen" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="manual-merge-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="manualMergeModalOpen" x-transition.opacity class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" @click="manualMergeModalOpen = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div x-show="manualMergeModalOpen" x-transition.scale class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-gray-200 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2" id="manual-merge-title">
+                                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                Manual Search & Merge
+                            </h3>
+                            <p class="text-sm text-gray-500 mt-1">Search and select the primary record and the duplicate record to merge them.</p>
+
+                            <form method="POST" action="{{ route('admin.duplicates.merge') }}" id="manualMergeForm" class="mt-6 space-y-5 text-left">
+                                @csrf
+                                <input type="hidden" name="type" value="{{ $type }}">
+                                
+                                <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
+                                    <!-- Primary Search -->
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">1. Search Primary Profile (Keep)</label>
+                                        <div class="relative">
+                                            <input type="text" x-model="searchPrimaryQuery" @input.debounce.500ms="searchProfiles('primary')" placeholder="Type name or phone..." class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block p-2.5 dark:bg-gray-800 dark:border-gray-600 dark:text-white placeholder-gray-400">
+                                            <div x-show="primaryResults.length > 0" class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 max-h-48 overflow-y-auto">
+                                                <template x-for="item in primaryResults" :key="item.id">
+                                                    <div @click="selectPrimary(item)" class="p-2.5 hover:bg-sky-50 dark:hover:bg-gray-700 cursor-pointer text-sm border-b border-gray-100 dark:border-gray-700 last:border-0" x-text="item.text"></div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        
+                                        <div x-show="selectedPrimary" class="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg flex justify-between items-center dark:bg-green-900/20 dark:border-green-800">
+                                            <span class="text-sm font-medium text-green-800 dark:text-green-400" x-text="selectedPrimary ? selectedPrimary.text : ''"></span>
+                                            <button type="button" @click="selectedPrimary = null; manualPrimaryId = ''" class="text-green-600 hover:text-green-800 font-bold px-2">&times;</button>
+                                        </div>
+                                        <input type="hidden" name="primary_id" x-model="manualPrimaryId" required>
+                                    </div>
+
+                                    <!-- Duplicate Search -->
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">2. Search Duplicate Profile (Merge & Delete)</label>
+                                        <div class="relative">
+                                            <input type="text" x-model="searchDuplicateQuery" @input.debounce.500ms="searchProfiles('duplicate')" placeholder="Type name or phone..." class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block p-2.5 dark:bg-gray-800 dark:border-gray-600 dark:text-white placeholder-gray-400">
+                                            <div x-show="duplicateResults.length > 0" class="absolute z-10 w-full mt-1 bg-white border border-red-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-red-900 max-h-48 overflow-y-auto">
+                                                <template x-for="item in duplicateResults" :key="item.id">
+                                                    <div @click="addDuplicate(item)" class="p-2.5 hover:bg-red-50 dark:hover:bg-gray-700 cursor-pointer text-sm border-b border-gray-100 dark:border-gray-700 last:border-0" x-text="item.text"></div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        
+                                        <div x-show="selectedDuplicates.length > 0" class="mt-2 space-y-2">
+                                            <template x-for="(dup, index) in selectedDuplicates" :key="dup.id">
+                                                <div class="p-2 bg-red-50 border border-red-200 rounded-lg flex justify-between items-center dark:bg-red-900/20 dark:border-red-800">
+                                                    <span class="text-sm font-medium text-red-800 dark:text-red-400" x-text="dup.text"></span>
+                                                    <button type="button" @click="removeDuplicate(index)" class="text-red-600 hover:text-red-800 font-bold px-2">&times;</button>
+                                                    <input type="hidden" name="duplicate_ids[]" :value="dup.id">
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div x-show="selectedDuplicates.length === 0" class="text-xs text-red-500 mt-1 hidden" :class="{'block': !selectedDuplicates.length && manualPrimaryId}">
+                                            * Please select at least one duplicate to merge.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm border border-red-100 dark:border-red-800/50 flex gap-2">
+                                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    <span>Warning: This action will permanently merge relationships and <strong>delete</strong> the duplicate profiles. An SEO redirect will be created automatically.</span>
+                                </div>
+
+                                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                    <button type="submit" :disabled="!manualPrimaryId || selectedDuplicates.length === 0" class="w-full inline-flex justify-center rounded-lg border border-transparent px-4 py-2 bg-amber-600 text-base font-medium text-white shadow-sm hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                                        Execute Merge
+                                    </button>
+                                    <button type="button" @click="manualMergeModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 px-4 py-2 bg-white text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    @endif
+    </div>
 </div>
 @endsection
 
@@ -277,6 +367,76 @@
                 } else {
                     this.mergedBio = '';
                 }
+            },
+            
+            // Manual Merge Methods
+            manualMergeModalOpen: false,
+            searchPrimaryQuery: '',
+            primaryResults: [],
+            selectedPrimary: null,
+            manualPrimaryId: '',
+            
+            searchDuplicateQuery: '',
+            duplicateResults: [],
+            selectedDuplicates: [],
+            
+            openManualMergeModal() {
+                this.manualMergeModalOpen = true;
+                this.searchPrimaryQuery = '';
+                this.primaryResults = [];
+                this.selectedPrimary = null;
+                this.manualPrimaryId = '';
+                this.searchDuplicateQuery = '';
+                this.duplicateResults = [];
+                this.selectedDuplicates = [];
+            },
+            
+            async searchProfiles(boxType) {
+                let query = boxType === 'primary' ? this.searchPrimaryQuery : this.searchDuplicateQuery;
+                if(query.length < 2) {
+                    if(boxType === 'primary') this.primaryResults = [];
+                    else this.duplicateResults = [];
+                    return;
+                }
+                
+                try {
+                    let type = '{{ $type }}';
+                    let response = await fetch(`{{ route('admin.duplicates.search') }}?type=${type}&q=${encodeURIComponent(query)}`);
+                    let data = await response.json();
+                    
+                    if(boxType === 'primary') {
+                        this.primaryResults = data.results;
+                    } else {
+                        this.duplicateResults = data.results;
+                    }
+                } catch(e) {
+                    console.error('Search failed', e);
+                }
+            },
+            
+            selectPrimary(item) {
+                this.selectedPrimary = item;
+                this.manualPrimaryId = item.id;
+                this.searchPrimaryQuery = '';
+                this.primaryResults = [];
+            },
+            
+            addDuplicate(item) {
+                // Avoid adding primary as duplicate
+                if(this.manualPrimaryId == item.id) {
+                    alert('Cannot add the primary profile as a duplicate to merge.');
+                    return;
+                }
+                // Avoid adding same duplicate twice
+                if(!this.selectedDuplicates.find(d => d.id == item.id)) {
+                    this.selectedDuplicates.push(item);
+                }
+                this.searchDuplicateQuery = '';
+                this.duplicateResults = [];
+            },
+            
+            removeDuplicate(index) {
+                this.selectedDuplicates.splice(index, 1);
             }
         }));
     });

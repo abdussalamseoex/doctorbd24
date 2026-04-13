@@ -153,6 +153,40 @@ class DuplicateManagerController extends Controller
         }
     }
 
+    public function search(Request $request)
+    {
+        $type = $request->get('type', 'doctor');
+        $q = $request->get('q', '');
+
+        if (!$q) return response()->json([]);
+
+        if ($type === 'doctor') {
+            $results = Doctor::where('name', 'like', "%{$q}%")
+                ->orWhere('phone', 'like', "%{$q}%")
+                ->limit(20)
+                ->get()
+                ->map(function ($doc) {
+                    return [
+                        'id' => $doc->id,
+                        'text' => "#{$doc->id} - {$doc->name} " . ($doc->phone ? "({$doc->phone})" : "")
+                    ];
+                });
+        } else {
+            $results = Hospital::where('name', 'like', "%{$q}%")
+                ->orWhere('phone', 'like', "%{$q}%")
+                ->limit(20)
+                ->get()
+                ->map(function ($hosp) {
+                    return [
+                        'id' => $hosp->id,
+                        'text' => "#{$hosp->id} - {$hosp->name} " . ($hosp->phone ? "({$hosp->phone})" : "")
+                    ];
+                });
+        }
+
+        return response()->json(['results' => $results]);
+    }
+
     public function ignore(Request $request)
     {
         $request->validate([

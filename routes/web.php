@@ -236,12 +236,13 @@ Route::prefix('admin')
 
         // Duplicates Manager
         Route::get('duplicates', [\App\Http\Controllers\Admin\DuplicateManagerController::class, 'index'])->name('duplicates.index')->middleware('role:admin');
+        Route::get('duplicates/search', [\App\Http\Controllers\Admin\DuplicateManagerController::class, 'search'])->name('duplicates.search')->middleware('role:admin');
         Route::post('duplicates/merge', [\App\Http\Controllers\Admin\DuplicateManagerController::class, 'merge'])->name('duplicates.merge')->middleware('role:admin');
         Route::post('duplicates/ignore', [\App\Http\Controllers\Admin\DuplicateManagerController::class, 'ignore'])->name('duplicates.ignore')->middleware('role:admin');
 
 
         // Redirect Logs
-        Route::resource('redirect-logs', \App\Http\Controllers\Admin\RedirectLogController::class)->only(['index', 'destroy'])->middleware('role:admin');
+        Route::resource('redirect-logs', \App\Http\Controllers\Admin\RedirectLogController::class)->only(['index', 'store', 'destroy'])->middleware('role:admin');
 
         // Claim Requests
         Route::get('claim-requests', [\App\Http\Controllers\Admin\AdminClaimRequestController::class, 'index'])->name('claim-requests.index')->middleware('permission:manage claims');

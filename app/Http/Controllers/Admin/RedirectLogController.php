@@ -14,6 +14,25 @@ class RedirectLogController extends Controller
         return view('admin.redirect_logs.index', compact('logs'));
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'from_url' => 'required|string',
+            'to_url' => 'required|string',
+        ]);
+
+        RedirectLog::firstOrCreate(
+            ['from_url' => $request->from_url],
+            [
+                'to_url' => $request->to_url,
+                'hits' => 0,
+                'last_hit_at' => now(),
+            ]
+        )->update(['to_url' => $request->to_url]);
+
+        return redirect()->back()->with('success', 'Manual redirect added successfully.');
+    }
+
     public function destroy(RedirectLog $redirectLog)
     {
         $redirectLog->delete();
