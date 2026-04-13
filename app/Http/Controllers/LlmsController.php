@@ -86,7 +86,7 @@ class LlmsController extends Controller
         $content .= "## Supported Medical Specialties\n";
         $content .= "Our platform categorizes doctors into the following primary specialties:\n";
         
-        $specialties = Specialty::where('is_active', true)->orderBy('name')->get();
+        $specialties = Specialty::orderBy('name')->get();
         foreach ($specialties as $specialty) {
             $content .= "- {$specialty->name}\n";
         }
@@ -95,7 +95,7 @@ class LlmsController extends Controller
         $content .= "## Service Coverage (Major Districts)\n";
         $content .= "We provide healthcare information for major districts in Bangladesh, including:\n";
         
-        $districts = District::where('is_active', true)->orderBy('name')->limit(30)->get();
+        $districts = District::orderBy('name')->limit(30)->get();
         foreach ($districts as $district) {
             $content .= "- {$district->name}\n";
         }
