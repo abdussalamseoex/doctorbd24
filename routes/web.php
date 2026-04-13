@@ -31,7 +31,7 @@ Route::get('/lang/{locale}', function ($locale) {
 })->name('lang.switch');
 
 // â”€â”€ Public Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->middleware('cache.response')->name('home');
 
 // PWA Manifest
 Route::get('/manifest.json', function () {
@@ -82,14 +82,29 @@ Route::prefix('hospital')->middleware(['auth', 'role:hospital'])->name('hospital
     Route::get('/reviews', [\App\Http\Controllers\ProviderReviewController::class, 'index'])->name('reviews.index');
 });
 
-// Doctors
-Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
-Route::get('/doctor/{slug}', [DoctorController::class, 'show'])->name('doctors.show');
-Route::post('/doctors/{doctor}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'store'])->name('doctors.claim')->middleware('auth');
+Route::middleware(['cache.response'])->group(function () {
+    // Doctors
+    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
+    Route::get('/doctor/{slug}', [DoctorController::class, 'show'])->name('doctors.show');
 
-// Hospitals
-Route::get('/hospitals', [HospitalController::class, 'index'])->name('hospitals.index');
-Route::get('/hospital/{slug}', [HospitalController::class, 'show'])->name('hospitals.show');
+    // Hospitals
+    Route::get('/hospitals', [HospitalController::class, 'index'])->name('hospitals.index');
+    Route::get('/hospital/{slug}', [HospitalController::class, 'show'])->name('hospitals.show');
+
+    // Specialties
+    Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
+
+    // Ambulances
+    Route::get('/ambulances', [AmbulanceController::class, 'index'])->name('ambulances.index');
+    Route::get('/ambulance/{slug}', [AmbulanceController::class, 'resolve'])->name('ambulances.type');
+    Route::get('/ambulance/{slug}', [AmbulanceController::class, 'resolve'])->name('ambulances.show');
+
+    // Blog
+    Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+    Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+});
+
+Route::post('/doctors/{doctor}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'store'])->name('doctors.claim')->middleware('auth');
 Route::post('/hospitals/{hospital}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'storeHospital'])->name('hospitals.claim')->middleware('auth');
 
 // Specialties
@@ -167,9 +182,10 @@ Route::prefix('admin')
         // System optimization route
         Route::get('/optimize-system', function () {
             \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+            \Spatie\ResponseCache\Facades\ResponseCache::clear();
             \Illuminate\Support\Facades\Artisan::call('optimize');
             \Illuminate\Support\Facades\Artisan::call('view:cache');
-            return redirect()->back()->with('success', 'System optimized successfully! All configuration and views have been cached for maximum performance.');
+            return redirect()->back()->with('success', 'System optimized and Response Cache flushed successfully! All configuration and views have been cached for maximum performance.');
         })->name('optimize-system')->middleware('permission:manage settings');
 
 

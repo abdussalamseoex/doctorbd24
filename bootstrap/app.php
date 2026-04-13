@@ -21,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'cache.response' => \Spatie\ResponseCache\Middlewares\CacheResponse::class,
+            'cache.bypass' => \Spatie\ResponseCache\Middlewares\DoNotCacheResponse::class,
         ]);
     })
 
