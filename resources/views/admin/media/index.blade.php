@@ -13,6 +13,11 @@
         </div>
 
         <div class="flex items-center gap-3 w-full md:w-auto">
+            <a href="{{ route('admin.media.optimize') }}" target="_blank" onclick="return confirm('This will bulk convert all old JPG/PNG images to WebP. It may take a few minutes. Proceed?')" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Auto-Optimize WebP
+            </a>
+
             <form method="GET" action="{{ route('admin.media.index') }}" class="flex-1 md:w-64">
                 <select name="folder" onchange="this.form.submit()" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-sky-500 focus:border-sky-500">
                     <option value="">All Folders</option>

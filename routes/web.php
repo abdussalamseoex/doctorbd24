@@ -255,6 +255,16 @@ Route::prefix('admin')
         Route::get('media', [\App\Http\Controllers\Admin\AdminMediaController::class, 'index'])->name('media.index')->middleware('role:admin');
         Route::post('media/rename', [\App\Http\Controllers\Admin\AdminMediaController::class, 'rename'])->name('media.rename')->middleware('role:admin');
         Route::post('media/bulk-delete', [\App\Http\Controllers\Admin\AdminMediaController::class, 'bulkDelete'])->name('media.bulk-delete')->middleware('role:admin');
+        Route::get('media/run-optimization', function () {
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+            try {
+                \Illuminate\Support\Facades\Artisan::call('images:optimize');
+                return "Optimization Complete! <br><br> " . nl2br(\Illuminate\Support\Facades\Artisan::output());
+            } catch (\Exception $e) {
+                return "Optimization Failed: " . $e->getMessage();
+            }
+        })->name('media.optimize')->middleware('role:admin');
 
         // Contact Messages
         Route::get('contact-messages', [\App\Http\Controllers\Admin\AdminContactMessageController::class, 'index'])->name('contact-messages.index')->middleware('permission:manage users');
