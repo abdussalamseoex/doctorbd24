@@ -184,4 +184,188 @@ class AdminMediaController extends Controller
             }
         }
     }
+
+    public function optimizeBatch()
+    {
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+
+        try {
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Please run Fix Server Packages (Composer) first!']);
+        }
+
+        $limit = 20; // process 20 at a time
+        $processed = 0;
+        $logs = [];
+
+        // Hospitals
+        $hospitals = Hospital::all();
+        foreach ($hospitals as $hospital) {
+            if ($processed >= $limit) break;
+            $updates = [];
+            if ($hospital->logo && !str_ends_with($hospital->logo, '.webp')) {
+                $n = $this->runOpt($manager, $hospital->logo, 'hospitals', 800);
+                if ($n) { $updates['logo'] = $n; $processed++; $logs[] = "Optimized Hospital Logo: " . $hospital->id; }
+            }
+            if ($processed < $limit && $hospital->banner && !str_ends_with($hospital->banner, '.webp')) {
+                $n = $this->runOpt($manager, $hospital->banner, 'hospitals/covers', 1200);
+                if ($n) { $updates['banner'] = $n; $processed++; $logs[] = "Optimized Hospital Banner: " . $hospital->id; }
+            }
+            if ($processed < $limit && !empty($hospital->gallery)) {
+                $newGallery = [];
+                $changed = false;
+                foreach ($hospital->gallery as $img) {
+                    if ($processed >= $limit) {
+                        $newGallery[] = $img;
+                        continue;
+                    }
+                    if (!str_ends_with($img, '.webp')) {
+                        $n = $this->runOpt($manager, $img, 'hospitals/gallery', 1200);
+                        if ($n) {
+                            $newGallery[] = $n;
+                            $changed = true;
+                            $processed++;
+                            $logs[] = "Optimized Hospital Gallery Image: " . $hospital->id;
+                            continue;
+                        }
+                    }
+                    $newGallery[] = $img;
+                }
+                if ($changed) $updates['gallery'] = $newGallery;
+            }
+            if (!empty($updates)) $hospital->update($updates);
+        }
+
+        // Doctors
+        if ($processed < $limit) {
+            $doctors = Doctor::all();
+            foreach ($doctors as $doctor) {
+                if ($processed >= $limit) break;
+                $updates = [];
+                if ($doctor->photo && !str_ends_with($doctor->photo, '.webp')) {
+                    $n = $this->runOpt($manager, $doctor->photo, 'doctors', 800);
+                    if ($n) { $updates['photo'] = $n; $processed++; $logs[] = "Optimized Doctor Photo: " . $doctor->id; }
+                }
+                if ($processed < $limit && $doctor->cover_image && !str_ends_with($doctor->cover_image, '.webp')) {
+                    $n = $this->runOpt($manager, $doctor->cover_image, 'doctors/covers', 1200);
+                    if ($n) { $updates['cover_image'] = $n; $processed++; $logs[] = "Optimized Doctor Cover: " . $doctor->id; }
+                }
+                if ($processed < $limit && !empty($doctor->gallery)) {
+                    $newGallery = [];
+                    $changed = false;
+                    foreach ($doctor->gallery as $img) {
+                        if ($processed >= $limit) {
+                            $newGallery[] = $img;
+                            continue;
+                        }
+                        if (!str_ends_with($img, '.webp')) {
+                            $n = $this->runOpt($manager, $img, 'doctors/gallery', 1200);
+                            if ($n) {
+                                $newGallery[] = $n;
+                                $changed = true;
+                                $processed++;
+                                $logs[] = "Optimized Doctor Gallery Image: " . $doctor->id;
+                                continue;
+                            }
+                        }
+                        $newGallery[] = $img;
+                    }
+                    if ($changed) $updates['gallery'] = $newGallery;
+                }
+                if (!empty($updates)) $doctor->update($updates);
+            }
+        }
+
+        // Ambulances
+        if ($processed < $limit) {
+            $ambulances = Ambulance::all();
+            foreach ($ambulances as $ambulance) {
+                if ($processed >= $limit) break;
+                $updates = [];
+                if ($ambulance->logo && !str_ends_with($ambulance->logo, '.webp')) {
+                    $n = $this->runOpt($manager, $ambulance->logo, 'ambulances', 800);
+                    if ($n) { $updates['logo'] = $n; $processed++; $logs[] = "Optimized Ambulance Logo: " . $ambulance->id; }
+                }
+                if ($processed < $limit && $ambulance->cover_image && !str_ends_with($ambulance->cover_image, '.webp')) {
+                    $n = $this->runOpt($manager, $ambulance->cover_image, 'ambulances/covers', 1200);
+                    if ($n) { $updates['cover_image'] = $n; $processed++; $logs[] = "Optimized Ambulance Cover: " . $ambulance->id; }
+                }
+                if ($processed < $limit && !empty($ambulance->gallery)) {
+                    $newGallery = [];
+                    $changed = false;
+                    foreach ($ambulance->gallery as $img) {
+                        if ($processed >= $limit) {
+                            $newGallery[] = $img;
+                            continue;
+                        }
+                        if (!str_ends_with($img, '.webp')) {
+                            $n = $this->runOpt($manager, $img, 'ambulances/gallery', 1200);
+                            if ($n) {
+                                $newGallery[] = $n;
+                                $changed = true;
+                                $processed++;
+                                $logs[] = "Optimized Ambulance Gallery Image: " . $ambulance->id;
+                                continue;
+                            }
+                        }
+                        $newGallery[] = $img;
+                    }
+                    if ($changed) $updates['gallery'] = $newGallery;
+                }
+                if (!empty($updates)) $ambulance->update($updates);
+            }
+        }
+
+        // Blog Posts
+        if ($processed < $limit) {
+            $blogs = BlogPost::all();
+            foreach ($blogs as $blog) {
+                if ($processed >= $limit) break;
+                $updates = [];
+                if ($blog->image && !str_ends_with($blog->image, '.webp')) {
+                    $n = $this->runOpt($manager, $blog->image, 'blog', 1200);
+                    if ($n) { $updates['image'] = $n; $processed++; $logs[] = "Optimized Blog Image: " . $blog->id; }
+                }
+                if (!empty($updates)) $blog->update($updates);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'processed' => $processed,
+            'logs' => $logs
+        ]);
+    }
+
+    private function runOpt($manager, $path, $directory, $maxWidth)
+    {
+        if (!trim($path) || !Storage::disk('public')->exists($path)) {
+            return null;
+        }
+
+        try {
+            $absolutePath = Storage::disk('public')->path($path);
+            $image = $manager->decode($absolutePath);
+
+            $filename = \Illuminate\Support\Str::uuid() . '.webp';
+            $newRelativePath = $directory . '/' . $filename;
+            $newAbsolutePath = Storage::disk('public')->path($newRelativePath);
+
+            if ($maxWidth && $image->width() > $maxWidth) {
+                $image->scaleDown(width: $maxWidth);
+            }
+
+            Storage::disk('public')->makeDirectory($directory);
+            $image->save($newAbsolutePath, quality: 80);
+
+            // Delete old file
+            Storage::disk('public')->delete($path);
+
+            return $newRelativePath;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }

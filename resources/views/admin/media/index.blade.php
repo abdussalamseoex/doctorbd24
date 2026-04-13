@@ -11,10 +11,10 @@
             <h1 class="text-2xl font-bold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">Media Library</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">View, manage, and rename images for SEO.</p>
         <div class="flex items-center gap-3 w-full md:w-auto">
-            <a href="{{ route('admin.media.optimize') }}" target="_blank" onclick="return confirm('This will bulk convert all old JPG/PNG images to WebP. It may take a few minutes. Proceed?')" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition whitespace-nowrap">
+            <button @click="startOptimization" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                Auto-Optimize WebP
-            </a>
+                Auto-Optimize WebP (Batch Process)
+            </button>
 
             <form method="GET" action="{{ route('admin.media.index') }}" class="flex-1 md:w-64">
                 <select name="folder" onchange="this.form.submit()" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-sky-500 focus:border-sky-500">
@@ -145,6 +145,35 @@
             </div>
         </div>
     </template>
+
+    {{-- Optimization Progress Modal --}}
+    <template x-teleport="body">
+        <div x-show="isOptimizing" x-cloak style="z-index: 9999;" class="fixed inset-0 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+                <div x-show="isOptimizing" x-transition.opacity class="fixed inset-0 transition-opacity bg-gray-900/75 dark:bg-black/80"></div>
+                <div x-show="isOptimizing" x-transition class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white dark:bg-gray-900 rounded-xl shadow-xl sm:my-8 sm:align-middle sm:w-full sm:max-w-xl sm:p-6 text-gray-900 dark:text-white border border-gray-100 dark:border-gray-800">
+                    <div>
+                        <h3 class="text-lg font-bold">Image Optimization Progress</h3>
+                        <p class="text-sm text-gray-500 mt-1">Processing images in batches to prevent server timeout.</p>
+                        
+                        <div class="mt-4 flex justify-between items-center bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg">
+                            <span class="font-semibold text-sky-500">Total Optimized:</span>
+                            <span class="font-bold text-xl" x-text="optimizeProcessed">0</span>
+                        </div>
+
+                        <div class="mt-4 bg-gray-900 text-green-400 p-3 rounded-lg h-64 overflow-y-auto font-mono text-xs shadow-inner" id="optLogs">
+                            <template x-for="(log, idx) in optimizeLogs" :key="idx">
+                                <div x-html="log" class="py-1 border-b border-gray-800 last:border-0 border-dashed"></div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="mt-5 sm:mt-6 text-right">
+                        <button type="button" @click="isOptimizing = false; window.location.reload();" class="px-5 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition">Close & Refresh</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 </div>
 
 <script>
@@ -161,6 +190,52 @@ document.addEventListener('alpine:init', () => {
             url: '',
             size: '',
             date: ''
+        },
+
+        isOptimizing: false,
+        optimizeProcessed: 0,
+        optimizeLogs: [],
+        
+        async startOptimization() {
+            if (!confirm('This will bulk convert all old JPG/PNG images to WebP safely in batches. Proceed?')) return;
+            this.isOptimizing = true;
+            this.optimizeProcessed = 0;
+            this.optimizeLogs = ['Starting batch optimization process...'];
+            this.runOptimizationBatch();
+        },
+        
+        runOptimizationBatch() {
+            fetch("{{ route('admin.media.optimize.batch') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.processed > 0) {
+                        this.optimizeProcessed += data.processed;
+                        this.optimizeLogs = [...this.optimizeLogs, ...data.logs];
+                        setTimeout(() => {
+                            let el = document.getElementById('optLogs');
+                            if(el) el.scrollTop = el.scrollHeight;
+                        }, 50);
+                        // trigger next batch automatically
+                        this.runOptimizationBatch();
+                    } else {
+                        this.optimizeLogs.push('<span class="text-emerald-400 font-bold">✅ Check complete! All 100% images are already optimized format WebP!</span>');
+                    }
+                } else {
+                    this.optimizeLogs.push('<span class="text-red-400 font-bold">❌ Error: ' + data.message + '</span>');
+                }
+            })
+            .catch(err => {
+                this.optimizeLogs.push('<span class="text-red-400 font-bold">❌ Network Error. Processing paused. Try clicking Auto-Optimize again to resume.</span>');
+                console.error(err);
+            });
         },
         
         toggleSelect(path) {
