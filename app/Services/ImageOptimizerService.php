@@ -19,7 +19,7 @@ class ImageOptimizerService
      * @param int $quality The WEBP compression quality (0-100)
      * @return string The generated storage path (e.g., 'doctors/uuid.webp')
      */
-    public static function storeAndOptimize(UploadedFile $file, string $directory, ?int $maxWidth = 1200, int $quality = 80): string
+    public static function storeAndOptimize(UploadedFile $file, string $directory, ?int $maxWidth = 1200, int $quality = 80, ?string $seoSlug = null): string
     {
         ini_set('memory_limit', '-1');
         
@@ -27,8 +27,26 @@ class ImageOptimizerService
         Storage::disk('public')->makeDirectory($directory);
 
         // 2. Generate a unique filename with .webp extension
-        $filename = Str::uuid() . '.webp';
+        if (!$seoSlug) {
+            // Use the original filename as the SEO slug base
+            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $seoSlug = Str::slug(Str::limit($originalName, 60, ''));
+            // Fallback in case of completely non-latin names without transliteration matching
+            if (empty($seoSlug)) {
+                $seoSlug = 'image-' . Str::random(5);
+            }
+        }
+
+        $filename = $seoSlug . '.webp';
         $path = $directory . '/' . $filename;
+        
+        $counter = 1;
+        while (Storage::disk('public')->exists($path)) {
+            $filename = $seoSlug . '-' . $counter . '.webp';
+            $path = $directory . '/' . $filename;
+            $counter++;
+        }
+
         $absolutePath = Storage::disk('public')->path($path);
 
         // 3. Process the image using GD Driver

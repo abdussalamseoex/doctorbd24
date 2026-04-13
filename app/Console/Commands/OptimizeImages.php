@@ -40,99 +40,130 @@ class OptimizeImages extends Command
         $manager = new ImageManager(new Driver());
 
         // Hospitals
-        $this->info('Optimizing Hospitals...');
+        $this->info("Optimizing Hospitals...");
         $hospitals = Hospital::all();
         foreach ($hospitals as $hospital) {
             $updates = [];
-            
+            $baseSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($hospital->name, 50, ''));
+
             if ($hospital->logo && !str_ends_with($hospital->logo, '.webp')) {
-                $newPath = $this->optimizeFile($manager, $hospital->logo, 'hospitals', 800);
-                if ($newPath) $updates['logo'] = $newPath;
+                $newPath = $this->optimizeFile($manager, $hospital->logo, 'hospitals', 800, $baseSlug . '-logo');
+                if ($newPath) {
+                    $updates['logo'] = $newPath;
+                }
             }
             if ($hospital->banner && !str_ends_with($hospital->banner, '.webp')) {
-                $newPath = $this->optimizeFile($manager, $hospital->banner, 'hospitals/covers', 1200);
-                if ($newPath) $updates['banner'] = $newPath;
+                $newPath = $this->optimizeFile($manager, $hospital->banner, 'hospitals/covers', 1200, $baseSlug . '-cover');
+                if ($newPath) {
+                    $updates['banner'] = $newPath;
+                }
             }
+            
+            // Handle JSON gallery for hospitals
             if (!empty($hospital->gallery)) {
                 $newGallery = [];
                 $changed = false;
+                $gCount = 1;
                 foreach ($hospital->gallery as $img) {
                     if (!str_ends_with($img, '.webp')) {
-                        $newPath = $this->optimizeFile($manager, $img, 'hospitals/gallery', 1200);
+                        $newPath = $this->optimizeFile($manager, $img, 'hospitals/gallery', 1200, $baseSlug . '-gallery-' . $gCount);
                         if ($newPath) {
                             $newGallery[] = $newPath;
                             $changed = true;
+                            $gCount++;
                             continue;
                         }
                     }
+                    $gCount++;
                     $newGallery[] = $img;
                 }
-                if ($changed) $updates['gallery'] = $newGallery;
+                if ($changed) {
+                    $updates['gallery'] = $newGallery;
+                }
             }
-            
+
             if (!empty($updates)) {
                 $hospital->update($updates);
-                $this->line("Updated hospital: {$hospital->name}");
+                $this->info("Updated Hospital: {$hospital->name}");
             }
         }
 
         // Doctors
-        $this->info('Optimizing Doctors...');
-        // We'll skip chunking for simplicity unless it's huge, but it's fine for CLI
+        $this->info("Optimizing Doctors...");
         $doctors = Doctor::all();
         foreach ($doctors as $doctor) {
             $updates = [];
-            
+            $baseSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($doctor->name, 50, ''));
+
             if ($doctor->photo && !str_ends_with($doctor->photo, '.webp')) {
-                $newPath = $this->optimizeFile($manager, $doctor->photo, 'doctors', 800);
-                if ($newPath) $updates['photo'] = $newPath;
+                $newPath = $this->optimizeFile($manager, $doctor->photo, 'doctors', 800, $baseSlug . '-photo');
+                if ($newPath) {
+                    $updates['photo'] = $newPath;
+                }
             }
             if ($doctor->cover_image && !str_ends_with($doctor->cover_image, '.webp')) {
-                $newPath = $this->optimizeFile($manager, $doctor->cover_image, 'doctors/covers', 1200);
-                if ($newPath) $updates['cover_image'] = $newPath;
+                $newPath = $this->optimizeFile($manager, $doctor->cover_image, 'doctors/covers', 1200, $baseSlug . '-cover');
+                if ($newPath) {
+                    $updates['cover_image'] = $newPath;
+                }
             }
+            
+            // Handle JSON gallery for doctors
             if (!empty($doctor->gallery)) {
                 $newGallery = [];
                 $changed = false;
+                $gCount = 1;
                 foreach ($doctor->gallery as $img) {
                     if (!str_ends_with($img, '.webp')) {
-                        $newPath = $this->optimizeFile($manager, $img, 'doctors/gallery', 1200);
+                        $newPath = $this->optimizeFile($manager, $img, 'doctors/gallery', 1200, $baseSlug . '-gallery-' . $gCount);
                         if ($newPath) {
                             $newGallery[] = $newPath;
                             $changed = true;
+                            $gCount++;
                             continue;
                         }
                     }
+                    $gCount++;
                     $newGallery[] = $img;
                 }
-                if ($changed) $updates['gallery'] = $newGallery;
+                if ($changed) {
+                    $updates['gallery'] = $newGallery;
+                }
             }
-            
+
             if (!empty($updates)) {
                 $doctor->update($updates);
+                $this->info("Updated Doctor: {$doctor->name}");
             }
         }
 
         // Ambulances
-        $this->info('Optimizing Ambulances...');
+        $this->info("Optimizing Ambulances...");
         $ambulances = Ambulance::all();
         foreach ($ambulances as $ambulance) {
             $updates = [];
-            
+            $baseSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($ambulance->name, 50, ''));
+
             if ($ambulance->logo && !str_ends_with($ambulance->logo, '.webp')) {
-                $newPath = $this->optimizeFile($manager, $ambulance->logo, 'ambulances', 800);
-                if ($newPath) $updates['logo'] = $newPath;
+                $newPath = $this->optimizeFile($manager, $ambulance->logo, 'ambulances', 800, $baseSlug . '-logo');
+                if ($newPath) {
+                    $updates['logo'] = $newPath;
+                }
             }
             if ($ambulance->cover_image && !str_ends_with($ambulance->cover_image, '.webp')) {
-                $newPath = $this->optimizeFile($manager, $ambulance->cover_image, 'ambulances/covers', 1200);
-                if ($newPath) $updates['cover_image'] = $newPath;
+                $newPath = $this->optimizeFile($manager, $ambulance->cover_image, 'ambulances/covers', 1200, $baseSlug . '-cover');
+                if ($newPath) {
+                    $updates['cover_image'] = $newPath;
+                }
             }
+            
+            // Handle JSON gallery for ambulances
             if (!empty($ambulance->gallery)) {
                 $newGallery = [];
                 $changed = false;
+                $gCount = 1;
                 foreach ($ambulance->gallery as $img) {
                     if (!str_ends_with($img, '.webp')) {
-                        $newPath = $this->optimizeFile($manager, $img, 'ambulances/gallery', 1200);
                         if ($newPath) {
                             $newGallery[] = $newPath;
                             $changed = true;
@@ -168,7 +199,7 @@ class OptimizeImages extends Command
         $this->info('Optimization Complete!');
     }
 
-    private function optimizeFile($manager, $path, $directory, $maxWidth)
+    private function optimizeFile($manager, $path, $directory, $maxWidth, $seoSlug = null)
     {
         if (!trim($path) || !Storage::disk('public')->exists($path)) {
             return null;
@@ -178,10 +209,24 @@ class OptimizeImages extends Command
             $absolutePath = Storage::disk('public')->path($path);
             $image = $manager->decode($absolutePath);
 
-            $oldFilenameBase = pathinfo($path, PATHINFO_FILENAME);
-            $filename = $oldFilenameBase . '.webp';
+            if ($seoSlug) {
+                $filename = $seoSlug . '.webp';
+            } else {
+                $oldFilenameBase = pathinfo($path, PATHINFO_FILENAME);
+                $filename = $oldFilenameBase . '.webp';
+            }
             
             $newRelativePath = $directory . '/' . $filename;
+            
+            // Handle duplicate names
+            $counter = 1;
+            while (Storage::disk('public')->exists($newRelativePath) && $newRelativePath !== $path) {
+                $fallbackSlug = $seoSlug ? $seoSlug : pathinfo($path, PATHINFO_FILENAME);
+                $filename = $fallbackSlug . '-' . $counter . '.webp';
+                $newRelativePath = $directory . '/' . $filename;
+                $counter++;
+            }
+
             $newAbsolutePath = Storage::disk('public')->path($newRelativePath);
 
             if ($maxWidth && $image->width() > $maxWidth) {
@@ -192,7 +237,9 @@ class OptimizeImages extends Command
             $image->save($newAbsolutePath, quality: 80);
 
             // Delete old file
-            Storage::disk('public')->delete($path);
+            if ($newRelativePath !== $path) {
+                Storage::disk('public')->delete($path);
+            }
 
             return $newRelativePath;
         } catch (\Exception $e) {
