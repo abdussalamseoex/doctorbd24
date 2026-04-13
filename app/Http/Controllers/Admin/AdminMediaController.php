@@ -349,7 +349,9 @@ class AdminMediaController extends Controller
             $absolutePath = Storage::disk('public')->path($path);
             $image = $manager->decode($absolutePath);
 
-            $filename = \Illuminate\Support\Str::uuid() . '.webp';
+            $oldFilenameBase = pathinfo($path, PATHINFO_FILENAME);
+            $filename = $oldFilenameBase . '.webp';
+            
             $newRelativePath = $directory . '/' . $filename;
             $newAbsolutePath = Storage::disk('public')->path($newRelativePath);
 

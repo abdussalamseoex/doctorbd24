@@ -170,7 +170,7 @@ class OptimizeImages extends Command
 
     private function optimizeFile($manager, $path, $directory, $maxWidth)
     {
-        if (!Storage::disk('public')->exists($path)) {
+        if (!trim($path) || !Storage::disk('public')->exists($path)) {
             return null;
         }
 
@@ -178,7 +178,9 @@ class OptimizeImages extends Command
             $absolutePath = Storage::disk('public')->path($path);
             $image = $manager->decode($absolutePath);
 
-            $filename = \Illuminate\Support\Str::uuid() . '.webp';
+            $oldFilenameBase = pathinfo($path, PATHINFO_FILENAME);
+            $filename = $oldFilenameBase . '.webp';
+            
             $newRelativePath = $directory . '/' . $filename;
             $newAbsolutePath = Storage::disk('public')->path($newRelativePath);
 
@@ -194,7 +196,7 @@ class OptimizeImages extends Command
 
             return $newRelativePath;
         } catch (\Exception $e) {
-            $this->error("Failed to process {$path}: " . $e->getMessage());
+            $this->error("Failed {$path}: " . $e->getMessage());
             return null;
         }
     }

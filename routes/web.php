@@ -293,7 +293,20 @@ Route::prefix('admin')
 
 
 
-// â”€â”€ Dynamic Pages (Catch-All) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Legacy Image SEO Redirect Route ────────────────────
+// Catch 404s for .jpg/.png in storage and 301 redirect to .webp version
+Route::get('storage/{path}', function ($path) {
+    if (preg_match('/\.(jpg|jpeg|png)$/i', $path)) {
+        $webpPath = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $path);
+        
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($webpPath)) {
+            return redirect(\Illuminate\Support\Facades\Storage::disk('public')->url($webpPath), 301);
+        }
+    }
+    abort(404);
+})->where('path', '.*');
+
+// ─── Dynamic Pages (Catch-All) ────────────────────────
 // This route must remain at the very bottom
 Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
 

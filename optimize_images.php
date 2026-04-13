@@ -18,15 +18,17 @@ $manager = new ImageManager(new Driver());
 
 function optimizeFile($manager, $path, $directory, $maxWidth) {
     if (!trim($path) || !Storage::disk('public')->exists($path)) {
-        return null;
+        return null; // Skip if invalid or missing
     }
+
     try {
         $absolutePath = Storage::disk('public')->path($path);
         
-        // If it's already a webP, skip or not? Actually we only pass non-webps.
         $image = $manager->decode($absolutePath);
 
-        $filename = \Illuminate\Support\Str::uuid() . '.webp';
+        $oldFilenameBase = pathinfo($path, PATHINFO_FILENAME);
+        $filename = $oldFilenameBase . '.webp';
+        
         $newRelativePath = $directory . '/' . $filename;
         $newAbsolutePath = Storage::disk('public')->path($newRelativePath);
 
@@ -35,13 +37,15 @@ function optimizeFile($manager, $path, $directory, $maxWidth) {
         }
 
         Storage::disk('public')->makeDirectory($directory);
+        
         $image->save($newAbsolutePath, quality: 80);
 
+        // Delete old
         Storage::disk('public')->delete($path);
 
         return $newRelativePath;
     } catch (\Exception $e) {
-        echo "Failed $path: " . $e->getMessage() . "\n";
+        echo "Failed {$path}: " . $e->getMessage() . "\n";
         return null;
     }
 }
