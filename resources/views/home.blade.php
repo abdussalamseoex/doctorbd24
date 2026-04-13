@@ -15,14 +15,14 @@
 ═══════════════════════════════════════ --}}
 @if($homeTopAd)
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-    <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group flex justify-center">
+    <div class="w-full h-[120px] md:h-[150px] bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group flex justify-center border border-gray-200 dark:border-gray-700">
         <span class="absolute top-2 right-2 text-[10px] font-bold uppercase text-gray-400 bg-white/90 backdrop-blur px-2 py-0.5 rounded shadow-sm z-10">Advertisement</span>
         @if($homeTopAd->target_url)
             <a href="{{ $homeTopAd->target_url }}" target="_blank" class="block w-full h-full flex items-center justify-center">
-                <img src="{{ asset('storage/' . $homeTopAd->image_path) }}" alt="{{ $homeTopAd->title ?? 'Advertisement' }}" fetchpriority="high" decoding="async" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
+                <img src="{{ asset('storage/' . $homeTopAd->image_path) }}" alt="{{ $homeTopAd->title ?? 'Advertisement' }}" fetchpriority="high" decoding="async" class="w-full h-full object-contain">
             </a>
         @else
-            <img src="{{ asset('storage/' . $homeTopAd->image_path) }}" alt="{{ $homeTopAd->title ?? 'Advertisement' }}" fetchpriority="high" decoding="async" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
+            <img src="{{ asset('storage/' . $homeTopAd->image_path) }}" alt="{{ $homeTopAd->title ?? 'Advertisement' }}" fetchpriority="high" decoding="async" class="w-full h-full object-contain">
         @endif
     </div>
 </div>
