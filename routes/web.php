@@ -182,7 +182,9 @@ Route::prefix('admin')
         // System optimization route
         Route::get('/optimize-system', function () {
             \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-            \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+                \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            }
             \Illuminate\Support\Facades\Artisan::call('optimize');
             \Illuminate\Support\Facades\Artisan::call('view:cache');
             return redirect()->back()->with('success', 'System optimized and Response Cache flushed successfully! All configuration and views have been cached for maximum performance.');
