@@ -92,13 +92,13 @@ class AdminAmbulanceController extends Controller
         }
 
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('ambulances', 'public');
+            $validated['logo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('logo'), 'ambulances', 800);
         } else {
             unset($validated['logo']);
         }
 
         if ($request->hasFile('cover_image')) {
-            $validated['cover_image'] = $request->file('cover_image')->store('ambulances/covers', 'public');
+            $validated['cover_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('cover_image'), 'ambulances/covers', 1200);
         } else {
             unset($validated['cover_image']);
         }
@@ -106,7 +106,7 @@ class AdminAmbulanceController extends Controller
         if ($request->hasFile('gallery')) {
             $galleryPaths = [];
             foreach ($request->file('gallery') as $file) {
-                $galleryPaths[] = $file->store('ambulances/gallery', 'public');
+                $galleryPaths[] = \App\Services\ImageOptimizerService::storeAndOptimize($file, 'ambulances/gallery', 1200);
             }
             $validated['gallery'] = $galleryPaths;
         } else {
@@ -150,7 +150,7 @@ class AdminAmbulanceController extends Controller
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
             if ($request->hasFile('seo.og_image_file')) {
-                $seoData['og_image'] = $request->file('seo.og_image_file')->store('seo/og', 'public');
+                $seoData['og_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
             }
             $ambulance->updateSeo($seoData);
         }
@@ -207,7 +207,7 @@ class AdminAmbulanceController extends Controller
             if ($ambulance->logo) {
                 Storage::disk('public')->delete($ambulance->logo);
             }
-            $validated['logo'] = $request->file('logo')->store('ambulances', 'public');
+            $validated['logo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('logo'), 'ambulances', 800);
         } elseif ($request->boolean('remove_logo') && $ambulance->logo) {
             Storage::disk('public')->delete($ambulance->logo);
             $validated['logo'] = null;
@@ -217,7 +217,7 @@ class AdminAmbulanceController extends Controller
 
         if ($request->hasFile('cover_image')) {
             if ($ambulance->cover_image) Storage::disk('public')->delete($ambulance->cover_image);
-            $validated['cover_image'] = $request->file('cover_image')->store('ambulances/covers', 'public');
+            $validated['cover_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('cover_image'), 'ambulances/covers', 1200);
         } elseif ($request->boolean('remove_cover_image') && $ambulance->cover_image) {
             Storage::disk('public')->delete($ambulance->cover_image);
             $validated['cover_image'] = null;
@@ -240,7 +240,7 @@ class AdminAmbulanceController extends Controller
 
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
-                $existingGallery[] = $file->store('ambulances/gallery', 'public');
+                $existingGallery[] = \App\Services\ImageOptimizerService::storeAndOptimize($file, 'ambulances/gallery', 1200);
             }
             $validated['gallery'] = $existingGallery;
         } elseif (!isset($validated['gallery'])) {
@@ -276,7 +276,7 @@ class AdminAmbulanceController extends Controller
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
             if ($request->hasFile('seo.og_image_file')) {
-                $seoData['og_image'] = $request->file('seo.og_image_file')->store('seo/og', 'public');
+                $seoData['og_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
             }
             $ambulance->updateSeo($seoData);
         }

@@ -61,7 +61,7 @@ class DoctorProfileController extends Controller
             if ($doctor->photo) {
                 Storage::disk('public')->delete($doctor->photo);
             }
-            $validated['photo'] = $request->file('photo')->store('doctors', 'public');
+            $validated['photo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('photo'), 'doctors', 800);
         } elseif ($request->boolean('remove_photo') && $doctor->photo) {
             Storage::disk('public')->delete($doctor->photo);
             $validated['photo'] = null;
@@ -71,7 +71,7 @@ class DoctorProfileController extends Controller
 
         if ($request->hasFile('cover_image')) {
             if ($doctor->cover_image) Storage::disk('public')->delete($doctor->cover_image);
-            $validated['cover_image'] = $request->file('cover_image')->store('doctors/covers', 'public');
+            $validated['cover_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('cover_image'), 'doctors/covers', 1200);
         } elseif ($request->boolean('remove_cover_image') && $doctor->cover_image) {
             Storage::disk('public')->delete($doctor->cover_image);
             $validated['cover_image'] = null;
@@ -94,7 +94,7 @@ class DoctorProfileController extends Controller
 
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
-                $existingGallery[] = $file->store('doctors/gallery', 'public');
+                $existingGallery[] = \App\Services\ImageOptimizerService::storeAndOptimize($file, 'doctors/gallery', 1200);
             }
             $validated['gallery'] = $existingGallery;
         } elseif (!isset($validated['gallery'])) {

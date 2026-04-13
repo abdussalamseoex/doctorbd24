@@ -27,7 +27,7 @@
                 {{-- Banner Area --}}
                 <div class="h-48 sm:h-64 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 relative overflow-hidden">
                     @if($hospital->banner)
-                        <img src="{{ asset('storage/'.$hospital->banner) }}" alt="{{ $hospital->name }} Banner" class="absolute inset-0 w-full h-full object-cover">
+                        <img loading="lazy" decoding="async" src="{{ asset('storage/'.$hospital->banner) }}" alt="{{ $hospital->name }} Banner" class="absolute inset-0 w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
                     @else
                         <div class="absolute inset-0 opacity-20">
@@ -82,7 +82,7 @@
                     <div class="flex-shrink-0 flex justify-center sm:justify-start -mt-16 sm:-mt-20 z-20 relative">
                         <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-[2rem] bg-white dark:bg-gray-800 shadow-xl p-2 sm:p-3 border-4 sm:border-8 border-white dark:border-gray-800 overflow-hidden group">
                             @if($hospital->logo)
-                                <img src="{{ asset('storage/'.$hospital->logo) }}" alt="{{ $hospital->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                                <img loading="lazy" decoding="async" src="{{ asset('storage/'.$hospital->logo) }}" alt="{{ $hospital->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-6xl bg-gray-50 dark:bg-gray-900 rounded-2xl">🏥</div>
                             @endif
@@ -293,7 +293,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     @foreach($hospital->gallery as $index => $image)
                         <button type="button" @click="activeImage = {{ $index }}; lightboxOpen = true" class="block w-full aspect-square rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group/gallery relative focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
-                            <img src="{{ asset('storage/' . $image) }}" alt="Gallery Image" class="w-full h-full object-cover transition-transform duration-500 group-hover/gallery:scale-110">
+                            <img loading="lazy" decoding="async" src="{{ asset('storage/' . $image) }}" alt="Gallery Image" class="w-full h-full object-cover transition-transform duration-500 group-hover/gallery:scale-110">
                             <div class="absolute inset-0 bg-black/0 group-hover/gallery:bg-black/20 transition-colors flex items-center justify-center">
                                 <svg class="w-8 h-8 text-white opacity-0 group-hover/gallery:opacity-100 transition-opacity drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
                             </div>
@@ -326,7 +326,7 @@
 
                         {{-- Image Container --}}
                         <div class="w-full h-full p-4 sm:p-12 flex items-center justify-center relative" @click.self="lightboxOpen = false">
-                            <img :src="images[activeImage]" class="max-w-full max-h-full object-contain rounded-md shadow-2xl pointer-events-auto" :key="activeImage">
+                            <img loading="lazy" decoding="async" :src="images[activeImage]" class="max-w-full max-h-full object-contain rounded-md shadow-2xl pointer-events-auto" :key="activeImage">
                         </div>
                     </div>
                 </template>
@@ -530,10 +530,10 @@
                     <span class="absolute top-2 right-2 text-[10px] font-bold uppercase text-gray-400 bg-white/90 backdrop-blur px-2 py-0.5 rounded shadow-sm z-10">Ad</span>
                     @if($sidebarTopAd->target_url)
                         <a href="{{ $sidebarTopAd->target_url }}" target="_blank" class="block w-full h-full flex items-center justify-center">
-                            <img src="{{ asset('storage/' . $sidebarTopAd->image_path) }}" alt="{{ $sidebarTopAd->title }}" class="w-full h-full max-h-[400px] object-contain">
+                            <img loading="lazy" decoding="async" src="{{ asset('storage/' . $sidebarTopAd->image_path) }}" alt="{{ $sidebarTopAd->title }}" class="w-full h-full max-h-[400px] object-contain">
                         </a>
                     @else
-                        <img src="{{ asset('storage/' . $sidebarTopAd->image_path) }}" alt="{{ $sidebarTopAd->title }}" class="w-full h-full max-h-[400px] object-contain">
+                        <img loading="lazy" decoding="async" src="{{ asset('storage/' . $sidebarTopAd->image_path) }}" alt="{{ $sidebarTopAd->title }}" class="w-full h-full max-h-[400px] object-contain">
                     @endif
                 </div>
                 @else
@@ -551,10 +551,10 @@
                     <span class="absolute top-2 right-2 text-[10px] font-bold uppercase text-sky-500 bg-white/90 backdrop-blur px-2 py-0.5 rounded shadow-sm z-10">Sponsored</span>
                     @if($sidebarBottomAd->target_url)
                         <a href="{{ $sidebarBottomAd->target_url }}" target="_blank" class="block w-full h-full flex items-center justify-center">
-                            <img src="{{ asset('storage/' . $sidebarBottomAd->image_path) }}" alt="{{ $sidebarBottomAd->title }}" class="w-full h-full max-h-[400px] object-contain">
+                            <img loading="lazy" decoding="async" src="{{ asset('storage/' . $sidebarBottomAd->image_path) }}" alt="{{ $sidebarBottomAd->title }}" class="w-full h-full max-h-[400px] object-contain">
                         </a>
                     @else
-                        <img src="{{ asset('storage/' . $sidebarBottomAd->image_path) }}" alt="{{ $sidebarBottomAd->title }}" class="w-full h-full max-h-[400px] object-contain">
+                        <img loading="lazy" decoding="async" src="{{ asset('storage/' . $sidebarBottomAd->image_path) }}" alt="{{ $sidebarBottomAd->title }}" class="w-full h-full max-h-[400px] object-contain">
                     @endif
                 </div>
                 @else
@@ -586,10 +586,10 @@
         <span class="absolute top-2 right-2 text-[10px] font-bold uppercase text-gray-500 bg-white/80 dark:bg-gray-900/80 backdrop-blur px-2 py-0.5 rounded shadow-sm z-10">Advertisement</span>
         @if($profileBottomAd->target_url)
             <a href="{{ $profileBottomAd->target_url }}" target="_blank" class="block w-full h-full flex items-center justify-center">
-                <img src="{{ asset('storage/' . $profileBottomAd->image_path) }}" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
+                <img loading="lazy" decoding="async" src="{{ asset('storage/' . $profileBottomAd->image_path) }}" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
             </a>
         @else
-            <img src="{{ asset('storage/' . $profileBottomAd->image_path) }}" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
+            <img loading="lazy" decoding="async" src="{{ asset('storage/' . $profileBottomAd->image_path) }}" class="w-full h-full max-h-[120px] md:max-h-[150px] object-contain">
         @endif
     </div>
     @endif

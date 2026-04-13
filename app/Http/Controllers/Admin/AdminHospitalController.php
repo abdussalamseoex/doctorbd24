@@ -97,13 +97,13 @@ class AdminHospitalController extends Controller
         $validated['opening_hours'] = $this->parseJsonField($request->input('opening_hours'));
 
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('hospitals', 'public');
+            $validated['logo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('logo'), 'hospitals', 800);
         } else {
             unset($validated['logo']);
         }
 
         if ($request->hasFile('banner')) {
-            $validated['banner'] = $request->file('banner')->store('hospitals/covers', 'public');
+            $validated['banner'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('banner'), 'hospitals/covers', 1200);
         } else {
             unset($validated['banner']);
         }
@@ -111,7 +111,7 @@ class AdminHospitalController extends Controller
         if ($request->hasFile('gallery')) {
             $galleryPaths = [];
             foreach ($request->file('gallery') as $file) {
-                $galleryPaths[] = $file->store('hospitals/gallery', 'public');
+                $galleryPaths[] = \App\Services\ImageOptimizerService::storeAndOptimize($file, 'hospitals/gallery', 1200);
             }
             $validated['gallery'] = $galleryPaths;
         } else {
@@ -155,7 +155,7 @@ class AdminHospitalController extends Controller
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
             if ($request->hasFile('seo.og_image_file')) {
-                $seoData['og_image'] = $request->file('seo.og_image_file')->store('seo/og', 'public');
+                $seoData['og_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
             }
             $hospital->updateSeo($seoData);
         }
@@ -212,7 +212,7 @@ class AdminHospitalController extends Controller
             if ($hospital->logo) {
                 Storage::disk('public')->delete($hospital->logo);
             }
-            $validated['logo'] = $request->file('logo')->store('hospitals', 'public');
+            $validated['logo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('logo'), 'hospitals', 800);
         } elseif ($request->boolean('remove_logo') && $hospital->logo) {
             Storage::disk('public')->delete($hospital->logo);
             $validated['logo'] = null;
@@ -222,7 +222,7 @@ class AdminHospitalController extends Controller
 
         if ($request->hasFile('banner')) {
             if ($hospital->banner) Storage::disk('public')->delete($hospital->banner);
-            $validated['banner'] = $request->file('banner')->store('hospitals/covers', 'public');
+            $validated['banner'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('banner'), 'hospitals/covers', 1200);
         } elseif ($request->boolean('remove_banner') && $hospital->banner) {
             Storage::disk('public')->delete($hospital->banner);
             $validated['banner'] = null;
@@ -245,7 +245,7 @@ class AdminHospitalController extends Controller
 
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
-                $existingGallery[] = $file->store('hospitals/gallery', 'public');
+                $existingGallery[] = \App\Services\ImageOptimizerService::storeAndOptimize($file, 'hospitals/gallery', 1200);
             }
             $validated['gallery'] = $existingGallery;
         } elseif (!isset($validated['gallery'])) {
@@ -281,7 +281,7 @@ class AdminHospitalController extends Controller
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
             if ($request->hasFile('seo.og_image_file')) {
-                $seoData['og_image'] = $request->file('seo.og_image_file')->store('seo/og', 'public');
+                $seoData['og_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
             }
             $hospital->updateSeo($seoData);
         }

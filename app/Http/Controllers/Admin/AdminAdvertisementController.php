@@ -31,7 +31,7 @@ class AdminAdvertisementController extends Controller
             'is_active'  => 'boolean'
         ]);
 
-        $path = $request->file('image')->store('advertisements', 'public');
+        $path = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('image'), 'advertisements', 1200);
 
         Advertisement::create([
             'title'      => $request->title,
@@ -66,7 +66,7 @@ class AdminAdvertisementController extends Controller
             if (Storage::disk('public')->exists($advertisement->image_path)) {
                 Storage::disk('public')->delete($advertisement->image_path);
             }
-            $advertisement->image_path = $request->file('image')->store('advertisements', 'public');
+            $advertisement->image_path = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('image'), 'advertisements', 1200);
         }
 
         $advertisement->update([

@@ -164,13 +164,13 @@ class AdminDoctorController extends Controller
         $validated['featured'] = $request->boolean('featured');
 
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('doctors', 'public');
+            $validated['photo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('photo'), 'doctors', 800);
         } else {
             unset($validated['photo']);
         }
 
         if ($request->hasFile('cover_image')) {
-            $validated['cover_image'] = $request->file('cover_image')->store('doctors/covers', 'public');
+            $validated['cover_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('cover_image'), 'doctors/covers', 1200);
         } else {
             unset($validated['cover_image']);
         }
@@ -178,7 +178,7 @@ class AdminDoctorController extends Controller
         if ($request->hasFile('gallery')) {
             $galleryPaths = [];
             foreach ($request->file('gallery') as $file) {
-                $galleryPaths[] = $file->store('doctors/gallery', 'public');
+                $galleryPaths[] = \App\Services\ImageOptimizerService::storeAndOptimize($file, 'doctors/gallery', 1200);
             }
             $validated['gallery'] = $galleryPaths;
         } else {
@@ -207,7 +207,7 @@ class AdminDoctorController extends Controller
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
             if ($request->hasFile('seo.og_image_file')) {
-                $seoData['og_image'] = $request->file('seo.og_image_file')->store('seo/og', 'public');
+                $seoData['og_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
             }
             $doctor->updateSeo($seoData);
         }
@@ -271,7 +271,7 @@ class AdminDoctorController extends Controller
             if ($doctor->photo) {
                 Storage::disk('public')->delete($doctor->photo);
             }
-            $validated['photo'] = $request->file('photo')->store('doctors', 'public');
+            $validated['photo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('photo'), 'doctors', 800);
         } elseif ($request->boolean('remove_photo') && $doctor->photo) {
             Storage::disk('public')->delete($doctor->photo);
             $validated['photo'] = null;
@@ -281,7 +281,7 @@ class AdminDoctorController extends Controller
 
         if ($request->hasFile('cover_image')) {
             if ($doctor->cover_image) Storage::disk('public')->delete($doctor->cover_image);
-            $validated['cover_image'] = $request->file('cover_image')->store('doctors/covers', 'public');
+            $validated['cover_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('cover_image'), 'doctors/covers', 1200);
         } elseif ($request->boolean('remove_cover_image') && $doctor->cover_image) {
             Storage::disk('public')->delete($doctor->cover_image);
             $validated['cover_image'] = null;
@@ -304,7 +304,7 @@ class AdminDoctorController extends Controller
 
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
-                $existingGallery[] = $file->store('doctors/gallery', 'public');
+                $existingGallery[] = \App\Services\ImageOptimizerService::storeAndOptimize($file, 'doctors/gallery', 1200);
             }
             $validated['gallery'] = $existingGallery;
         } elseif (!isset($validated['gallery'])) {
@@ -330,7 +330,7 @@ class AdminDoctorController extends Controller
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
             if ($request->hasFile('seo.og_image_file')) {
-                $seoData['og_image'] = $request->file('seo.og_image_file')->store('seo/og', 'public');
+                $seoData['og_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
             }
             $doctor->updateSeo($seoData);
         }

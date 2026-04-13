@@ -50,7 +50,7 @@ class HospitalProfileController extends Controller
             if ($hospital->logo) {
                 Storage::disk('public')->delete($hospital->logo);
             }
-            $validated['logo'] = $request->file('logo')->store('hospitals/logos', 'public');
+            $validated['logo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('logo'), 'hospitals/logos', 800);
         } elseif ($request->boolean('remove_logo') && $hospital->logo) {
             Storage::disk('public')->delete($hospital->logo);
             $validated['logo'] = null;

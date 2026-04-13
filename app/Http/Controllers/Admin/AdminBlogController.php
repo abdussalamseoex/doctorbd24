@@ -50,7 +50,7 @@ class AdminBlogController extends Controller
         $validated['published_at'] = $validated['published'] ? ($validated['published_at'] ?? now()) : null;
         
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('blog', 'public');
+            $validated['image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('image'), 'blog', 1200);
         }
 
 
@@ -90,7 +90,7 @@ class AdminBlogController extends Controller
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
             if ($request->hasFile('seo.og_image_file')) {
-                $seoData['og_image'] = $request->file('seo.og_image_file')->store('seo/og', 'public');
+                $seoData['og_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
             }
             $post->updateSeo($seoData);
         }
@@ -135,7 +135,7 @@ class AdminBlogController extends Controller
 
         if ($request->hasFile('image')) {
             if ($blogPost->image) Storage::disk('public')->delete($blogPost->image);
-            $validated['image'] = $request->file('image')->store('blog', 'public');
+            $validated['image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('image'), 'blog', 1200);
         } elseif ($request->boolean('remove_image') && $blogPost->image) {
             Storage::disk('public')->delete($blogPost->image);
             $validated['image'] = null;
@@ -173,7 +173,7 @@ class AdminBlogController extends Controller
                 if ($blogPost->seoMeta && $blogPost->seoMeta->og_image && !Str::startsWith($blogPost->seoMeta->og_image, 'http')) {
                     Storage::disk('public')->delete($blogPost->seoMeta->og_image);
                 }
-                $seoData['og_image'] = $request->file('seo.og_image_file')->store('seo/og', 'public');
+                $seoData['og_image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
             }
             $blogPost->updateSeo($seoData);
         }

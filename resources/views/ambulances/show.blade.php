@@ -22,7 +22,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden relative">
                 <div class="h-48 md:h-64 bg-gradient-to-r from-red-500 to-rose-600 relative overflow-hidden">
                     @if($ambulance->cover_image)
-                        <img src="{{ asset('storage/' . $ambulance->cover_image) }}" alt="{{ $ambulance->provider_name }} Cover" class="absolute inset-0 w-full h-full object-cover">
+                        <img loading="lazy" decoding="async" src="{{ asset('storage/' . $ambulance->cover_image) }}" alt="{{ $ambulance->provider_name }} Cover" class="absolute inset-0 w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/10"></div>
                     @endif
                 </div>
@@ -31,7 +31,7 @@
                     {{-- Icon/Avatar --}}
                     <div class="w-24 h-24 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white dark:border-gray-800 shadow-md flex items-center justify-center text-4xl flex-shrink-0 overflow-hidden">
                         @if($ambulance->logo)
-                            <img src="{{ asset('storage/' . $ambulance->logo) }}" alt="{{ $ambulance->provider_name }}" class="w-full h-full object-cover">
+                            <img loading="lazy" decoding="async" src="{{ asset('storage/' . $ambulance->logo) }}" alt="{{ $ambulance->provider_name }}" class="w-full h-full object-cover">
                         @else
                             🚑
                         @endif
@@ -207,7 +207,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     @foreach($ambulance->gallery as $index => $image)
                         <button type="button" @click="activeImage = {{ $index }}; lightboxOpen = true" class="block w-full aspect-square rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group/gallery relative focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
-                            <img src="{{ asset('storage/' . $image) }}" alt="Gallery Image" class="w-full h-full object-cover transition-transform duration-500 group-hover/gallery:scale-110">
+                            <img loading="lazy" decoding="async" src="{{ asset('storage/' . $image) }}" alt="Gallery Image" class="w-full h-full object-cover transition-transform duration-500 group-hover/gallery:scale-110">
                             <div class="absolute inset-0 bg-black/0 group-hover/gallery:bg-black/20 transition-colors flex items-center justify-center">
                                 <svg class="w-8 h-8 text-white opacity-0 group-hover/gallery:opacity-100 transition-opacity drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
                             </div>
@@ -240,7 +240,7 @@
 
                         {{-- Image Container --}}
                         <div class="w-full h-full p-4 sm:p-12 flex items-center justify-center relative" @click.self="lightboxOpen = false">
-                            <img :src="images[activeImage]" class="max-w-full max-h-full object-contain rounded-md shadow-2xl pointer-events-auto" :key="activeImage">
+                            <img loading="lazy" decoding="async" :src="images[activeImage]" class="max-w-full max-h-full object-contain rounded-md shadow-2xl pointer-events-auto" :key="activeImage">
                         </div>
                     </div>
                 </template>
