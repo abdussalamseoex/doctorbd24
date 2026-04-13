@@ -166,6 +166,20 @@ class SystemUpdaterController extends Controller
                 throw new Exception("Failed to open downloaded ZIP package.");
             }
 
+            $outputLog .= "> Running Composer Install (Updating Packages)...\n";
+            try {
+                putenv('COMPOSER_HOME=' . storage_path('app'));
+                $composerPath = file_exists(base_path('composer.phar')) ? 'php ' . base_path('composer.phar') : 'composer';
+                $command = "cd " . escapeshellarg(base_path()) . " && {$composerPath} install --no-dev --optimize-autoloader 2>&1";
+                exec($command, $composerOutput, $composerCode);
+                $outputLog .= implode("\n", $composerOutput) . "\n";
+                if ($composerCode !== 0) {
+                    $outputLog .= "⚠️ Composer install had warnings or isn't supported via script on this server.\n";
+                }
+            } catch (\Exception $e) {
+                $outputLog .= "⚠️ Failed to run composer: " . $e->getMessage() . "\n";
+            }
+
             $outputLog .= "> Running Database Migrations...\n";
             Artisan::call('migrate', ['--force' => true]);
             $outputLog .= Artisan::output() . "\n";
