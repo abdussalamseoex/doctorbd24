@@ -138,6 +138,11 @@ async function generateAiContent(promptType, targetSelector, btnElement) {
                 let editorId = targetSelector.split(':')[1];
                 if (typeof tinymce !== 'undefined' && tinymce.get(editorId)) {
                     tinymce.get(editorId).setContent(data.content);
+                } else {
+                    let target = document.getElementById(editorId) || document.querySelector(targetSelector);
+                    if (target) {
+                        target.value = data.content;
+                    }
                 }
             } else {
                 let target = null;

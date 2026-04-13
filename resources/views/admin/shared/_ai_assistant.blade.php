@@ -501,7 +501,7 @@ window.aiSidebarGenerate = async function() {
                     }
                 }
                 
-                if(tinymce.get('ai-result')) {
+                if(typeof tinymce !== 'undefined' && tinymce.get('ai-result')) {
                     tinymce.get('ai-result').setContent(previewHtml);
                 } else {
                     resultBox.value = previewHtml;
@@ -516,7 +516,7 @@ window.aiSidebarGenerate = async function() {
             } else {
                 // Normal insert or AI failed to output valid JSON for Mass Generate
                 let rawContent = (typeof data.content === 'object') ? JSON.stringify(data.content) : data.content;
-                if(tinymce.get('ai-result')) {
+                if(typeof tinymce !== 'undefined' && tinymce.get('ai-result')) {
                     tinymce.get('ai-result').setContent(rawContent);
                 } else {
                     resultBox.value = rawContent;
@@ -551,7 +551,7 @@ window.aiSidebarGenerate = async function() {
 };
 
 window.aiSidebarCopy = function() {
-    let text = tinymce.get('ai-result') ? tinymce.get('ai-result').getContent() : document.getElementById('ai-result').value;
+    let text = (typeof tinymce !== 'undefined' && tinymce.get('ai-result')) ? tinymce.get('ai-result').getContent() : document.getElementById('ai-result').value;
     navigator.clipboard.writeText(text);
     window.aiSidebarShowSuccess('Copied HTML to clipboard!');
 };
@@ -565,7 +565,7 @@ window.aiSidebarInsert = function() {
     
     // We only insert manually into the first checked field, if multiple were checked, they should use mass generation.
     const selectedField = checkedBoxes[0].value;
-    const result = tinymce.get('ai-result') ? tinymce.get('ai-result').getContent() : document.getElementById('ai-result').value;
+    const result = (typeof tinymce !== 'undefined' && tinymce.get('ai-result')) ? tinymce.get('ai-result').getContent() : document.getElementById('ai-result').value;
 
     if (!result) return;
     
