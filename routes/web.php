@@ -250,6 +250,11 @@ Route::prefix('admin')
 
         // Advertisements
         Route::resource('advertisements', \App\Http\Controllers\Admin\AdminAdvertisementController::class)->middleware('permission:manage settings');
+        
+        // Media Library
+        Route::get('media', [\App\Http\Controllers\Admin\AdminMediaController::class, 'index'])->name('media.index')->middleware('role:admin');
+        Route::post('media/rename', [\App\Http\Controllers\Admin\AdminMediaController::class, 'rename'])->name('media.rename')->middleware('role:admin');
+        Route::post('media/bulk-delete', [\App\Http\Controllers\Admin\AdminMediaController::class, 'bulkDelete'])->name('media.bulk-delete')->middleware('role:admin');
 
         // Contact Messages
         Route::get('contact-messages', [\App\Http\Controllers\Admin\AdminContactMessageController::class, 'index'])->name('contact-messages.index')->middleware('permission:manage users');
