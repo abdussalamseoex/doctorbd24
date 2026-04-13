@@ -164,6 +164,14 @@ Route::prefix('admin')
     ->group(function () {
         Route::get('/', \App\Http\Controllers\Admin\AdminDashboardController::class)->name('dashboard');
 
+        // System optimization route
+        Route::get('/optimize-system', function () {
+            \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+            \Illuminate\Support\Facades\Artisan::call('optimize');
+            \Illuminate\Support\Facades\Artisan::call('view:cache');
+            return redirect()->back()->with('success', 'System optimized successfully! All configuration and views have been cached for maximum performance.');
+        })->name('optimize-system')->middleware('permission:manage settings');
+
 
         // Doctors
         Route::get('doctors/import-progress', [\App\Http\Controllers\Admin\AdminDoctorController::class, 'importProgress'])->name('doctors.import-progress')->middleware('permission:manage doctors');

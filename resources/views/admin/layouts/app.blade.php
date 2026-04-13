@@ -152,6 +152,15 @@
                 <h1 class="font-bold text-gray-700 dark:text-gray-200 text-sm md:text-base">@yield('title', 'Dashboard')</h1>
             </div>
             <div class="flex items-center gap-3">
+                {{-- Turbo Optimize Server Button --}}
+                @if(auth()->user()->hasRole('admin'))
+                <a href="{{ route('admin.optimize-system') }}" 
+                   class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-800/40 transition-colors font-medium text-xs shadow-sm" title="Turbo Optimize Server Caching">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Turbo Optimize
+                </a>
+                @endif
+
                 {{-- AI Assistant Topbar Trigger --}}
                 <button @click="$dispatch('open-ai-assistant')" id="topbar-ai-btn"
                         class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-800/40 transition-colors font-medium text-xs shadow-sm" title="AI Assistant">
