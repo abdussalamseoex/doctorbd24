@@ -34,6 +34,7 @@ class OptimizeImages extends Command
      */
     public function handle()
     {
+        ini_set('memory_limit', '-1');
         $this->info('Starting image optimization...');
         
         $manager = new ImageManager(new Driver());
@@ -112,6 +113,58 @@ class OptimizeImages extends Command
             }
         }
 
+        // Ambulances
+        $this->info('Optimizing Ambulances...');
+        $ambulances = Ambulance::all();
+        foreach ($ambulances as $ambulance) {
+            $updates = [];
+            
+            if ($ambulance->logo && !str_ends_with($ambulance->logo, '.webp')) {
+                $newPath = $this->optimizeFile($manager, $ambulance->logo, 'ambulances', 800);
+                if ($newPath) $updates['logo'] = $newPath;
+            }
+            if ($ambulance->cover_image && !str_ends_with($ambulance->cover_image, '.webp')) {
+                $newPath = $this->optimizeFile($manager, $ambulance->cover_image, 'ambulances/covers', 1200);
+                if ($newPath) $updates['cover_image'] = $newPath;
+            }
+            if (!empty($ambulance->gallery)) {
+                $newGallery = [];
+                $changed = false;
+                foreach ($ambulance->gallery as $img) {
+                    if (!str_ends_with($img, '.webp')) {
+                        $newPath = $this->optimizeFile($manager, $img, 'ambulances/gallery', 1200);
+                        if ($newPath) {
+                            $newGallery[] = $newPath;
+                            $changed = true;
+                            continue;
+                        }
+                    }
+                    $newGallery[] = $img;
+                }
+                if ($changed) $updates['gallery'] = $newGallery;
+            }
+            
+            if (!empty($updates)) {
+                $ambulance->update($updates);
+            }
+        }
+
+        // Blog Posts
+        $this->info('Optimizing Blog Posts...');
+        $blogs = BlogPost::all();
+        foreach ($blogs as $blog) {
+            $updates = [];
+            
+            if ($blog->image && !str_ends_with($blog->image, '.webp')) {
+                $newPath = $this->optimizeFile($manager, $blog->image, 'blog', 1200);
+                if ($newPath) $updates['image'] = $newPath;
+            }
+            
+            if (!empty($updates)) {
+                $blog->update($updates);
+            }
+        }
+
         $this->info('Optimization Complete!');
     }
 
@@ -123,7 +176,7 @@ class OptimizeImages extends Command
 
         try {
             $absolutePath = Storage::disk('public')->path($path);
-            $image = $manager->read($absolutePath);
+            $image = $manager->decode($absolutePath);
 
             $filename = \Illuminate\Support\Str::uuid() . '.webp';
             $newRelativePath = $directory . '/' . $filename;
@@ -134,7 +187,7 @@ class OptimizeImages extends Command
             }
 
             Storage::disk('public')->makeDirectory($directory);
-            $image->toWebp(80)->save($newAbsolutePath);
+            $image->save($newAbsolutePath, quality: 80);
 
             // Delete old file
             Storage::disk('public')->delete($path);
