@@ -266,37 +266,6 @@ Route::prefix('admin')
             }
         })->name('media.optimize')->middleware('role:admin');
 
-        Route::get('media/composer-install', function () {
-            ini_set('memory_limit', '-1');
-            set_time_limit(0);
-            
-            $basePath = base_path();
-            $composerFile = $basePath . '/composer.phar';
-            $output = "<h2>Starting Composer Install Process...</h2><br>";
-            
-            try {
-                if (!file_exists($composerFile)) {
-                    $output .= "Downloading composer.phar from getcomposer.org...<br>";
-                    file_put_contents($composerFile, file_get_contents('https://getcomposer.org/download/latest-stable/composer.phar'));
-                    $output .= "Composer downloaded successfully.<br><br>";
-                }
-                
-                putenv('COMPOSER_HOME=' . storage_path('framework/cache'));
-                
-                $output .= "<b>Installing missing packages (intervention/image)... Please wait.</b><br>";
-                $command = "cd " . escapeshellarg($basePath) . " && php composer.phar install --no-dev --optimize-autoloader 2>&1";
-                $result = shell_exec($command);
-                
-                $output .= "<pre style='background:#111;color:#0f0;padding:15px;border-radius:8px;'>" . htmlspecialchars($result) . "</pre>";
-                $output .= "<h3>✅ Done! Packages installed successfully!</h3>";
-                $output .= "<p>You can now close this tab and click the <b>Auto-Optimize WebP</b> button again!</p>";
-                
-                return $output;
-            } catch (\Exception $e) {
-                return "Error: " . $e->getMessage();
-            }
-        })->name('media.composer')->middleware('role:admin');
-
         // Contact Messages
         Route::get('contact-messages', [\App\Http\Controllers\Admin\AdminContactMessageController::class, 'index'])->name('contact-messages.index')->middleware('permission:manage users');
         Route::get('contact-messages/{contact_message}', [\App\Http\Controllers\Admin\AdminContactMessageController::class, 'show'])->name('contact-messages.show')->middleware('permission:manage users');
