@@ -38,8 +38,17 @@ class AdminHospitalController extends Controller
             });
         }
 
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $counts = [
+            'published' => Hospital::where('status', 'published')->count(),
+            'draft'     => Hospital::where('status', 'draft')->count(),
+        ];
+
         $hospitals = $query->latest()->paginate(20)->withQueryString();
-        return view('admin.hospitals.index', compact('hospitals'));
+        return view('admin.hospitals.index', compact('hospitals', 'counts'));
     }
 
     public function create()

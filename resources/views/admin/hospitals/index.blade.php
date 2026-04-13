@@ -24,8 +24,12 @@
                 <x-admin.location-filter :showHospital="false" />
 
                 <div class="flex border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+                    <a href="{{ route('admin.hospitals.index', array_merge(request()->query(), ['status' => 'draft'])) }}" 
+                       class="px-3 py-2 text-xs font-semibold hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/20 {{ request('status') === 'draft' ? 'bg-fuchsia-100 dark:bg-fuchsia-900/40 text-fuchsia-700 dark:text-fuchsia-400' : 'text-gray-500' }}">Drafts ({{ $counts['draft'] ?? 0 }})</a>
+                    <a href="{{ route('admin.hospitals.index', array_merge(request()->query(), ['status' => 'published'])) }}" 
+                       class="px-3 py-2 text-xs font-semibold border-l border-gray-200 dark:border-gray-600 hover:bg-sky-50 dark:hover:bg-sky-900/20 {{ request('status') === 'published' ? 'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-400' : 'text-gray-500' }}">Published ({{ $counts['published'] ?? 0 }})</a>
                     <a href="{{ route('admin.hospitals.index', array_merge(request()->query(), ['featured' => 1])) }}" 
-                       class="px-3 py-2 text-xs font-semibold hover:bg-amber-50 dark:hover:bg-amber-900/20 {{ request('featured') ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' : 'text-gray-500' }}">Featured</a>
+                       class="px-3 py-2 text-xs font-semibold border-l border-gray-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 {{ request('featured') ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' : 'text-gray-500' }}">Featured</a>
                     <a href="{{ route('admin.hospitals.index', array_merge(request()->query(), ['verified' => 1])) }}" 
                        class="px-3 py-2 text-xs font-semibold border-l border-gray-200 dark:border-gray-600 hover:bg-green-50 dark:hover:bg-green-900/20 {{ request('verified') == '1' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400' : 'text-gray-500' }}">Verified</a>
                 </div>
@@ -128,6 +132,12 @@
                     <td class="px-4 py-3 hidden md:table-cell text-xs text-gray-500 dark:text-gray-400">{{ $hospital->phone ?? '—' }}</td>
                     <td class="px-4 py-3">
                         <div class="flex gap-1 flex-wrap">
+                            @if($hospital->status === 'draft')
+                                <span class="px-2 py-0.5 rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-400 text-xs font-medium border border-fuchsia-200 dark:border-fuchsia-800">Draft</span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 text-xs font-medium">Published</span>
+                            @endif
+
                             @if($hospital->verified)
                                 <span class="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">✓ Verified</span>
                             @else
