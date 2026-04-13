@@ -136,7 +136,7 @@
                                 <svg class="w-3 h-3 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
 
-                            <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                            <div x-cloak style="display: none;" x-show="open" x-transition:enter="transition ease-out duration-100"
                                 x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 z-50">
                                 @if(!auth()->user()->hasAnyRole(['admin', 'doctor', 'hospital', 'editor', 'moderator']))
@@ -192,7 +192,7 @@
             </div>
 
             {{-- Mobile menu --}}
-            <div x-show="mobileOpen" x-transition class="md:hidden pb-4 pt-2 space-y-1 border-t border-gray-200 dark:border-gray-700 mt-2">
+            <div x-cloak style="display: none;" x-show="mobileOpen" x-transition class="md:hidden pb-4 pt-2 space-y-1 border-t border-gray-200 dark:border-gray-700 mt-2">
                 <a href="{{ route('doctors.index') }}" class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('doctors.*') ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-sky-50 dark:hover:bg-gray-800' }}">
                     {{ __('Doctors') }}
                 </a>
