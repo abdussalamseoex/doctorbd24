@@ -75,8 +75,9 @@
     @endif
 
     {{-- File View & Detail Modal --}}
-    <div x-show="isMediaModalOpen" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
+    <template x-teleport="body">
+        <div x-show="isMediaModalOpen" style="display: none;" class="fixed inset-0 z-[999] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
             <div x-show="isMediaModalOpen" x-transition.opacity class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm transition-opacity" @click="closeMediaModal"></div>
             
             <div x-show="isMediaModalOpen" x-transition class="relative inline-block bg-white dark:bg-gray-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 align-middle w-full max-w-4xl border border-gray-100 dark:border-gray-800">
@@ -140,7 +141,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 </div>
 
 <script>
