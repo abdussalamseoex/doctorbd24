@@ -58,6 +58,22 @@ foreach ($hospitals as $hospital) {
         $n = optimizeFile($manager, $hospital->banner, 'hospitals/covers', 1200);
         if ($n) $updates['banner'] = $n;
     }
+    if (!empty($hospital->gallery)) {
+        $newGallery = [];
+        $changed = false;
+        foreach ($hospital->gallery as $img) {
+            if (!str_ends_with($img, '.webp')) {
+                $n = optimizeFile($manager, $img, 'hospitals/gallery', 1200);
+                if ($n) {
+                    $newGallery[] = $n;
+                    $changed = true;
+                    continue;
+                }
+            }
+            $newGallery[] = $img;
+        }
+        if ($changed) $updates['gallery'] = $newGallery;
+    }
     if (!empty($updates)) {
         $hospital->update($updates);
         echo "Updated hospital: {$hospital->name}\n";
@@ -76,9 +92,73 @@ foreach ($doctors as $doctor) {
         $n = optimizeFile($manager, $doctor->cover_image, 'doctors/covers', 1200);
         if ($n) $updates['cover_image'] = $n;
     }
+    if (!empty($doctor->gallery)) {
+        $newGallery = [];
+        $changed = false;
+        foreach ($doctor->gallery as $img) {
+            if (!str_ends_with($img, '.webp')) {
+                $n = optimizeFile($manager, $img, 'doctors/gallery', 1200);
+                if ($n) {
+                    $newGallery[] = $n;
+                    $changed = true;
+                    continue;
+                }
+            }
+            $newGallery[] = $img;
+        }
+        if ($changed) $updates['gallery'] = $newGallery;
+    }
     if (!empty($updates)) {
         $doctor->update($updates);
         echo "Updated doctor: {$doctor->name}\n";
+    }
+}
+
+// Ambulances
+$ambulances = App\Models\Ambulance::all();
+foreach ($ambulances as $ambulance) {
+    $updates = [];
+    if ($ambulance->logo && !str_ends_with($ambulance->logo, '.webp')) {
+        $n = optimizeFile($manager, $ambulance->logo, 'ambulances', 800);
+        if ($n) $updates['logo'] = $n;
+    }
+    if ($ambulance->cover_image && !str_ends_with($ambulance->cover_image, '.webp')) {
+        $n = optimizeFile($manager, $ambulance->cover_image, 'ambulances/covers', 1200);
+        if ($n) $updates['cover_image'] = $n;
+    }
+    if (!empty($ambulance->gallery)) {
+        $newGallery = [];
+        $changed = false;
+        foreach ($ambulance->gallery as $img) {
+            if (!str_ends_with($img, '.webp')) {
+                $n = optimizeFile($manager, $img, 'ambulances/gallery', 1200);
+                if ($n) {
+                    $newGallery[] = $n;
+                    $changed = true;
+                    continue;
+                }
+            }
+            $newGallery[] = $img;
+        }
+        if ($changed) $updates['gallery'] = $newGallery;
+    }
+    if (!empty($updates)) {
+        $ambulance->update($updates);
+        echo "Updated ambulance: {$ambulance->name}\n";
+    }
+}
+
+// Blog Posts
+$blogs = App\Models\BlogPost::all();
+foreach ($blogs as $blog) {
+    $updates = [];
+    if ($blog->image && !str_ends_with($blog->image, '.webp')) {
+        $n = optimizeFile($manager, $blog->image, 'blog', 1200);
+        if ($n) $updates['image'] = $n;
+    }
+    if (!empty($updates)) {
+        $blog->update($updates);
+        echo "Updated blog: {$blog->title}\n";
     }
 }
 
