@@ -21,6 +21,8 @@ class ImageOptimizerService
      */
     public static function storeAndOptimize(UploadedFile $file, string $directory, ?int $maxWidth = 1200, int $quality = 80): string
     {
+        ini_set('memory_limit', '-1');
+        
         // 1. Ensure directory exists
         Storage::disk('public')->makeDirectory($directory);
 
@@ -31,7 +33,7 @@ class ImageOptimizerService
 
         // 3. Process the image using GD Driver
         $manager = new ImageManager(new Driver());
-        $image = $manager->read($file->getRealPath());
+        $image = $manager->decode($file->getRealPath());
 
         // 4. Resize if width is larger than max width (scale down only)
         if ($maxWidth && $image->width() > $maxWidth) {
@@ -39,7 +41,7 @@ class ImageOptimizerService
         }
 
         // 5. Convert to WEBP and save
-        $image->toWebp($quality)->save($absolutePath);
+        $image->save($absolutePath, quality: $quality);
 
         return $path;
     }
