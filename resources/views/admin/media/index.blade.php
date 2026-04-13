@@ -10,6 +10,7 @@
         <div>
             <h1 class="text-2xl font-bold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">Media Library</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">View, manage, and rename images for SEO.</p>
+        </div>
         <div class="flex items-center gap-3 w-full md:w-auto">
             <button @click="startOptimization" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
