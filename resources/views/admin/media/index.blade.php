@@ -13,7 +13,7 @@
         </div>
 
         <div class="flex items-center gap-3 w-full md:w-auto">
-            <form method="GET" action="{{ route('media.index') }}" class="flex-1 md:w-64">
+            <form method="GET" action="{{ route('admin.media.index') }}" class="flex-1 md:w-64">
                 <select name="folder" onchange="this.form.submit()" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-sky-500 focus:border-sky-500">
                     <option value="">All Folders</option>
                     @foreach($directories as $dir)
@@ -161,7 +161,7 @@ document.addEventListener('alpine:init', () => {
             if (!this.renameData.newName) return alert('Filename is required.');
             this.isSubmitting = true;
 
-            fetch("{{ route('media.rename') }}", {
+            fetch("{{ route('admin.media.rename') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -194,7 +194,7 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            fetch("{{ route('media.bulk-delete') }}", {
+            fetch("{{ route('admin.media.bulk-delete') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
