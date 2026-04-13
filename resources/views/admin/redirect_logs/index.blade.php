@@ -1,8 +1,4 @@
-@extends('admin.layouts.app')
 
-@section('title', 'Redirect Logs')
-
-@section('content')
 @extends('admin.layouts.app')
 
 @section('title', 'Redirect Logs')
