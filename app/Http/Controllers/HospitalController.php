@@ -19,7 +19,7 @@ class HospitalController extends Controller
 
     public function show(string $slug, string $tab = 'overview')
     {
-        if (!in_array($tab, ['overview', 'doctors', 'diagnostics'])) {
+        if (!in_array($tab, ['overview', 'doctors', 'diagnostics', 'video', 'blog'])) {
             abort(404);
         }
         $hospital = Hospital::published()

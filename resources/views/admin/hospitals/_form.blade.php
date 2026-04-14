@@ -344,28 +344,44 @@
         <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-6" 
              x-data="{ 
                 videos: {{ isset($hospital) && $hospital->hospitalVideos->count() > 0 ? $hospital->hospitalVideos->map(function($v){ return ['title' => $v->title, 'url' => $v->video_url]; })->toJson() : '[]' }},
-                blogs: {{ empty(isset($hospital) && $hospital->blogs) ? '[]' : json_encode($hospital->blogs) }},
+                blogs: {{ empty(isset($hospital) && $hospital->blogs) ? '[]' : (is_string($hospital->blogs[0] ?? null) ? json_encode(array_map(function($url){ return ['title'=>'Linked Content', 'url'=>$url]; }, $hospital->blogs)) : json_encode($hospital->blogs)) }},
                 newVideoUrl: '',
-                newBlog: '',
+                newBlogUrl: '',
                 isFetchingVideo: false,
                 isFetchingBlog: false,
+                
+                fetchMeta(url, idx, arrayName) {
+                    fetch('{{ route('admin.hospitals.fetch-url-meta') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ url: url })
+                    }).then(res => res.json()).then(data => {
+                        if(data.title) { this[arrayName][idx].title = data.title; }
+                    }).catch(() => {
+                        this[arrayName][idx].title = 'Linked Article/Media';
+                    });
+                },
+
                 addVideo(fetchedUrl = null) {
                     let vUrl = fetchedUrl || this.newVideoUrl.trim();
                     if(vUrl && !this.videos.find(v => v.url === vUrl)) {
                         let obj = { title: 'Fetching title...', url: vUrl };
                         this.videos.push(obj);
                         let idx = this.videos.length - 1;
-                        fetch(`https://noembed.com/embed?url=${vUrl}`)
-                            .then(res => res.json())
-                            .then(data => { if(data.title) this.videos[idx].title = data.title; else this.videos[idx].title = 'Video Link'; })
-                            .catch(() => this.videos[idx].title = 'Video Link');
+                        this.fetchMeta(vUrl, idx, 'videos');
                     }
                     if(!fetchedUrl) this.newVideoUrl = '';
                 },
-                addBlog(url = null) {
-                    let val = url || this.newBlog.trim();
-                    if(val && !this.blogs.includes(val)) { this.blogs.push(val); }
-                    if(!url) this.newBlog = '';
+                
+                addBlog(fetchedUrl = null) {
+                    let bUrl = fetchedUrl || this.newBlogUrl.trim();
+                    if(bUrl && !this.blogs.find(b => b.url === bUrl)) {
+                        let obj = { title: 'Fetching title...', url: bUrl };
+                        this.blogs.push(obj);
+                        let idx = this.blogs.length - 1;
+                        this.fetchMeta(bUrl, idx, 'blogs');
+                    }
+                    if(!fetchedUrl) this.newBlogUrl = '';
                 },
                 fetchVideo() {
                     let name = document.querySelector('input[name=name]').value;

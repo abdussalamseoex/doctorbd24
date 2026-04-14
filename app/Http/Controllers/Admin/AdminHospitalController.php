@@ -97,8 +97,9 @@ class AdminHospitalController extends Controller
         // Handle JSON arrays (sent as stringified JSON from Alpine.js)
         $validated['services']      = $this->parseJsonField($request->input('services'));
         $validated['opening_hours'] = $this->parseJsonField($request->input('opening_hours'));
-        $validated['videos']        = $this->parseJsonField($request->input('videos'));
-        $validated['blogs']         = $this->parseJsonField($request->input('blogs'));
+        $videosInput = $this->parseJsonField($request->input('videos'));
+        $validated['videos'] = $videosInput; // temporary, will be unset later
+        $validated['blogs']         = $this->processExternalLinksData($this->parseJsonField($request->input('blogs')));
 
         if ($request->hasFile('logo')) {
             $validated['logo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('logo'), 'hospitals', 800);
@@ -191,8 +192,11 @@ class AdminHospitalController extends Controller
         $validated['verified'] = $request->boolean('verified');
         $validated['opening_hours'] = $this->parseJsonField($request->input('opening_hours'));
         $validated['services'] = $this->parseJsonField($request->input('services'));
-        $validated['videos'] = $this->parseJsonField($request->input('videos'));
-        $validated['blogs'] = $this->parseJsonField($request->input('blogs'));
+        
+        $videosInput = $this->parseJsonField($request->input('videos'));
+        $validated['videos'] = $videosInput; // temporary, will be unset later
+
+        $validated['blogs'] = $this->processExternalLinksData($this->parseJsonField($request->input('blogs')));
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(4);
@@ -344,6 +348,44 @@ class AdminHospitalController extends Controller
     }
 
     /**
+     * Process array of links to ensure they have titles.
+     */
+    private function processExternalLinksData(?array $links): ?array
+    {
+        if (!$links) return null;
+        
+        $processed = [];
+        foreach ($links as $link) {
+            $url = is_string($link) ? $link : ($link['url'] ?? null);
+            if (!$url) continue;
+
+            $title = is_string($link) ? 'Linked Content' : ($link['title'] ?? 'Linked Content');
+            
+            // Re-fetch only if title is generic
+            if (in_array($title, ['Fetching title...', 'Linked Content', 'Linked Article/Media']) || empty(trim($title))) {
+                try {
+                    $response = \Illuminate\Support\Facades\Http::timeout(3)
+                        ->withHeaders(['User-Agent' => 'Mozilla/5.0'])
+                        ->get($url);
+                    
+                    if ($response->successful()) {
+                        $html = $response->body();
+                        if (preg_match('/<meta[^>]*property=[\'"]og:title[\'"][^>]*content=[\'"]([^\'"]+)[\'"][^>]*>/i', $html, $matches) ||
+                            preg_match('/<title[^>]*>(.*?)<\/title>/is', $html, $matches)) {
+                            $titleChunk = explode(' |', $matches[1])[0];
+                            $title = trim(html_entity_decode(strip_tags(explode(' -', $titleChunk)[0]), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                        }
+                    }
+                } catch (\Exception $e) {}
+            }
+            if(empty(trim($title))) { $title = 'Linked Article/Media'; }
+
+            $processed[] = ['title' => $title, 'url' => $url];
+        }
+        return $processed;
+    }
+
+    /**
      * Parse JSON string from Alpine.js hidden input.
      */
     private function parseJsonField(?string $value): ?array
@@ -394,6 +436,46 @@ class AdminHospitalController extends Controller
             return response()->json(['url' => route('blog.index', ['search' => $query])]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function fetchUrlMeta(Request $request)
+    {
+        $url = $request->input('url');
+        if (!$url) return response()->json(['error' => 'URL is required'], 400);
+
+        try {
+            // check for oembed first as it's cleaner for media
+            $oembedRes = \Illuminate\Support\Facades\Http::timeout(3)->get("https://noembed.com/embed?url=" . urlencode($url));
+            if ($oembedRes->successful() && $oembedRes->json('title')) {
+                return response()->json(['title' => $oembedRes->json('title')]);
+            }
+
+            $response = \Illuminate\Support\Facades\Http::timeout(5)
+                ->withHeaders(['User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36'])
+                ->get($url);
+            
+            if ($response->successful()) {
+                $html = $response->body();
+                
+                // Try OpenGraph title first
+                if (preg_match('/<meta[^>]*property=[\'"]og:title[\'"][^>]*content=[\'"]([^\'"]+)[\'"][^>]*>/i', $html, $matches)) {
+                    return response()->json(['title' => html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8')]);
+                }
+                if (preg_match('/<meta[^>]*content=[\'"]([^\'"]+)[\'"][^>]*property=[\'"]og:title[\'"][^>]*>/i', $html, $matches)) {
+                    return response()->json(['title' => html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8')]);
+                }
+
+                // Fallback to <title>
+                if (preg_match('/<title[^>]*>(.*?)<\/title>/is', $html, $matches)) {
+                    $title = explode(' |', $matches[1])[0]; // try to get core title
+                    $title = explode(' -', $title)[0];
+                    return response()->json(['title' => trim(html_entity_decode(strip_tags($title), ENT_QUOTES | ENT_HTML5, 'UTF-8'))]);
+                }
+            }
+            return response()->json(['title' => 'Linked Content']);
+        } catch (\Exception $e) {
+            return response()->json(['title' => 'Linked Content', 'error' => $e->getMessage()], 500);
         }
     }
 }

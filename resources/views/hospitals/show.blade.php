@@ -759,11 +759,26 @@
                         <p class="text-gray-500 dark:text-gray-400 max-w-lg mb-4">{{ __('Explore in-depth articles, health tips, and hospital updates.') }}</p>
                     </div>
                     
-                    <div class="flex flex-wrap justify-center gap-4">
-                        @foreach($hospital->blogs as $index => $blogUrl)
-                        <a href="{{ $blogUrl }}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-1">
-                            {{ __('Read Article') }} {{ count($hospital->blogs) > 1 ? '#' . ($index + 1) : '' }}
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    <div class="flex flex-col gap-4 max-w-3xl mx-auto">
+                        @foreach($hospital->blogs as $index => $blogData)
+                        @php
+                            $bUrl = is_string($blogData) ? $blogData : ($blogData['url'] ?? '#');
+                            $bTitle = is_string($blogData) ? __('Read Article') . (count($hospital->blogs) > 1 ? ' #' . ($index + 1) : '') : ($blogData['title'] ?? __('Read Article'));
+                            $domain = parse_url($bUrl, PHP_URL_HOST);
+                        @endphp
+                        <a href="{{ $bUrl }}" target="_blank" class="group flex items-center gap-4 p-4 rounded-2xl bg-gray-50 hover:bg-emerald-50 dark:bg-gray-800/50 dark:hover:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-emerald-200 dark:hover:border-emerald-800/50 transition-all shadow-sm hover:shadow-md">
+                            <div class="w-12 h-12 flex-shrink-0 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center shadow-sm text-emerald-500 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-base font-bold text-gray-900 dark:text-gray-100 truncate group-hover:text-emerald-600 transition-colors">{{ $bTitle }}</h4>
+                                @if($domain)
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{{ $domain }}</p>
+                                @endif
+                            </div>
+                            <div class="text-gray-300 dark:text-gray-600 group-hover:text-emerald-500 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </div>
                         </a>
                         @endforeach
                     </div>
