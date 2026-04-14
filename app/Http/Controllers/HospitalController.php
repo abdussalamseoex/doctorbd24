@@ -17,9 +17,9 @@ class HospitalController extends Controller
         return view('hospitals.index');
     }
 
-    public function show(string $slug, string $tab = 'doctors')
+    public function show(string $slug, string $tab = 'overview')
     {
-        if (!in_array($tab, ['doctors', 'services'])) {
+        if (!in_array($tab, ['overview', 'doctors', 'services'])) {
             abort(404);
         }
         $hospital = Hospital::published()

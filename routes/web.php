@@ -93,7 +93,7 @@ Route::middleware(['cache.response'])->group(function () {
 
     // Hospitals
     Route::get('/hospitals', [HospitalController::class, 'index'])->name('hospitals.index');
-    Route::get('/hospital/{slug}/{tab?}', [HospitalController::class, 'show'])->where('tab', 'doctors|services')->name('hospitals.show');
+    Route::get('/hospital/{slug}/{tab?}', [HospitalController::class, 'show'])->where('tab', 'overview|doctors|services')->name('hospitals.show');
 
     // Specialties
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
