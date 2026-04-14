@@ -880,10 +880,17 @@ document.addEventListener('alpine:init', () => {
         }
     }));
 
+    @php
+        $activeServices = $hospital->hospitalServices()
+            ->select('id', 'service_category', 'service_name', 'price')
+            ->where('is_active', true)
+            ->get();
+    @endphp
+
     Alpine.data('hospitalDiagnosticServices', () => ({
         searchQuery: '',
         selectedCategory: '',
-        allServices: @json($hospital->hospitalServices()->select('id', 'service_category', 'service_name', 'price')->where('is_active', true)->get()),
+        allServices: @json($activeServices),
         
         get categories() {
             // Extract unique categories, remove any empty/falsy ones, and sort alphabetically
