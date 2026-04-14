@@ -186,6 +186,9 @@ class SystemUpdaterController extends Controller
 
             $outputLog .= "> Clearing Application Caches...\n";
             Artisan::call('optimize:clear');
+            if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+                \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            }
             $outputLog .= Artisan::output() . "\n";
 
             // Save history
