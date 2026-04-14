@@ -488,11 +488,21 @@
                                         </div>
                                         @endif
 
+                                        @php
+                                            $chamber = $hospital->chambers->where('doctor_id', $doctor->id)->first();
+                                            $visitingHours = $chamber?->visiting_hours ?: __('Contact for Schedule');
+                                            $closedDays = $chamber?->closed_days ? (is_string($chamber->closed_days) ? json_decode($chamber->closed_days, true) : $chamber->closed_days) : null;
+                                        @endphp
                                         <div class="flex items-start gap-2">
-                                            <svg class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                                            <svg class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                             <div class="flex flex-col">
-                                                <span class="text-[10px] font-bold uppercase text-gray-400 tracking-wider mb-0.5">{{ __('Branch Location') }}</span>
-                                                <span class="leading-relaxed font-semibold text-gray-800 dark:text-gray-200">{{ $hospital->name }}</span>
+                                                <span class="text-[10px] font-bold uppercase text-gray-400 tracking-wider mb-0.5">{{ __('Visiting Schedule') }}</span>
+                                                <div class="leading-relaxed font-semibold text-gray-800 dark:text-gray-200 text-[13px]">
+                                                    {{ $visitingHours }}
+                                                    @if(!empty($closedDays) && is_array($closedDays))
+                                                        <span class="block text-[10px] text-red-500 font-bold tracking-wider mt-0.5 uppercase">{{ __('Closed:') }} {{ implode(', ', array_map('__', $closedDays)) }}</span>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                         
