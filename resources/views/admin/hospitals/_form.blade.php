@@ -343,16 +343,28 @@
         {{-- ════ CARD: MEDIA & CONTENT TABS ════ --}}
         <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-6" 
              x-data="{ 
-                videos: {{ empty(isset($hospital) && $hospital->videos) ? '[]' : json_encode($hospital->videos) }},
+                videos: {{ isset($hospital) && $hospital->hospitalVideos->count() > 0 ? $hospital->hospitalVideos->map(function($v){ return ['title' => $v->title, 'url' => $v->video_url]; })->toJson() : '[]' }},
                 blogs: {{ empty(isset($hospital) && $hospital->blogs) ? '[]' : json_encode($hospital->blogs) }},
-                newVideo: '',
+                newVideoTitle: '',
+                newVideoUrl: '',
                 newBlog: '',
                 isFetchingVideo: false,
                 isFetchingBlog: false,
-                addVideo(url = null) {
-                    let val = url || this.newVideo.trim();
-                    if(val && !this.videos.includes(val)) { this.videos.push(val); }
-                    if(!url) this.newVideo = '';
+                addVideo(fetchedTitle = null, fetchedUrl = null) {
+                    let vTitle = fetchedTitle || this.newVideoTitle.trim();
+                    let vUrl = fetchedUrl || this.newVideoUrl.trim();
+                    
+                    if(vTitle && vUrl) { 
+                        // Only add if not exactly a duplicate URL
+                        if(!this.videos.find(v => v.url === vUrl)) {
+                            this.videos.push({ title: vTitle, url: vUrl }); 
+                        }
+                    }
+                    
+                    if(!fetchedTitle) {
+                        this.newVideoTitle = '';
+                        this.newVideoUrl = '';
+                    }
                 },
                 addBlog(url = null) {
                     let val = url || this.newBlog.trim();
@@ -368,7 +380,11 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         body: JSON.stringify({ query: name })
                     }).then(res => res.json()).then(data => {
-                        if (data.url) { this.addVideo(data.url); }
+                        // Assuming fetch-video also returns title if possible, otherwise generic title
+                        if (data.url) { 
+                            let fetchedTitle = data.title || (name + ' Overview Video');
+                            this.addVideo(fetchedTitle, data.url); 
+                        }
                         else { alert('No video found'); }
                     }).catch(() => alert('Error fetching video')).finally(() => this.isFetchingVideo = false);
                 },
@@ -403,31 +419,41 @@
                         <span class="w-6 h-6 rounded bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-500">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                         </span>
-                        YouTube Videos Array
+                        Videos (Multi-Platform)
                     </label>
                     
-                    <div class="flex gap-2 mb-3">
-                        <input type="url" x-model="newVideo" @keydown.enter.prevent="addVideo()" placeholder="https://youtube.com/watch..."
-                               class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
-                        <button type="button" @click="addVideo()" class="px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
-                            Add
-                        </button>
+                    <div class="flex flex-col gap-2 mb-3">
+                        <input type="text" x-model="newVideoTitle" placeholder="Video Title (e.g. Overview of Hospital)"
+                               class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                        <div class="flex gap-2">
+                            <input type="url" x-model="newVideoUrl" @keydown.enter.prevent="addVideo()" placeholder="https://youtube.com/watch... or facebook.com/..."
+                                   class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                            <button type="button" @click="addVideo()" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
+                                Add
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="space-y-1 mb-3 flex-1">
+                    <div class="space-y-1.5 mb-3 flex-1 overflow-y-auto max-h-[150px] pr-1">
                         <template x-for="(vid, index) in videos" :key="index">
-                            <div class="flex items-center justify-between gap-2 p-2 rounded bg-gray-50/80 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
-                                <span class="text-xs text-gray-600 dark:text-gray-300 truncate" x-text="vid"></span>
-                                <button type="button" @click="videos.splice(index, 1)" class="text-red-400 hover:text-red-600 transition-colors shrink-0 p-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <div class="group flex items-start justify-between gap-2 p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
+                                <div class="overflow-hidden">
+                                    <p class="text-xs font-bold text-gray-800 dark:text-gray-200 truncate pr-6" x-text="vid.title"></p>
+                                    <p class="text-[10px] text-gray-500 truncate" x-text="vid.url"></p>
+                                </div>
+                                <button type="button" @click="videos.splice(index, 1)" class="absolute top-2.5 right-2.5 text-gray-400 hover:text-red-600 bg-white dark:bg-gray-800 rounded transition-colors p-0.5" title="Remove Video">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </div>
                         </template>
+                        <div x-show="videos.length === 0" class="text-center py-4 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+                            <p class="text-xs text-gray-400">No videos added yet.</p>
+                        </div>
                     </div>
-
-                    <button type="button" @click="fetchVideo()" class="w-full bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 transition-colors px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer text-xs font-bold shadow-sm">
+                    
+                    <button type="button" @click="fetchVideo()" class="w-full bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 transition-colors px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer text-xs font-bold shadow-sm mt-auto">
                         <span x-show="isFetchingVideo" class="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
-                        <span x-show="!isFetchingVideo">Search Data & Add</span>
+                        <span x-show="!isFetchingVideo">Search YouTube & Add Auto</span>
                     </button>
                 </div>
                 

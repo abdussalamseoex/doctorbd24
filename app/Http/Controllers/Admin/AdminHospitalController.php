@@ -144,17 +144,20 @@ class AdminHospitalController extends Controller
             $validated['published_at'] = null;
 
 
-        }
+        $validated['status'] = $request->input('status', 'draft');
+        if ($validated['status'] === 'published') {
+            $validated['published_at'] = now();
+        } elseif ($validated['status'] === 'scheduled') {
+            $validated['published_at'] = $request->input('published_at');
+        } else {
+            $validated['published_at'] = null;
+        } 
 
-        $hospital =
- $validated['status'] = $request->input('status', 'draft');
- if ($validated['status'] === 'published') {
-     $validated['published_at'] = now();
- } elseif ($validated['status'] === 'scheduled') {
-     $validated['published_at'] = $request->input('published_at');
- } else {
-     $validated['published_at'] = null;
- } Hospital::create($validated);
+        $videosInput = $validated['videos'] ?? [];
+        unset($validated['videos']);
+
+        $hospital = Hospital::create($validated);
+        $this->syncHospitalVideos($hospital, $videosInput);
         
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
@@ -264,27 +267,21 @@ class AdminHospitalController extends Controller
         $validated['status'] = $request->input('status', 'draft');
 
 
+        $validated['status'] = $request->input('status', 'draft');
+
         if ($validated['status'] === 'published') {
-
-
             $validated['published_at'] = now();
-
-
         } elseif ($validated['status'] === 'scheduled') {
-
-
             $validated['published_at'] = $request->input('published_at');
-
-
         } else {
-
-
             $validated['published_at'] = null;
-
-
         }
 
+        $videosInput = $validated['videos'] ?? [];
+        unset($validated['videos']);
+        
         $hospital->update($validated);
+        $this->syncHospitalVideos($hospital, $videosInput);
         
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
@@ -300,6 +297,49 @@ class AdminHospitalController extends Controller
         }
 
         return redirect()->route('admin.hospitals.index')->with('success', $message);
+    }
+
+    private function syncHospitalVideos(Hospital $hospital, $videosInput)
+    {
+        // Get existing videos
+        $existingVideos = $hospital->hospitalVideos->keyBy('video_url');
+        $keptUrls = [];
+
+        foreach ($videosInput as $index => $videoData) {
+            if (!isset($videoData['title']) || !isset($videoData['url'])) continue;
+            
+            $url = $videoData['url'];
+            $title = $videoData['title'];
+            $keptUrls[] = $url;
+            
+            $youtubeId = null;
+            $thumbnailUrl = null;
+            if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $url, $match)) {
+                $youtubeId = $match[1];
+                $thumbnailUrl = 'https://img.youtube.com/vi/' . $youtubeId . '/hqdefault.jpg';
+            }
+
+            if ($existingVideos->has($url)) {
+                $existing = $existingVideos->get($url);
+                $existing->update([
+                    'title' => $title,
+                    'sort_order' => $index,
+                ]);
+            } else {
+                $hospital->hospitalVideos()->create([
+                    'provider' => $youtubeId ? 'youtube' : 'custom',
+                    'video_url' => $url,
+                    'youtube_id' => $youtubeId,
+                    'title' => $title,
+                    'slug' => \Illuminate\Support\Str::slug($title) . '-' . \Illuminate\Support\Str::random(4),
+                    'thumbnail_url' => $thumbnailUrl,
+                    'sort_order' => $index,
+                ]);
+            }
+        }
+
+        // Delete removed videos
+        $hospital->hospitalVideos()->whereNotIn('video_url', $keptUrls)->delete();
     }
 
     public function destroy(Hospital $hospital)

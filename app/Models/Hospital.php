@@ -33,7 +33,7 @@ class Hospital extends Model
         'lat', 'lng', 'google_maps_url', 'verified', 'featured', 'view_count',
         'rating_avg', 'rating_count',
         'facebook_url', 'instagram_url', 'youtube_url', 'blog_url', 
-        'linkedin_url', 'twitter_url', 'videos', 'blogs',
+        'linkedin_url', 'twitter_url', 'blogs',
         'services', 'opening_hours',
     ];
 
@@ -47,7 +47,6 @@ class Hospital extends Model
         'services'      => 'array',
         'opening_hours' => 'array',
         'gallery'       => 'array',
-        'videos'        => 'array',
         'blogs'         => 'array',
     ];
 
@@ -60,6 +59,11 @@ class Hospital extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function hospitalVideos()
+    {
+        return $this->hasMany(HospitalVideo::class)->orderBy('sort_order');
     }
 
     public function hospitalServices(): HasMany

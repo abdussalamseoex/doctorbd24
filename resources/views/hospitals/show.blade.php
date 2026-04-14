@@ -132,7 +132,7 @@
                        class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
                         💉 {{ __('Diagnostics') }}
                     </button>
-                    @if(!empty($hospital->videos) && count($hospital->videos) > 0)
+                    @if($hospital->hospitalVideos->count() > 0)
                     <button @click.prevent="switchTab('video')" 
                        :class="currentTab === 'video' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
                        class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
@@ -709,7 +709,7 @@
             @endif
             </div> {{-- END TAB CONTENT: DIAGNOSTICS --}}
 
-            @if(!empty($hospital->videos) && count($hospital->videos) > 0)
+            @if($hospital->hospitalVideos->count() > 0)
             {{-- TAB CONTENT: VIDEO --}}
             <div x-show="currentTab === 'video'" style="{{ ($tab ?? 'overview') === 'video' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
                 <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-8">
@@ -718,30 +718,31 @@
                         {{ __('Hospital Videos') }}
                     </h3>
                     
-                    <div class="grid grid-cols-1 {{ count($hospital->videos) > 1 ? 'md:grid-cols-2' : '' }} gap-6">
-                        @foreach($hospital->videos as $videoUrl)
-                        <div class="w-full">
-                            @php
-                                $youtubeId = '';
-                                preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $videoUrl, $match);
-                                if(isset($match[1])) {
-                                    $youtubeId = $match[1];
-                                }
-                            @endphp
-
-                            @if($youtubeId)
-                            <div class="relative w-full rounded-2xl overflow-hidden shadow-md" style="padding-top: 56.25%;">
-                                <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/{{ $youtubeId }}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="flex flex-col gap-4">
+                        @foreach($hospital->hospitalVideos as $video)
+                        <a href="{{ route('video.show', ['hospital_slug' => $hospital->slug, 'video_slug' => $video->slug]) }}" class="group flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md transition-all">
+                            <div class="relative w-full sm:w-48 aspect-video rounded-xl bg-black overflow-hidden shrink-0">
+                                @if($video->thumbnail_url)
+                                    <img src="{{ $video->thumbnail_url }}" alt="{{ $video->title }}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center text-gray-600 bg-gray-800"><svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+                                @endif
+                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-100 sm:opacity-80 group-hover:opacity-100 transition-opacity">
+                                    <div class="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                        <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
                             </div>
-                            @else
-                            <div class="text-center py-10 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-100 dark:border-gray-700 h-full flex items-center justify-center">
-                                <a href="{{ $videoUrl }}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all shadow-sm">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                                    {{ __('Watch on YouTube') }}
-                                </a>
+                            <div class="flex-1 w-full text-center sm:text-left">
+                                <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-emerald-600 transition-colors leading-snug">{{ $video->title }}</h4>
+                                <p class="text-xs text-gray-500 flex items-center justify-center sm:justify-start gap-1">
+                                    @if($hospital->logo)
+                                        <img src="{{ Storage::url($hospital->logo) }}" class="w-4 h-4 rounded-full object-cover">
+                                    @endif
+                                    {{ $hospital->name }} &bull; {{ $video->created_at->diffForHumans() }}
+                                </p>
                             </div>
-                            @endif
-                        </div>
+                        </a>
                         @endforeach
                     </div>
                 </div>

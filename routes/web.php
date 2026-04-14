@@ -93,8 +93,11 @@ Route::middleware(['cache.response'])->group(function () {
 
     // Hospitals
     Route::get('/hospitals', [HospitalController::class, 'index'])->name('hospitals.index');
-    Route::get('/hospital/{slug}/{tab?}', [HospitalController::class, 'show'])->where('tab', 'overview|doctors|diagnostics')->name('hospitals.show');
+    Route::get('/hospital/{slug}/{tab?}', [HospitalController::class, 'show'])->where('tab', 'overview|doctors|diagnostics|video|blog')->name('hospitals.show');
     Route::get('/hospital/{slug}/diagnostics/{service_slug}', [HospitalController::class, 'showDiagnosticTest'])->name('hospitals.diagnostic.show');
+
+    // Video Single Route
+    Route::get('/hospital/{hospital_slug}/video/{video_slug}', [App\Http\Controllers\VideoController::class, 'show'])->name('video.show');
 
     // Specialties
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
