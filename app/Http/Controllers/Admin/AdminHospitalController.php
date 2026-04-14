@@ -316,4 +316,48 @@ class AdminHospitalController extends Controller
         $decoded = json_decode($value, true);
         return is_array($decoded) ? $decoded : null;
     }
+
+    public function fetchVideoUrl(Request $request)
+    {
+        $query = $request->input('query');
+        if (!$query) return response()->json(['error' => 'Query is required'], 400);
+
+        try {
+            $url = "https://www.youtube.com/results?search_query=" . urlencode($query . " hospital bangladesh");
+            $response = \Illuminate\Support\Facades\Http::get($url);
+            
+            if ($response->successful()) {
+                $html = $response->body();
+                // Simple regex to extract the first video ID from ytInitialData
+                if (preg_match('/"videoId":"([a-zA-Z0-9_-]{11})"/', $html, $matches)) {
+                    return response()->json(['url' => 'https://www.youtube.com/watch?v=' . $matches[1]]);
+                }
+            }
+            return response()->json(['error' => 'No video found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function fetchBlogUrl(Request $request)
+    {
+        $query = $request->input('query');
+        if (!$query) return response()->json(['error' => 'Query is required'], 400);
+
+        try {
+            // First search existing blog posts
+            $post = \App\Models\BlogPost::where('title', 'like', '%' . $query . '%')
+                ->where('status', 'published')
+                ->first();
+
+            if ($post) {
+                return response()->json(['url' => route('blog.show', $post->slug)]);
+            }
+
+            // Fallback to dynamic search url
+            return response()->json(['url' => route('blog.index', ['search' => $query])]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }
