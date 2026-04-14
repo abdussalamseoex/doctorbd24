@@ -453,10 +453,61 @@ class AdminHospitalController extends Controller
     public function fetchChannelVideos(Request $request)
     {
         $url = $request->input('url');
-        if (!$url) return response()->json(['error' => 'URL is required'], 400);
+        $pageToken = $request->input('pageToken');
+        $channelId = $request->input('channelId');
+
+        if (!$url && !$channelId) return response()->json(['error' => 'URL or Channel ID is required'], 400);
 
         try {
-            // make sure it ends with /videos to get the video list tab
+            $apiKey = env('YOUTUBE_API_KEY');
+            
+            // If we have API Key, try the Google Data API route for pagination
+            if ($apiKey) {
+                // Determine Channel ID if not provided
+                if (!$channelId) {
+                    $testUrl = $url;
+                    if (!str_ends_with(parse_url($testUrl, PHP_URL_PATH) ?? '', '/videos')) {
+                        $testUrl = rtrim($testUrl, '/') . '/videos';
+                    }
+                    $chRes = \Illuminate\Support\Facades\Http::timeout(10)->withoutVerifying()->get($testUrl);
+                    if ($chRes->successful()) {
+                        $html = $chRes->body();
+                        if (preg_match('/<meta\s+itemprop="identifier"\s+content="(UC[a-zA-Z0-9_-]+)">/i', $html, $matches) || preg_match('/"channelId":"(UC[a-zA-Z0-9_-]+)"/i', $html, $matches)) {
+                            $channelId = $matches[1];
+                        }
+                    }
+                }
+
+                // Call YouTube Data API
+                if ($channelId) {
+                    $apiUrl = "https://www.googleapis.com/youtube/v3/search?key={$apiKey}&channelId={$channelId}&part=snippet,id&order=date&maxResults=30&type=video";
+                    if ($pageToken) {
+                        $apiUrl .= "&pageToken={$pageToken}";
+                    }
+                    
+                    $apiRes = \Illuminate\Support\Facades\Http::timeout(10)->withoutVerifying()->get($apiUrl);
+                    if ($apiRes->successful()) {
+                        $data = $apiRes->json();
+                        $videos = [];
+                        foreach ($data['items'] ?? [] as $item) {
+                            if (isset($item['id']['videoId'])) {
+                                $videos[] = [
+                                    'url' => "https://www.youtube.com/watch?v=" . $item['id']['videoId'],
+                                    'title' => html_entity_decode($item['snippet']['title'] ?? 'Video Link', ENT_QUOTES | ENT_HTML5, 'UTF-8')
+                                ];
+                            }
+                        }
+                        
+                        return response()->json([
+                            'videos' => array_reverse($videos), // Reversing so newest stays at top when prepended incrementally
+                            'channelId' => $channelId,
+                            'nextPageToken' => $data['nextPageToken'] ?? null
+                        ]);
+                    }
+                }
+            }
+
+            // Fallback natively to scraping if NO API key or if API failed
             if (!str_ends_with(parse_url($url, PHP_URL_PATH) ?? '', '/videos')) {
                 $url = rtrim($url, '/') . '/videos';
             }
@@ -464,12 +515,9 @@ class AdminHospitalController extends Controller
             $response = \Illuminate\Support\Facades\Http::timeout(10)->withoutVerifying()->get($url);
             if ($response->successful()) {
                 $html = $response->body();
-                
-                // Match the video IDs and Titles
                 if (preg_match_all('/"videoId":"([a-zA-Z0-9_-]{11})".*?"title":\{"runs":\[\{"text":"(.*?)"\}\]/is', $html, $matches)) {
                     $videos = [];
                     $seenIds = [];
-                    
                     foreach ($matches[1] as $index => $videoId) {
                         if (!isset($seenIds[$videoId])) {
                             $seenIds[$videoId] = true;
@@ -479,8 +527,8 @@ class AdminHospitalController extends Controller
                             ];
                         }
                     }
-                    
                     if (count($videos) > 0) {
+                        // Regex logic natively fetches newest to oldest. Reversing keeps order perfect when iterating.
                         return response()->json(['videos' => array_slice($videos, 0, 30)]);
                     }
                 }

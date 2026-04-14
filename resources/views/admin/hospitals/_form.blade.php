@@ -351,6 +351,8 @@
                 isFetchingVideo: false,
                 isFetchingChannel: false,
                 isFetchingBlog: false,
+                youtubePageToken: null,
+                youtubeChannelId: null,
                 
                 init() {
                     this.$watch('videos', value => {
@@ -358,6 +360,11 @@
                     });
                     this.$watch('blogs', value => {
                         document.querySelector('input[name=blogs]').value = JSON.stringify(value);
+                    });
+                    this.$watch('newChannelUrl', () => {
+                        // Reset pagination if user types a new URL
+                        this.youtubePageToken = null;
+                        this.youtubeChannelId = null;
                     });
                 },
                 
@@ -387,21 +394,34 @@
                 
                 fetchChannelVideo() {
                     let cUrl = this.newChannelUrl.trim();
-                    if (!cUrl) return;
+                    if (!cUrl && !this.youtubeChannelId) return;
                     this.isFetchingChannel = true;
                     
                     fetch('{{ route('admin.hospitals.fetch-channel-videos') }}', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                        body: JSON.stringify({ url: cUrl })
+                        body: JSON.stringify({ 
+                            url: cUrl, 
+                            pageToken: this.youtubePageToken,
+                            channelId: this.youtubeChannelId
+                        })
                     })
                     .then(res => res.json())
                     .then(data => {
                         if (data.videos && data.videos.length > 0) {
                             const existingVideos = this.videos;
+                            // Prepend videos exactly as done before
                             this.videos = [...data.videos, ...existingVideos];
-                            this.newChannelUrl = '';
-                            alert(`Successfully added ${data.videos.length} videos!`);
+                            
+                            // Save tokens for infinite scrolling via Official API
+                            this.youtubePageToken = data.nextPageToken || null;
+                            if (data.channelId) this.youtubeChannelId = data.channelId;
+                            
+                            if (this.youtubePageToken) {
+                                alert(`Successfully added ${data.videos.length} videos! You can click "Fetch Next 30" to get more.`);
+                            } else {
+                                alert(`Successfully added ${data.videos.length} videos!`);
+                            }
                         } else {
                             alert(data.error || 'No videos found in this channel.');
                         }
@@ -484,7 +504,7 @@
                                 class="flex-1 w-full px-3 py-2 text-sm border-dashed border-red-200 dark:border-red-900/50 rounded-lg border bg-red-50/50 focus:bg-white dark:bg-red-900/10 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all">
                             <button type="button" @click="fetchChannelVideo()" :disabled="isFetchingChannel" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-semibold rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors shrink-0 flex items-center min-w-[120px] justify-center text-xs">
                                 <span x-show="isFetchingChannel" class="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin mr-1" x-cloak></span>
-                                <span x-show="!isFetchingChannel" class="whitespace-nowrap">Fetch (~30)</span>
+                                <span x-show="!isFetchingChannel" class="whitespace-nowrap" x-text="youtubePageToken ? 'Fetch Next ~30' : 'Fetch (~30)'"></span>
                             </button>
                         </div>
                     </div>
