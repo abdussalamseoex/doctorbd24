@@ -401,20 +401,20 @@
             <div class="mb-8" x-data="hospitalDoctorsFilter()" x-init="update()">
                 <div class="mb-6">
                     @php
-                        $hospitalSpecialties = collect();
+                        $hospitalSpecialtiesArray = [];
                         foreach($doctors as $d) {
                             foreach($d->specialties as $sp) {
-                                if(!$hospitalSpecialties->has($sp->slug)) {
-                                    $hospitalSpecialties->put($sp->slug, [
+                                if(!isset($hospitalSpecialtiesArray[$sp->slug])) {
+                                    $hospitalSpecialtiesArray[$sp->slug] = [
                                         'name' => $sp->getTranslation('name', app()->getLocale()),
                                         'count' => 1
-                                    ]);
+                                    ];
                                 } else {
-                                    $hospitalSpecialties[$sp->slug]['count']++;
+                                    $hospitalSpecialtiesArray[$sp->slug]['count']++;
                                 }
                             }
                         }
-                        $hospitalSpecialties = $hospitalSpecialties->sortBy('name');
+                        $hospitalSpecialties = collect($hospitalSpecialtiesArray)->sortBy('name');
                     @endphp
                     <div class="flex overflow-x-auto hide-scrollbar gap-2 pb-3">
                         <button @click="setSpecialty('')" 
