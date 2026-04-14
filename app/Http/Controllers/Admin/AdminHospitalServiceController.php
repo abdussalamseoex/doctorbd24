@@ -23,6 +23,7 @@ class AdminHospitalServiceController extends Controller
         $request->validate([
             'service_category' => 'nullable|string|max:255',
             'service_name'     => 'required|string|max:500',
+            'description'      => 'nullable|string',
             'price'            => 'nullable|string|max:255',
             'is_active'        => 'boolean',
         ]);
@@ -30,6 +31,7 @@ class AdminHospitalServiceController extends Controller
         $hospital->hospitalServices()->create([
             'service_category' => $request->service_category,
             'service_name'     => $request->service_name,
+            'description'      => $request->description,
             'price'            => $request->price,
             'is_active'        => $request->has('is_active') ? $request->is_active : true,
         ]);
@@ -46,6 +48,7 @@ class AdminHospitalServiceController extends Controller
         $request->validate([
             'service_category' => 'nullable|string|max:255',
             'service_name'     => 'required|string|max:500',
+            'description'      => 'nullable|string',
             'price'            => 'nullable|string|max:255',
             'is_active'        => 'boolean',
         ]);
@@ -53,6 +56,7 @@ class AdminHospitalServiceController extends Controller
         $service->update([
             'service_category' => $request->service_category,
             'service_name'     => $request->service_name,
+            'description'      => $request->description,
             'price'            => $request->price,
             'is_active'        => $request->has('is_active') ? $request->is_active : true,
         ]);
@@ -99,11 +103,13 @@ class AdminHospitalServiceController extends Controller
             $nameIdx = -1;
             $catIdx = -1;
             $priceIdx = -1;
+            $descIdx = -1;
 
             foreach($header as $idx => $col) {
                 if (str_contains($col, 'name')) $nameIdx = $idx;
                 if (str_contains($col, 'categor')) $catIdx = $idx;
                 if (str_contains($col, 'price') || str_contains($col, 'charge') || str_contains($col, 'tk')) $priceIdx = $idx;
+                if (str_contains($col, 'desc') || str_contains($col, 'detail')) $descIdx = $idx;
             }
 
             if ($nameIdx === -1 || $priceIdx === -1) {
@@ -134,7 +140,9 @@ class AdminHospitalServiceController extends Controller
                 $name = isset($data[$nameIdx]) ? trim($data[$nameIdx]) : '';
                 $price = isset($data[$priceIdx]) ? trim($data[$priceIdx]) : '';
 
-                if (empty($cat) && empty($name) && empty($price)) {
+                $desc = ($descIdx !== -1 && isset($data[$descIdx])) ? trim($data[$descIdx]) : null;
+
+                if (empty($cat) && empty($name) && empty($price) && empty($desc)) {
                     continue; // Completely empty row
                 }
 
@@ -156,10 +164,16 @@ class AdminHospitalServiceController extends Controller
                 }
 
                 if (!empty($name)) {
+                    // Must generate a unique slug just in case
+                    $baseSlug = Str::slug($name);
+                    $rand = Str::random(5);
+
                     $servicesToInsert[] = [
                         'hospital_id' => $hospital->id,
                         'service_category' => Str::limit($currentCategory ?? 'Uncategorized', 250),
                         'service_name' => Str::limit($name, 490),
+                        'slug' => $baseSlug . '-' . $rand,
+                        'description' => $desc,
                         'price' => Str::limit($price, 250),
                         'is_active' => true,
                         'created_at' => now(),
@@ -184,5 +198,76 @@ class AdminHospitalServiceController extends Controller
             Log::error('Hospital Service Import Error: ' . $e->getMessage());
             return back()->with('error', 'Error during import: ' . $e->getMessage());
         }
+    }
+
+    public function generateBiDescription(Request $request, Hospital $hospital)
+    {
+        $request->validate([
+            'service_ids' => 'required|array',
+            'service_ids.*' => 'integer|exists:hospital_services,id'
+        ]);
+
+        // Get AI settings
+        $provider = \App\Models\Setting::get('ai_provider', 'openai');
+        $apiKey = '';
+        if ($provider === 'openai' || $provider === 'custom_openai') {
+            $apiKey = \App\Models\Setting::get('openai_api_key');
+        } else {
+            $apiKey = \App\Models\Setting::get('gemini_api_key');
+        }
+
+        if (empty($apiKey)) {
+            return response()->json(['success' => false, 'message' => 'AI API Key is missing.'], 400);
+        }
+
+        $results = [];
+        $services = HospitalService::whereIn('id', $request->service_ids)->where('hospital_id', $hospital->id)->get();
+
+        foreach($services as $service) {
+            $prompt = "Write a highly accurate, 2-3 sentence medical description for a diagnostic test/service named '{$service->service_name}'. This description is for patients to understand what the test involves. Do NOT use markdown. Do NOT use html tags except paragraph <p>. Tone: Informative and Professional.";
+            $desc = null;
+
+            try {
+                if ($provider === 'gemini') {
+                    $response = \Illuminate\Support\Facades\Http::post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey, [
+                        'contents' => [['parts' => [['text' => "System: You are a medical professional.\n\nUser: " . $prompt]]]],
+                        'generationConfig' => ['temperature' => 0.6]
+                    ]);
+                    if ($response->successful()) {
+                        $desc = trim($response->json()['candidates'][0]['content']['parts'][0]['text'] ?? '');
+                    }
+                } else {
+                    $baseUrl = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_base_url')) 
+                              ? rtrim(preg_replace('#/chat/completions/?$#i', '', \App\Models\Setting::get('openai_base_url')), '/')
+                              : 'https://api.openai.com/v1';
+                    $model = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_model')) 
+                              ? \App\Models\Setting::get('openai_model') : 'gpt-4o-mini';
+
+                    $response = \Illuminate\Support\Facades\Http::withToken($apiKey)->post($baseUrl . '/chat/completions', [
+                        'model' => $model,
+                        'messages' => [
+                            ['role' => 'system', 'content' => 'You are a medical professional writing for patients.'],
+                            ['role' => 'user', 'content' => $prompt]
+                        ],
+                        'temperature' => 0.6
+                    ]);
+                    if ($response->successful()) {
+                        $desc = trim($response->json()['choices'][0]['message']['content'] ?? '');
+                    }
+                }
+
+                if ($desc) {
+                    $service->update(['description' => $desc]);
+                    $results[] = ['id' => $service->id, 'status' => 'success', 'description' => Str::limit($desc, 50)];
+                } else {
+                    $results[] = ['id' => $service->id, 'status' => 'failed', 'reason' => 'Empty response from AI'];
+                }
+
+            } catch (\Exception $e) {
+                $results[] = ['id' => $service->id, 'status' => 'failed', 'reason' => $e->getMessage()];
+            }
+        }
+
+        return response()->json(['success' => true, 'results' => $results]);
     }
 }

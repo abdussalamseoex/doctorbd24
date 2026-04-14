@@ -127,10 +127,10 @@
                         👨‍⚕️ {{ __('Doctors') }}
                         <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-[10px]">{{ $doctors->count() }}</span>
                     </button>
-                    <button @click.prevent="switchTab('services')" 
-                       :class="currentTab === 'services' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                    <button @click.prevent="switchTab('diagnostics')" 
+                       :class="currentTab === 'diagnostics' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
                        class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
-                        💉 {{ __('Services & Tests') }}
+                        💉 {{ __('Diagnostics') }}
                     </button>
                 </div>
 
@@ -540,8 +540,8 @@
             </div>
             </div> {{-- END TAB CONTENT: DOCTORS --}}
 
-            {{-- TAB CONTENT: SERVICES & TESTS --}}
-            <div x-show="currentTab === 'services'" style="{{ ($tab ?? 'overview') === 'services' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
+            {{-- TAB CONTENT: DIAGNOSTICS --}}
+            <div x-show="currentTab === 'diagnostics'" style="{{ ($tab ?? 'overview') === 'diagnostics' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
             
             @if(isset($hospital) && $hospital->hospitalServices()->count() > 0)
                 <div x-data="hospitalDiagnosticServices()" class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-8">
@@ -595,12 +595,20 @@
                                 </div>
                                 <div class="divide-y divide-gray-100 dark:divide-gray-700/50 max-h-[400px] overflow-y-auto hide-scrollbar">
                                     <template x-for="service in group.services" :key="service.id">
-                                        <div class="flex items-center justify-between p-4 hover:bg-sky-50/50 dark:hover:bg-gray-700/30 transition-colors">
-                                            <p class="text-sm font-medium text-gray-700 dark:text-gray-200" x-text="service.service_name"></p>
-                                            <div class="text-right ml-4">
-                                                <span class="inline-block px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm border border-emerald-100 dark:border-emerald-800/50 whitespace-nowrap" x-text="service.price ? '৳ ' + service.price : '-'"></span>
+                                        <a :href="`/hospital/{{ $hospital->slug }}/diagnostics/${service.slug}`" class="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-sky-50/50 dark:hover:bg-gray-700/30 transition-colors group/item block">
+                                            <div class="mb-2 sm:mb-0 pr-4">
+                                                <p class="text-[15px] font-black text-gray-800 dark:text-gray-100 group-hover/item:text-sky-600 dark:group-hover/item:text-sky-400 transition-colors mb-1" x-text="service.service_name"></p>
+                                                <template x-if="service.description">
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 leading-relaxed" x-text="service.description"></p>
+                                                </template>
                                             </div>
-                                        </div>
+                                            <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                                                <span class="inline-block px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm border border-emerald-100 dark:border-emerald-800/50 whitespace-nowrap shadow-sm" x-text="service.price ? '৳ ' + service.price : '-'"></span>
+                                                <span class="text-sky-500 bg-sky-50 dark:bg-gray-800 border border-sky-100 dark:border-gray-700 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity shrink-0">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                                </span>
+                                            </div>
+                                        </a>
                                     </template>
                                 </div>
                             </div>
@@ -619,7 +627,7 @@
                     </div>
                 </div>
             @endif
-            </div> {{-- END TAB CONTENT: SERVICES --}}
+            </div> {{-- END TAB CONTENT: DIAGNOSTICS --}}
 
             </div> {{-- END SPA TABS COMPONENT --}}
 
@@ -882,7 +890,7 @@ document.addEventListener('alpine:init', () => {
 
     @php
         $activeServices = $hospital->hospitalServices()
-            ->select('id', 'service_category', 'service_name', 'price')
+            ->select('id', 'slug', 'service_category', 'service_name', 'description', 'price')
             ->where('is_active', true)
             ->get();
     @endphp

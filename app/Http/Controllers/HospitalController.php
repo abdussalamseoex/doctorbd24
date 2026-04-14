@@ -19,7 +19,7 @@ class HospitalController extends Controller
 
     public function show(string $slug, string $tab = 'overview')
     {
-        if (!in_array($tab, ['overview', 'doctors', 'services'])) {
+        if (!in_array($tab, ['overview', 'doctors', 'diagnostics'])) {
             abort(404);
         }
         $hospital = Hospital::published()
@@ -91,5 +91,50 @@ class HospitalController extends Controller
         $specialties = \App\Models\Specialty::orderBy('name->en')->get();
 
         return view('hospitals.show', compact('hospital', 'doctors', 'specialties', 'tab'));
+    }
+
+    public function showDiagnosticTest(string $hospitalSlug, string $serviceSlug)
+    {
+        $hospital = Hospital::published()
+            ->where('slug', $hospitalSlug)
+            ->with(['area.district.division'])
+            ->firstOrFail();
+
+        $service = $hospital->hospitalServices()
+            ->where('slug', $serviceSlug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $hospital->incrementViewCount();
+
+        // ── Dynamic SEO generation for the specific test ──────────────────────
+        $areaName = $hospital->area?->getTranslation('name', 'en') ?? '';
+        $locationStr = $areaName ? " $areaName," : "";
+        $testName = \Illuminate\Support\Str::title($service->service_name);
+        
+        $title = "{$testName} Price & Details at {$hospital->name}{$locationStr} Bangladesh | DoctorBD24";
+        $priceStr = $service->price ? " The current price is around Tk {$service->price}." : "";
+        $desc = "Find the latest cost, procedure, and details for the {$testName} test at {$hospital->name} in{$locationStr} Bangladesh.{$priceStr} Book your appointment or call for inquiries.";
+
+        SEOTools::setTitle($title, false);
+        SEOTools::setDescription(\Illuminate\Support\Str::limit($desc, 160));
+        
+        $keywords = [$testName, "{$testName} test cost", "{$testName} price in {$hospital->name}", $hospital->name, $areaName];
+        SEOTools::metatags()->addKeyword(array_filter($keywords));
+
+        SEOTools::setCanonical(route('hospitals.diagnostic.show', [$hospital->slug, $service->slug]));
+        OpenGraph::setUrl(route('hospitals.diagnostic.show', [$hospital->slug, $service->slug]));
+        OpenGraph::setType('article');
+
+        $ogImage = $hospital->logo ? asset('storage/' . $hospital->logo) : null;
+        if ($ogImage) OpenGraph::addImage($ogImage);
+
+        JsonLd::setType('MedicalTest');
+        JsonLd::setTitle($title);
+        JsonLd::setDescription($desc);
+        JsonLd::addValue('url', route('hospitals.diagnostic.show', [$hospital->slug, $service->slug]));
+        // ─────────────────────────────────────────────
+
+        return view('hospitals.diagnostic_show', compact('hospital', 'service'));
     }
 }

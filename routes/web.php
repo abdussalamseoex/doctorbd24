@@ -93,7 +93,8 @@ Route::middleware(['cache.response'])->group(function () {
 
     // Hospitals
     Route::get('/hospitals', [HospitalController::class, 'index'])->name('hospitals.index');
-    Route::get('/hospital/{slug}/{tab?}', [HospitalController::class, 'show'])->where('tab', 'overview|doctors|services')->name('hospitals.show');
+    Route::get('/hospital/{slug}/{tab?}', [HospitalController::class, 'show'])->where('tab', 'overview|doctors|diagnostics')->name('hospitals.show');
+    Route::get('/hospital/{slug}/diagnostics/{service_slug}', [HospitalController::class, 'showDiagnosticTest'])->name('hospitals.diagnostic.show');
 
     // Specialties
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
@@ -207,6 +208,7 @@ Route::prefix('admin')
         // Hospital Services
         Route::get('hospitals/{hospital}/services', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'index'])->name('hospitals.services.index')->middleware('permission:manage hospitals');
         Route::post('hospitals/{hospital}/services/import', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'import'])->name('hospitals.services.import')->middleware('permission:manage hospitals');
+        Route::post('hospitals/{hospital}/services/generate-ai', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'generateBiDescription'])->name('hospitals.services.generate-ai')->middleware('permission:manage hospitals');
         Route::post('hospitals/{hospital}/services', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'store'])->name('hospitals.services.store')->middleware('permission:manage hospitals');
         Route::put('hospitals/{hospital}/services/{service}', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'update'])->name('hospitals.services.update')->middleware('permission:manage hospitals');
         Route::delete('hospitals/{hospital}/services/clear', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'clearAll'])->name('hospitals.services.clear')->middleware('permission:manage hospitals');

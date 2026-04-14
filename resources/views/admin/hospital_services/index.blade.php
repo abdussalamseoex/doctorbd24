@@ -56,6 +56,10 @@
                         <input type="text" name="service_name" required placeholder="e.g. CBC" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-300">
                     </div>
                     <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Description (Optional SEO Snippet)</label>
+                        <textarea name="description" rows="2" placeholder="Brief details about this test..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-300"></textarea>
+                    </div>
+                    <div>
                         <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Price</label>
                         <input type="text" name="price" placeholder="e.g. 500" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-300">
                     </div>
@@ -69,18 +73,83 @@
         {{-- Right Column: Data Table --}}
         <div class="lg:col-span-2">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col h-full">
-                <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
-                    <h3 class="font-bold text-gray-800 dark:text-gray-200">
-                        Existing Services ({{ $services->total() }})
-                    </h3>
-                    @if($services->total() > 0)
-                        <form action="{{ route('admin.hospitals.services.clear', $hospital->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete ALL services for this hospital?');">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-xs font-semibold text-red-500 hover:text-red-700 hover:underline">
-                                Clear All
+                <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50 flex-wrap gap-4"
+                     x-data="{
+                        generating: false,
+                        progress: 0,
+                        total: 0,
+                        missingIds: {{ $services->getCollection()->filter(fn($s) => empty($s->description))->pluck('id')->values()->toJson() }},
+                        generateAll() {
+                            if (this.missingIds.length === 0) {
+                                alert('All services on this page already have descriptions!');
+                                return;
+                            }
+                            if (!confirm('Generate AI descriptions for ' + this.missingIds.length + ' tests on this page? Note: This might take a moment.')) return;
+                            
+                            this.generating = true;
+                            this.total = this.missingIds.length;
+                            this.progress = 0;
+                            
+                            let chunkSize = 10;
+                            let chunks = [];
+                            for (let i = 0; i < this.missingIds.length; i += chunkSize) {
+                                chunks.push(this.missingIds.slice(i, i + chunkSize));
+                            }
+                            
+                            this.processChunks(chunks, 0);
+                        },
+                        processChunks(chunks, index) {
+                            if (index >= chunks.length) {
+                                this.generating = false;
+                                window.location.reload();
+                                return;
+                            }
+                            
+                            fetch('{{ route('admin.hospitals.services.generate-ai', $hospital->id) }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ service_ids: chunks[index] })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                this.progress += chunks[index].length;
+                                this.processChunks(chunks, index + 1);
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert('API Error generating descriptions.');
+                                this.generating = false;
+                            });
+                        }
+                     }">
+                    <div>
+                        <h3 class="font-bold text-gray-800 dark:text-gray-200">
+                            Existing Services ({{ $services->total() }})
+                        </h3>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Showing {{ $services->count() }} items per page.</p>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        @if($services->count() > 0)
+                            <button @click="generateAll" :disabled="generating" class="text-xs font-bold px-3 py-1.5 rounded-lg border flex items-center gap-1 transition-colors"
+                                    :class="generating ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-fuchsia-50 text-fuchsia-600 border-fuchsia-200 hover:bg-fuchsia-100 hover:border-fuchsia-300 dark:bg-fuchsia-900/30 dark:border-fuchsia-800 dark:text-fuchsia-400'">
+                                <svg x-show="!generating" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                <svg x-cloak x-show="generating" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                <span x-show="!generating" x-text="'AI Generate Descriptions (' + missingIds.length + ' missing)'"></span>
+                                <span x-cloak x-show="generating" x-text="'Generating... ' + progress + '/' + total"></span>
                             </button>
-                        </form>
-                    @endif
+                        
+                            <form action="{{ route('admin.hospitals.services.clear', $hospital->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete ALL services for this hospital?');">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-xs font-semibold text-red-500 hover:text-red-700 hover:underline">
+                                    Clear All
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -103,7 +172,12 @@
                                             <span class="text-gray-400">-</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3">{{ $svc->service_name }}</td>
+                                    <td class="px-4 py-3">
+                                        <div class="font-medium">{{ $svc->service_name }}</div>
+                                        @if($svc->description)
+                                            <div class="text-xs text-gray-500 mt-1 truncate max-w-xs">{{ $svc->description }}</div>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-semibold">{{ $svc->price ?: '-' }}</td>
                                     <td class="px-4 py-3 text-right">
                                         <form action="{{ route('admin.hospitals.services.destroy', [$hospital->id, $svc->id]) }}" method="POST" class="inline" onsubmit="return confirm('Delete this service?');">
