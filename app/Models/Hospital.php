@@ -32,7 +32,7 @@ class Hospital extends Model
         'phone', 'email', 'website', 'address', 'area_id',
         'lat', 'lng', 'google_maps_url', 'verified', 'featured', 'view_count',
         'rating_avg', 'rating_count',
-        'facebook_url', 'instagram_url', 'youtube_url', 'services', 'opening_hours',
+        'facebook_url', 'instagram_url', 'youtube_url', 'blog_url', 'services', 'opening_hours',
     ];
 
     protected $casts = [

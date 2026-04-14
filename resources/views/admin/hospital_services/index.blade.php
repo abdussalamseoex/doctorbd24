@@ -180,6 +180,12 @@
                                     </td>
                                     <td class="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-semibold">{{ $svc->price ?: '-' }}</td>
                                     <td class="px-4 py-3 text-right">
+                                        <button @click="$dispatch('open-edit-modal', {
+                                                data: { name: {{ json_encode($svc->service_name) }}, cat: {{ json_encode($svc->service_category) }}, price: {{ json_encode($svc->price) }}, desc: {{ json_encode($svc->description) }} },
+                                                url: '{{ route('admin.hospitals.services.update', [$hospital->id, $svc->id]) }}'
+                                            })" type="button" class="text-sky-500 hover:text-sky-700 p-1 mr-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                        </button>
                                         <form action="{{ route('admin.hospitals.services.destroy', [$hospital->id, $svc->id]) }}" method="POST" class="inline" onsubmit="return confirm('Delete this service?');">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="text-red-400 hover:text-red-600 p-1">
@@ -205,4 +211,61 @@
         </div>
     </div>
 </div>
+</div>
+
+{{-- Edit Modal --}}
+<div x-data="{
+        open: false,
+        service: { name: '', cat: '', price: '', desc: '' },
+        actionUrl: '',
+        openModal(data, url) {
+            this.service = data;
+            this.actionUrl = url;
+            this.open = true;
+        }
+    }" 
+    @open-edit-modal.window="openModal($event.detail.data, $event.detail.url)"
+    x-show="open" 
+    class="relative z-50" 
+    x-cloak>
+    
+    <div x-show="open" x-transition.opacity class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm"></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div x-show="open" @click.away="open = false" x-transition.opacity class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-100 dark:border-gray-700">
+                <form :action="actionUrl" method="POST">
+                    @csrf @method('PUT')
+                    <div class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Edit Service</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Category</label>
+                                <input type="text" name="service_category" x-model="service.cat" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Service Name <span class="text-red-500">*</span></label>
+                                <input type="text" name="service_name" x-model="service.name" required class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Price / Charge</label>
+                                <input type="text" name="price" x-model="service.price" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Description</label>
+                                <textarea name="description" x-model="service.desc" rows="3" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 sm:ml-3 sm:w-auto">Save Changes</button>
+                        <button type="button" @click="open = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection

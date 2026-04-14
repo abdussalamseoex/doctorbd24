@@ -288,6 +288,14 @@
                     <input type="url" name="youtube_url" value="{{ old('youtube_url', $hospital->youtube_url ?? '') }}" placeholder="https://youtube.com/..."
                            class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400">
                 </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        Related Blog URL
+                    </label>
+                    <input type="url" name="blog_url" value="{{ old('blog_url', $hospital->blog_url ?? '') }}" placeholder="https://example.com/blog..."
+                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                </div>
             </div>
 
             <hr class="border-gray-100 dark:border-gray-700 mb-4">
