@@ -23,7 +23,27 @@ class VideoController extends Controller
             ->firstOrFail();
 
         $title = $video->title . ' | ' . $hospital->name;
-        $description = $video->description ? mb_substr(strip_tags($video->description), 0, 160) : ('Watch ' . escapeshellcmd($video->title) . ' by ' . $hospital->name . '. Comprehensive healthcare insights, treatments, and hospital overview video.');
+        if ($video->description) {
+            $rawDesc = strip_tags($video->description);
+            if (mb_strlen($rawDesc) > 160) {
+                $buffer = mb_substr($rawDesc, 0, 220); // Search for period within 220 chars
+                $lastDari = mb_strrpos($buffer, '।');
+                $lastDot = mb_strrpos($buffer, '.');
+                $cutPos = max($lastDari !== false ? $lastDari : 0, $lastDot !== false ? $lastDot : 0);
+                
+                if ($cutPos > 0) {
+                    $description = mb_substr($buffer, 0, $cutPos + 1);
+                } else {
+                    // Fallback to space break
+                    $lastSpace = mb_strrpos(mb_substr($rawDesc, 0, 160), ' ');
+                    $description = $lastSpace !== false ? mb_substr($rawDesc, 0, $lastSpace) . '...' : mb_substr($rawDesc, 0, 160) . '...';
+                }
+            } else {
+                $description = $rawDesc;
+            }
+        } else {
+            $description = 'Watch ' . escapeshellcmd($video->title) . ' by ' . $hospital->name . '. Comprehensive healthcare insights, treatments, and hospital overview video.';
+        }
 
         SEOMeta::setTitle($title);
         SEOMeta::setDescription($description);
