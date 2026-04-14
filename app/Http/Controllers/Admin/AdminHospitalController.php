@@ -124,27 +124,6 @@ class AdminHospitalController extends Controller
 
 
         $validated['status'] = $request->input('status', 'draft');
-
-
-        if ($validated['status'] === 'published') {
-
-
-            $validated['published_at'] = now();
-
-
-        } elseif ($validated['status'] === 'scheduled') {
-
-
-            $validated['published_at'] = $request->input('published_at');
-
-
-        } else {
-
-
-            $validated['published_at'] = null;
-
-
-        $validated['status'] = $request->input('status', 'draft');
         if ($validated['status'] === 'published') {
             $validated['published_at'] = now();
         } elseif ($validated['status'] === 'scheduled') {
