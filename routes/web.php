@@ -208,6 +208,7 @@ Route::prefix('admin')
         // Hospitals
         Route::post('hospitals/bulk-action', [\App\Http\Controllers\Admin\AdminHospitalController::class, 'bulkAction'])->name('hospitals.bulk-action')->middleware('permission:manage hospitals');
         Route::post('hospitals/fetch-video', [\App\Http\Controllers\Admin\AdminHospitalController::class, 'fetchVideoUrl'])->name('hospitals.fetch-video')->middleware('permission:manage hospitals');
+        Route::post('hospitals/generate-video-description', [\App\Http\Controllers\Admin\AdminHospitalController::class, 'generateVideoDescription'])->name('hospitals.generate-video-description')->middleware('permission:manage hospitals');
         Route::post('hospitals/fetch-channel-videos', [\App\Http\Controllers\Admin\AdminHospitalController::class, 'fetchChannelVideos'])->name('hospitals.fetch-channel-videos')->middleware('permission:manage hospitals');
         Route::post('hospitals/fetch-blog', [\App\Http\Controllers\Admin\AdminHospitalController::class, 'fetchBlogUrl'])->name('hospitals.fetch-blog')->middleware('permission:manage hospitals');
         Route::post('hospitals/fetch-url-meta', [\App\Http\Controllers\Admin\AdminHospitalController::class, 'fetchUrlMeta'])->name('hospitals.fetch-url-meta')->middleware('permission:manage hospitals');

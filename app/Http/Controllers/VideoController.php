@@ -23,7 +23,7 @@ class VideoController extends Controller
             ->firstOrFail();
 
         $title = $video->title . ' | ' . $hospital->name;
-        $description = 'Watch ' . escapeshellcmd($video->title) . ' by ' . $hospital->name . '. Comprehensive healthcare insights, treatments, and hospital overview video.';
+        $description = $video->description ? mb_substr(strip_tags($video->description), 0, 160) : ('Watch ' . escapeshellcmd($video->title) . ' by ' . $hospital->name . '. Comprehensive healthcare insights, treatments, and hospital overview video.');
 
         SEOMeta::setTitle($title);
         SEOMeta::setDescription($description);

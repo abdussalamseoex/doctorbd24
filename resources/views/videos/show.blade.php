@@ -54,6 +54,11 @@
 
                     <div class="p-6 md:p-8">
                         <h1 class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white leading-tight mb-4">{{ $video->title }}</h1>
+                        @if($video->description)
+                            <div class="prose prose-sm md:prose-base dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 mb-6 bg-gray-50/50 dark:bg-gray-700/20 p-4 rounded-xl border border-gray-100 dark:border-gray-700/50">
+                                {!! nl2br(e($video->description)) !!}
+                            </div>
+                        @endif
                         <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4 mt-2">
                             <a href="{{ route('hospitals.show', $hospital->slug) }}" class="flex items-center gap-3 group">
                                 @if($hospital->logo)

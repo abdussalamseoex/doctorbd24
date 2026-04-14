@@ -343,7 +343,7 @@
         {{-- ════ CARD: MEDIA & CONTENT TABS ════ --}}
         <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-6" 
              x-data="{ 
-                videos: {{ isset($hospital) && $hospital->hospitalVideos->count() > 0 ? $hospital->hospitalVideos->map(function($v){ return ['title' => $v->title, 'url' => $v->video_url]; })->toJson() : '[]' }},
+                videos: {{ isset($hospital) && $hospital->hospitalVideos->count() > 0 ? $hospital->hospitalVideos->map(function($v){ return ['id' => $v->id, 'title' => $v->title, 'url' => $v->video_url, 'description' => $v->description]; })->toJson() : '[]' }},
                 blogs: {{ empty(isset($hospital) && $hospital->blogs) ? '[]' : (is_string($hospital->blogs[0] ?? null) ? json_encode(array_map(function($url){ return ['title'=>'Linked Content', 'url'=>$url]; }, $hospital->blogs)) : json_encode($hospital->blogs)) }},
                 newVideoUrl: '',
                 newChannelUrl: '',
@@ -474,6 +474,40 @@
                     }).then(res => res.json()).then(data => {
                         if (data.url) { this.addBlog(data.url); }
                     }).catch(() => alert('Error fetching blog')).finally(() => this.isFetchingBlog = false);
+                },
+
+                isGeneratingAll: false,
+                generateMissingDescriptions() {
+                    this.isGeneratingAll = true;
+                    this.generateNextMissing(0);
+                },
+                generateNextMissing(index) {
+                    if (index >= this.videos.length) {
+                        this.isGeneratingAll = false;
+                        alert('All missing descriptions have been successfully generated!');
+                        return;
+                    }
+
+                    if (!this.videos[index].description) {
+                        let name = document.querySelector('input[name=name]').value;
+                        fetch('{{ route('admin.hospitals.generate-video-description') }}', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                            body: JSON.stringify({ title: this.videos[index].title, hospital_name: name })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success && data.description) {
+                                this.videos[index].description = data.description;
+                            }
+                            // Move to next even if it fails to avoid infinite loop freeze
+                            this.generateNextMissing(index + 1);
+                        })
+                        .catch(() => this.generateNextMissing(index + 1));
+                    } else {
+                        // Already has description, skip to next
+                        this.generateNextMissing(index + 1);
+                    }
                 }
             }">
             <div class="mb-5">
@@ -495,6 +529,12 @@
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                         </span>
                         Videos (Multi-Platform Auto Fetch)
+                        
+                        <button type="button" @click="generateMissingDescriptions()" :disabled="isGeneratingAll || videos.length === 0" 
+                                class="ml-auto flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors">
+                            <span x-show="isGeneratingAll" class="w-3 h-3 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
+                            <span x-show="!isGeneratingAll">✨ Auto-Generate AI Desc</span>
+                        </button>
                     </label>
                     
                     <div class="flex flex-col gap-2 mb-3 border-b border-gray-100 dark:border-gray-700 pb-3">
@@ -518,9 +558,17 @@
                     <div class="space-y-1.5 mb-3 flex-1 overflow-y-auto max-h-[250px] pr-1">
                         <template x-for="(vid, index) in videos" :key="index">
                             <div class="group flex items-start justify-between gap-2 p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
-                                <div class="overflow-hidden">
-                                    <p class="text-xs font-bold text-gray-800 dark:text-gray-200 truncate pr-6" x-text="vid.title"></p>
-                                    <p class="text-[10px] text-gray-500 truncate" x-text="vid.url"></p>
+                                <div class="overflow-hidden w-full pr-6">
+                                    <p class="text-xs font-bold text-gray-800 dark:text-gray-200 truncate" x-text="vid.title"></p>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <p class="text-[10px] text-gray-500 truncate max-w-[120px] sm:max-w-[200px]" x-text="vid.url"></p>
+                                        <template x-if="vid.description">
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">📝 Desc Added</span>
+                                        </template>
+                                        <template x-if="!vid.description">
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">No Desc</span>
+                                        </template>
+                                    </div>
                                 </div>
                                 <button type="button" @click="videos.splice(index, 1)" class="absolute top-2.5 right-2.5 text-gray-400 hover:text-red-600 bg-white dark:bg-gray-800 rounded transition-colors p-0.5" title="Remove Video">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -689,3 +737,4 @@
     </form>
 </div>
 @include('admin.shared._tinymce')
+

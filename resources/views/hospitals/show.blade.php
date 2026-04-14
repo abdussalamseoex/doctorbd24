@@ -746,6 +746,9 @@
                             </div>
                             <div class="flex-1 w-full text-center sm:text-left">
                                 <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-emerald-600 transition-colors leading-snug">{{ $video->title }}</h4>
+                                @if($video->description)
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{{ $video->description }}</p>
+                                @endif
                                 <p class="text-xs text-gray-500 flex items-center justify-center sm:justify-start gap-1">
                                     @if($hospital->logo)
                                         <img src="{{ Storage::url($hospital->logo) }}" class="w-4 h-4 rounded-full object-cover">

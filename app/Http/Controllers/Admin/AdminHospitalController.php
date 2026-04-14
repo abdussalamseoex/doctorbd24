@@ -665,4 +665,61 @@ class AdminHospitalController extends Controller
             return response()->json(['title' => 'Linked Content', 'image' => null, 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function generateVideoDescription(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string',
+            'hospital_name' => 'nullable|string'
+        ]);
+
+        $title = $request->input('title');
+        $hospitalName = $request->input('hospital_name', '');
+
+        $prompt = "You are a professional medical content writer. Write a highly engaging, 2-3 sentence description in pure Bengali for a YouTube video titled '{$title}'. ";
+        if ($hospitalName) {
+            $prompt .= "This video is from the facility '{$hospitalName}'. ";
+        }
+        $prompt .= "Make it sound helpful and informative for patients. DO NOT wrap the output in markdown code blocks like ```text. Return ONLY the raw Bengali text.";
+
+        try {
+            $apiKey = \App\Models\Setting::get('gemini_api_key');
+            if ($apiKey) {
+                $response = \Illuminate\Support\Facades\Http::timeout(30)->withoutVerifying()->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey, [
+                    'contents' => [['parts' => [['text' => $prompt]]]],
+                    'generationConfig' => ['temperature' => 0.7]
+                ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    $desc = trim($data['candidates'][0]['content']['parts'][0]['text'] ?? '');
+                    // Clean up potential markdown formatting from AI output
+                    $desc = preg_replace('/^```(?:text|markdown|html)?\s*([\s\S]*?)\s*```$/im', '$1', $desc);
+                    return response()->json(['success' => true, 'description' => trim($desc)]);
+                }
+            }
+
+            // Fallback to OpenAI
+            $openAiKey = \App\Models\Setting::get('openai_api_key');
+            if ($openAiKey) {
+                 $openResponse = \Illuminate\Support\Facades\Http::withToken($openAiKey)->timeout(30)->withoutVerifying()->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4o-mini',
+                    'messages' => [['role' => 'user', 'content' => $prompt]],
+                    'temperature' => 0.7,
+                ]);
+
+                if ($openResponse->successful()) {
+                     $data = $openResponse->json();
+                     $desc = trim($data['choices'][0]['message']['content'] ?? '');
+                     $desc = preg_replace('/^```(?:text|markdown|html)?\s*([\s\S]*?)\s*```$/im', '$1', $desc);
+                     return response()->json(['success' => true, 'description' => trim($desc)]);
+                }
+            }
+
+            return response()->json(['success' => false, 'message' => 'No active AI API Configuration found.']);
+            
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }
