@@ -363,8 +363,27 @@ class AdminHospitalController extends Controller
             $image = is_string($link) ? null : ($link['image'] ?? null);
             
             // Re-fetch only if title is generic
-            if (in_array($title, ['Fetching title...', 'Linked Content', 'Linked Article/Media']) || empty(trim($title))) {
+            if (in_array($title, ['Fetching title...', 'Linked Content', 'Linked Article/Media', 'Read Article']) || empty(trim($title))) {
                 try {
+                    // check if internal blog link first
+                    $appHost = parse_url(config('app.url'), PHP_URL_HOST) ?? 'doctorbd24.com';
+                    $linkHost = parse_url($url, PHP_URL_HOST);
+                    if ($linkHost === $appHost || str_contains($url, '/blog/')) {
+                        $parts = explode('/blog/', parse_url($url, PHP_URL_PATH));
+                        if(count($parts) > 1) {
+                            $slug = end($parts);
+                            $post = \App\Models\BlogPost::where('slug', $slug)->first();
+                            if($post) {
+                                $processed[] = [
+                                    'title' => $post->title,
+                                    'url' => $url,
+                                    'image' => $post->image ? asset('storage/' . $post->image) : null
+                                ];
+                                continue;
+                            }
+                        }
+                    }
+
                     $response = \Illuminate\Support\Facades\Http::timeout(3)
                         ->withHeaders(['User-Agent' => 'Mozilla/5.0'])
                         ->get($url);
@@ -454,6 +473,24 @@ class AdminHospitalController extends Controller
 
         try {
             $meta = ['title' => 'Linked Content', 'image' => null];
+
+            // 1. FAST PATH: Check if it's an internal blog link!
+            // E.g. https://doctorbd24.com/blog/popular-diagnostic
+            $appHost = parse_url(config('app.url'), PHP_URL_HOST) ?? 'doctorbd24.com';
+            $linkHost = parse_url($url, PHP_URL_HOST);
+            if ($linkHost === $appHost || str_contains($url, '/blog/')) {
+                $parts = explode('/blog/', parse_url($url, PHP_URL_PATH));
+                if(count($parts) > 1) {
+                    $slug = end($parts);
+                    $post = \App\Models\BlogPost::where('slug', $slug)->first();
+                    if($post) {
+                        return response()->json([
+                            'title' => $post->title,
+                            'image' => $post->image ? asset('storage/' . $post->image) : null
+                        ]);
+                    }
+                }
+            }
 
             // check for oembed first as it's cleaner for media
             $oembedRes = \Illuminate\Support\Facades\Http::timeout(3)->get("https://noembed.com/embed?url=" . urlencode($url));
