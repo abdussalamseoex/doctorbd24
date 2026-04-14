@@ -80,7 +80,8 @@ class AdminHospitalController extends Controller
             'facebook_url'    => ['nullable','url'],
             'instagram_url'   => ['nullable','url'],
             'youtube_url'     => ['nullable','url'],
-            'blog_url'        => ['nullable','url'],
+            'linkedin_url'    => ['nullable','url'],
+            'twitter_url'     => ['nullable','url'],
             'logo'            => ['nullable','image','mimes:jpeg,png,webp','max:2048'],
             'banner'          => ['nullable','image','mimes:jpeg,png,webp','max:2048'],
             'gallery'         => ['nullable','array','max:10'],
@@ -93,9 +94,11 @@ class AdminHospitalController extends Controller
         $validated['verified'] = $request->boolean('verified');
         $validated['featured'] = $request->boolean('featured');
 
-        // Handle services JSON (sent as stringified JSON from Alpine.js)
+        // Handle JSON arrays (sent as stringified JSON from Alpine.js)
         $validated['services']      = $this->parseJsonField($request->input('services'));
         $validated['opening_hours'] = $this->parseJsonField($request->input('opening_hours'));
+        $validated['videos']        = $this->parseJsonField($request->input('videos'));
+        $validated['blogs']         = $this->parseJsonField($request->input('blogs'));
 
         if ($request->hasFile('logo')) {
             $validated['logo'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('logo'), 'hospitals', 800);
@@ -195,7 +198,8 @@ class AdminHospitalController extends Controller
             'facebook_url'    => ['nullable','url'],
             'instagram_url'   => ['nullable','url'],
             'youtube_url'     => ['nullable','url'],
-            'blog_url'        => ['nullable','url'],
+            'linkedin_url'    => ['nullable','url'],
+            'twitter_url'     => ['nullable','url'],
             'logo'            => ['nullable','image','mimes:jpeg,png,webp','max:2048'],
             'banner'          => ['nullable','image','mimes:jpeg,png,webp','max:2048'],
             'gallery'         => ['nullable','array','max:10'],
@@ -205,6 +209,8 @@ class AdminHospitalController extends Controller
         $validated['verified'] = $request->boolean('verified');
         $validated['opening_hours'] = $this->parseJsonField($request->input('opening_hours'));
         $validated['services'] = $this->parseJsonField($request->input('services'));
+        $validated['videos'] = $this->parseJsonField($request->input('videos'));
+        $validated['blogs'] = $this->parseJsonField($request->input('blogs'));
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(4);
