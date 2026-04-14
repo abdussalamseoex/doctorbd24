@@ -365,9 +365,11 @@ class AdminHospitalController extends Controller
             // Re-fetch only if title is generic
             if (in_array($title, ['Fetching title...', 'Linked Content', 'Linked Article/Media', 'Read Article']) || empty(trim($title))) {
                 try {
-                    // check if internal blog link first
                     $appHost = parse_url(config('app.url'), PHP_URL_HOST) ?? 'doctorbd24.com';
                     $linkHost = parse_url($url, PHP_URL_HOST);
+                    $linkHostLower = strtolower((string)$linkHost);
+
+                    // 1. Check if internal blog link first
                     if ($linkHost === $appHost || str_contains($url, '/blog/')) {
                         $parts = explode('/blog/', parse_url($url, PHP_URL_PATH));
                         if(count($parts) > 1) {
@@ -384,8 +386,22 @@ class AdminHospitalController extends Controller
                         }
                     }
 
+                    // 2. Facebook Fallback (Since Facebook blocks backend scraper bots without an API Key)
+                    if (str_contains($linkHostLower, 'facebook.com') || str_contains($linkHostLower, 'fb.watch')) {
+                        $fbTitle = 'Facebook Post';
+                        if (str_contains($url, '/reel/')) $fbTitle = 'Facebook Reel';
+                        elseif (str_contains($url, '/videos/') || str_contains($linkHostLower, 'fb.watch')) $fbTitle = 'Facebook Video';
+                        
+                        $processed[] = [
+                            'title' => $fbTitle,
+                            'url' => $url,
+                            'image' => 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg' // Clean fb icon
+                        ];
+                        continue;
+                    }
+
                     $response = \Illuminate\Support\Facades\Http::timeout(3)
-                        ->withHeaders(['User-Agent' => 'Mozilla/5.0'])
+                        ->withHeaders(['User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36'])
                         ->get($url);
                     
                     if ($response->successful()) {
@@ -401,6 +417,11 @@ class AdminHospitalController extends Controller
                             $image = $matches[1];
                         } elseif (!$image && preg_match('/<meta[^>]*content=[\'"]([^\'"]+)[\'"][^>]*property=[\'"]og:image[\'"][^>]*>/i', $html, $matches)) {
                             $image = $matches[1];
+                        }
+                        
+                        // Prevent storing literal "Facebook" or generic site names if scrape failed
+                        if (in_array(trim($title), ['Facebook', 'Log In or Sign Up to View'])) {
+                            $title = 'Linked Media';
                         }
                     }
                 } catch (\Exception $e) {}
@@ -478,6 +499,8 @@ class AdminHospitalController extends Controller
             // E.g. https://doctorbd24.com/blog/popular-diagnostic
             $appHost = parse_url(config('app.url'), PHP_URL_HOST) ?? 'doctorbd24.com';
             $linkHost = parse_url($url, PHP_URL_HOST);
+            $linkHostLower = strtolower((string)$linkHost);
+
             if ($linkHost === $appHost || str_contains($url, '/blog/')) {
                 $parts = explode('/blog/', parse_url($url, PHP_URL_PATH));
                 if(count($parts) > 1) {
@@ -490,6 +513,20 @@ class AdminHospitalController extends Controller
                         ]);
                     }
                 }
+            }
+
+            // 2. FAST PATH: Facebook Fallback
+            // Facebook actively blocks backend scrapers that don't have API keys. 
+            // We provide a rich fallback so the UI looks good instead of failing or generic.
+            if (str_contains($linkHostLower, 'facebook.com') || str_contains($linkHostLower, 'fb.watch')) {
+                $fbTitle = 'Facebook Post';
+                if (str_contains($url, '/reel/')) $fbTitle = 'Facebook Reel';
+                elseif (str_contains($url, '/videos/') || str_contains($linkHostLower, 'fb.watch')) $fbTitle = 'Facebook Video';
+                
+                return response()->json([
+                    'title' => $fbTitle,
+                    'image' => 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg' // Clean fb icon
+                ]);
             }
 
             // check for oembed first as it's cleaner for media
