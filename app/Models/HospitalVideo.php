@@ -11,7 +11,7 @@ class HospitalVideo extends Model
     use HasFactory;
 
     protected $fillable = [
-        'hospital_id', 'provider', 'video_url', 'youtube_id', 'title', 'slug', 'thumbnail_url', 'is_active', 'sort_order'
+        'hospital_id', 'provider', 'video_url', 'youtube_id', 'title', 'description', 'slug', 'thumbnail_url', 'is_active', 'sort_order'
     ];
 
     protected $casts = [
