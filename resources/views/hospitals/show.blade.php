@@ -416,23 +416,47 @@
                         }
                         $hospitalSpecialties = collect($hospitalSpecialtiesArray)->sortBy('name');
                     @endphp
-                    <div class="flex overflow-x-auto hide-scrollbar gap-2 pb-3">
-                        <button @click="setSpecialty('')" 
-                            :class="selectedSpecialty === '' ? 'bg-sky-500 text-white shadow-sm border-sky-500' : 'bg-gray-50 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'"
-                            class="whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-bold border transition-colors flex items-center gap-1.5 focus:outline-none shrink-0">
-                            {{ __('All Specialties') }} 
-                            <span :class="selectedSpecialty === '' ? 'bg-white/20 text-white' : 'bg-gray-200/50 dark:bg-gray-700 text-gray-500 dark:text-gray-400'" class="px-1.5 py-0.5 rounded-full text-[10px]">{{ $doctors->count() }}</span>
-                        </button>
-                        @foreach($hospitalSpecialties as $slug => $data)
-                        <button @click="setSpecialty('{{ $slug }}')" 
-                            :class="selectedSpecialty === '{{ $slug }}' ? 'bg-sky-500 text-white shadow-sm border-sky-500' : 'bg-gray-50 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'"
-                            class="whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-bold border transition-colors flex items-center gap-1.5 focus:outline-none shrink-0">
-                            {{ $data['name'] }}
-                            <span :class="selectedSpecialty === '{{ $slug }}' ? 'bg-white/20 text-white' : 'bg-gray-200/50 dark:bg-gray-700 text-gray-500 dark:text-gray-400'" class="px-1.5 py-0.5 rounded-full text-[10px]">{{ $data['count'] }}</span>
-                        </button>
-                        @endforeach
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-gray-700 shadow-sm relative">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4">
+                            <h4 class="font-bold text-gray-800 dark:text-gray-200 text-sm flex items-center gap-2">
+                                <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                                {{ __('Filter by Specialty') }}
+                            </h4>
+                            <div class="relative w-full sm:w-64">
+                                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <input type="text" x-model="searchSpecialty" placeholder="{{ __('Search specialty...') }}" class="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all">
+                            </div>
+                        </div>
+                        
+                        <div class="relative">
+                            <div class="flex flex-wrap gap-2 overflow-hidden transition-all duration-300" :class="showAllSpecialties || searchSpecialty !== '' ? 'max-h-[600px] overflow-y-auto hide-scrollbar' : 'max-h-[80px]'">
+                                <button x-show="searchSpecialty === ''" @click="setSpecialty('')" 
+                                    :class="selectedSpecialty === '' ? 'bg-sky-500 text-white shadow-sm border-sky-500' : 'bg-gray-50 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                                    class="whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-bold border transition-colors flex items-center gap-1.5 focus:outline-none shrink-0">
+                                    {{ __('All Specialties') }} 
+                                    <span :class="selectedSpecialty === '' ? 'bg-white/20 text-white' : 'bg-gray-200/50 dark:bg-gray-700 text-gray-500 dark:text-gray-400'" class="px-1.5 py-0.5 rounded-full text-[10px]">{{ $doctors->count() }}</span>
+                                </button>
+                                @foreach($hospitalSpecialties as $slug => $data)
+                                <button x-show="searchSpecialty === '' || '{{ strtolower($data['name']) }}'.includes(searchSpecialty.toLowerCase())" 
+                                    @click="setSpecialty('{{ $slug }}')" 
+                                    :class="selectedSpecialty === '{{ $slug }}' ? 'bg-sky-500 text-white shadow-sm border-sky-500' : 'bg-gray-50 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                                    class="whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-bold border transition-colors flex items-center gap-1.5 focus:outline-none shrink-0" x-cloak>
+                                    {{ $data['name'] }}
+                                    <span :class="selectedSpecialty === '{{ $slug }}' ? 'bg-white/20 text-white' : 'bg-gray-200/50 dark:bg-gray-700 text-gray-500 dark:text-gray-400'" class="px-1.5 py-0.5 rounded-full text-[10px]">{{ $data['count'] }}</span>
+                                </button>
+                                @endforeach
+                            </div>
+                            <!-- Gradient Fade for collapsed state -->
+                            <div x-show="!showAllSpecialties && searchSpecialty === ''" class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white dark:from-gray-800 to-transparent pointer-events-none"></div>
+                        </div>
+
+                        <div x-show="searchSpecialty === ''" class="mt-3 flex justify-center border-t border-gray-100 dark:border-gray-700 pt-3">
+                            <button @click="showAllSpecialties = !showAllSpecialties" class="text-xs font-bold text-sky-500 hover:text-sky-600 dark:hover:text-sky-400 flex items-center gap-1">
+                                <span x-text="showAllSpecialties ? '{{ __('Show Less') }}' : '{{ __('View All Specialties') }}'"></span>
+                                <svg class="w-3 h-3 transition-transform duration-300" :class="showAllSpecialties ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
                 @if($doctors->count())
                 <div class="space-y-4" x-ref="doctorList">
@@ -618,13 +642,13 @@
 
                     {{-- Data List --}}
                     <div class="space-y-6">
-                        <template x-for="group in groupedFilteredServices" :key="group.name">
+                        <template x-for="group in paginatedGroupedServices" :key="group.name">
                             <div class="border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm">
                                 <div class="bg-gray-50/80 dark:bg-gray-800/80 px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                                     <h4 class="font-bold text-gray-800 dark:text-gray-200 text-sm" x-text="group.name"></h4>
-                                    <span class="text-[10px] font-bold bg-white dark:bg-gray-700 px-2.5 py-1 rounded-full text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600" x-text="group.services.length + ' Tests'"></span>
+                                    <span class="text-[10px] font-bold bg-white dark:bg-gray-700 px-2.5 py-1 rounded-full text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600" x-text="group.services.length + ' {{ __('Tests') }}'"></span>
                                 </div>
-                                <div class="divide-y divide-gray-100 dark:divide-gray-700/50 max-h-[400px] overflow-y-auto hide-scrollbar">
+                                <div class="divide-y divide-gray-100 dark:divide-gray-700/50 hide-scrollbar">
                                     <template x-for="service in group.services" :key="service.id">
                                         <a :href="`/hospital/{{ $hospital->slug }}/diagnostics/${service.slug}`" class="flex flex-col sm:flex-row sm:items-center justify-between p-5 hover:bg-sky-50 dark:hover:bg-gray-700/40 transition-colors group/item block border-b border-gray-50 dark:border-gray-700/50 last:border-0 hover:shadow-sm">
                                             <div class="mb-3 sm:mb-0 pr-4 flex-1">
@@ -645,6 +669,15 @@
                                 </div>
                             </div>
                         </template>
+                    </div>
+
+                    {{-- Load More Option for Diagnostics --}}
+                    <div class="mt-8 text-center" x-show="filteredServicesCount > testLimit" x-cloak>
+                        <button @click="testLimit += 20" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 mx-auto">
+                            {{ __('Load More Tests') }}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <p class="text-xs text-gray-400 mt-2" x-text="'Showing ' + Math.min(testLimit, filteredServicesCount) + ' of ' + filteredServicesCount + ' matching tests'"></p>
                     </div>
 
                 </div>
@@ -890,6 +923,8 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('hospitalDoctorsFilter', () => ({
         selectedSpecialty: '',
+        searchSpecialty: '',
+        showAllSpecialties: false,
         limit: 15,
         visibleCount: 0,
         totalCount: 0,
@@ -975,6 +1010,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('hospitalDiagnosticServices', () => ({
         searchQuery: '',
         selectedCategory: '',
+        testLimit: 20,
         allServices: @json($activeServices),
         
         get categories() {
@@ -1009,6 +1045,24 @@ document.addEventListener('alpine:init', () => {
                 name: cat,
                 services: groups[cat]
             }));
+        },
+
+        get paginatedGroupedServices() {
+            let count = 0;
+            const paginatedGroups = [];
+            for (let group of this.groupedFilteredServices) {
+                if (count >= this.testLimit) break;
+                
+                let limitDifference = this.testLimit - count;
+                let testsToShow = group.services.slice(0, limitDifference);
+                
+                paginatedGroups.push({
+                    name: group.name,
+                    services: testsToShow
+                });
+                count += testsToShow.length;
+            }
+            return paginatedGroups;
         }
     }));
 });
