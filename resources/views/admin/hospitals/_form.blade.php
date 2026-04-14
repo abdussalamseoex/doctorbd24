@@ -383,6 +383,64 @@
                         this.fetchMeta(bUrl, idx, 'blogs');
                     }
                     if(!fetchedUrl) this.newBlogUrl = '';
+                newVideoUrl: '',
+                newChannelUrl: '',
+                newBlogUrl: '',
+                isFetchingVideo: false,
+                isFetchingChannel: false,
+                isFetchingBlog: false,
+                init() {
+                    this.$watch('videos', value => {
+                        document.querySelector('input[name=videos]').value = JSON.stringify(value);
+                    });
+                    this.$watch('blogs', value => {
+                        document.querySelector('input[name=blogs]').value = JSON.stringify(value);
+                    });
+                },
+                addVideo(url = null) {
+                    let vUrl = url || this.newVideoUrl.trim();
+                    if (vUrl) {
+                        let obj = { title: 'Fetching title...', url: vUrl };
+                        this.videos.push(obj);
+                        let idx = this.videos.length - 1;
+                        this.fetchMeta(vUrl, idx, 'videos');
+                    }
+                    if(!url) this.newVideoUrl = '';
+                },
+                fetchChannelVideo() {
+                    let cUrl = this.newChannelUrl.trim();
+                    if (!cUrl) return;
+                    this.isFetchingChannel = true;
+                    
+                    fetch('{{ route('admin.hospitals.fetch-channel-videos') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ url: cUrl })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.videos && data.videos.length > 0) {
+                            // Prepend videos to keep the newest ones on top
+                            const existingVideos = this.videos;
+                            this.videos = [...data.videos, ...existingVideos];
+                            this.newChannelUrl = '';
+                            alert(`Successfully added ${data.videos.length} videos!`);
+                        } else {
+                            alert(data.error || 'No videos found in this channel.');
+                        }
+                    })
+                    .catch(() => alert('Error fetching channel. Make sure the URL is a valid YouTube Channel.'))
+                    .finally(() => this.isFetchingChannel = false);
+                },
+                addBlog(url = null) {
+                    let bUrl = url || this.newBlogUrl.trim();
+                    if (bUrl) {
+                        let obj = { title: 'Fetching title...', url: bUrl };
+                        this.blogs.push(obj);
+                        let idx = this.blogs.length - 1;
+                        this.fetchMeta(bUrl, idx, 'blogs');
+                    }
+                    if(!url) this.newBlogUrl = '';
                 },
                 fetchVideo() {
                     let name = document.querySelector('input[name=name]').value;
@@ -433,15 +491,25 @@
                         Videos (Multi-Platform Auto Fetch)
                     </label>
                     
-                    <div class="flex gap-2 mb-3">
-                        <input type="url" x-model="newVideoUrl" @keydown.enter.prevent="addVideo()" placeholder="https://youtube.com/watch..."
-                               class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
-                        <button type="button" @click="addVideo()" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
-                            Add
-                        </button>
+                    <div class="flex flex-col gap-2 mb-3 border-b border-gray-100 dark:border-gray-700 pb-3">
+                        <div class="flex gap-2">
+                            <input type="url" x-model="newVideoUrl" @keydown.enter.prevent="addVideo()" placeholder="Paste a single video URL..."
+                                class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                            <button type="button" @click="addVideo()" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
+                                Add
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="url" x-model="newChannelUrl" @keydown.enter.prevent="fetchChannelVideo()" placeholder="Paste YouTube Channel URL..."
+                                class="flex-1 w-full px-3 py-2 text-sm border-dashed border-red-200 dark:border-red-900/50 rounded-lg border bg-red-50/50 focus:bg-white dark:bg-red-900/10 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all">
+                            <button type="button" @click="fetchChannelVideo()" :disabled="isFetchingChannel" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-semibold rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors shrink-0 flex items-center min-w-[120px] justify-center text-xs">
+                                <span x-show="isFetchingChannel" class="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin mr-1" x-cloak></span>
+                                <span x-show="!isFetchingChannel" class="whitespace-nowrap">Fetch (~30)</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="space-y-1.5 mb-3 flex-1 overflow-y-auto max-h-[150px] pr-1">
+                    <div class="space-y-1.5 mb-3 flex-1 overflow-y-auto max-h-[250px] pr-1">
                         <template x-for="(vid, index) in videos" :key="index">
                             <div class="group flex items-start justify-between gap-2 p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
                                 <div class="overflow-hidden">

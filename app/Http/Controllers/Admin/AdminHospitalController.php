@@ -450,6 +450,47 @@ class AdminHospitalController extends Controller
         return is_array($decoded) ? $decoded : null;
     }
 
+    public function fetchChannelVideos(Request $request)
+    {
+        $url = $request->input('url');
+        if (!$url) return response()->json(['error' => 'URL is required'], 400);
+
+        try {
+            // make sure it ends with /videos to get the video list tab
+            if (!str_ends_with(parse_url($url, PHP_URL_PATH) ?? '', '/videos')) {
+                $url = rtrim($url, '/') . '/videos';
+            }
+
+            $response = \Illuminate\Support\Facades\Http::timeout(10)->withoutVerifying()->get($url);
+            if ($response->successful()) {
+                $html = $response->body();
+                
+                // Match the video IDs and Titles
+                if (preg_match_all('/"videoId":"([a-zA-Z0-9_-]{11})".*?"title":\{"runs":\[\{"text":"(.*?)"\}\]/is', $html, $matches)) {
+                    $videos = [];
+                    $seenIds = [];
+                    
+                    foreach ($matches[1] as $index => $videoId) {
+                        if (!isset($seenIds[$videoId])) {
+                            $seenIds[$videoId] = true;
+                            $videos[] = [
+                                'url' => "https://www.youtube.com/watch?v=" . $videoId,
+                                'title' => $matches[2][$index] ?? 'Video Link'
+                            ];
+                        }
+                    }
+                    
+                    if (count($videos) > 0) {
+                        return response()->json(['videos' => array_slice($videos, 0, 30)]);
+                    }
+                }
+            }
+            return response()->json(['error' => 'Could not fetch videos from this channel.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function fetchVideoUrl(Request $request)
     {
         $query = $request->input('query');
