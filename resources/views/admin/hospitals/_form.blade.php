@@ -321,8 +321,10 @@
                         To get latitude & longitude: Open Google Maps, right-click on the hospital's pin, select the coordinates at the top (e.g., <span class="font-mono bg-white dark:bg-gray-800 px-1 py-0.5 rounded">23.8103, 90.4125</span>).
                     </p>
                 </div>
+                </div>
             </div>
-            
+        </div>
+
         @if(isset($hospital) && $hospital->id)
             {{-- ════ CARD: DIAGNOSTIC SERVICES & TESTS ════ --}}
             <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-800/50 p-6 flex flex-col md:flex-row items-center justify-between gap-4">
