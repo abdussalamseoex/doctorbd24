@@ -504,7 +504,7 @@
                                 class="flex-1 w-full px-3 py-2 text-sm border-dashed border-red-200 dark:border-red-900/50 rounded-lg border bg-red-50/50 focus:bg-white dark:bg-red-900/10 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all">
                             <button type="button" @click="fetchChannelVideo()" :disabled="isFetchingChannel" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-semibold rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors shrink-0 flex items-center min-w-[120px] justify-center text-xs">
                                 <span x-show="isFetchingChannel" class="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin mr-1" x-cloak></span>
-                                <span x-show="!isFetchingChannel" class="whitespace-nowrap" x-text="youtubePageToken ? 'Fetch Next ~30' : 'Fetch (~30)'"></span>
+                                <span x-show="!isFetchingChannel" class="whitespace-nowrap" x-text="youtubePageToken ? 'Fetch Next ~50' : 'Fetch (~50)'"></span>
                             </button>
                         </div>
                     </div>

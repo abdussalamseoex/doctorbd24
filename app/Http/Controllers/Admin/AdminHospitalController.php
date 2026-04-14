@@ -480,7 +480,7 @@ class AdminHospitalController extends Controller
 
                 // Call YouTube Data API
                 if ($channelId) {
-                    $apiUrl = "https://www.googleapis.com/youtube/v3/search?key={$apiKey}&channelId={$channelId}&part=snippet,id&order=date&maxResults=30&type=video";
+                    $apiUrl = "https://www.googleapis.com/youtube/v3/search?key={$apiKey}&channelId={$channelId}&part=snippet,id&order=date&maxResults=50&type=video";
                     if ($pageToken) {
                         $apiUrl .= "&pageToken={$pageToken}";
                     }
@@ -529,7 +529,7 @@ class AdminHospitalController extends Controller
                     }
                     if (count($videos) > 0) {
                         // Regex logic natively fetches newest to oldest. Reversing keeps order perfect when iterating.
-                        return response()->json(['videos' => array_slice($videos, 0, 30)]);
+                        return response()->json(['videos' => array_slice($videos, 0, 50)]);
                     }
                 }
             }
