@@ -90,7 +90,7 @@
                         <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-3">{{ __('Test Details & Description') }}</h3>
                         <div class="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-loose">
                             @if($service->description)
-                                {!! nl2br(e($service->description)) !!}
+                                {!! $service->description !!}
                             @else
                                 <p class="italic text-gray-400">{{ __('No descriptive details have been provided for this test yet. Contact the hospital directly for preparation instructions and reporting times.') }}</p>
                             @endif

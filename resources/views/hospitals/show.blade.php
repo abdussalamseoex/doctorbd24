@@ -595,18 +595,19 @@
                                 </div>
                                 <div class="divide-y divide-gray-100 dark:divide-gray-700/50 max-h-[400px] overflow-y-auto hide-scrollbar">
                                     <template x-for="service in group.services" :key="service.id">
-                                        <a :href="`/hospital/{{ $hospital->slug }}/diagnostics/${service.slug}`" class="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-sky-50/50 dark:hover:bg-gray-700/30 transition-colors group/item block">
-                                            <div class="mb-2 sm:mb-0 pr-4">
-                                                <p class="text-[15px] font-black text-gray-800 dark:text-gray-100 group-hover/item:text-sky-600 dark:group-hover/item:text-sky-400 transition-colors mb-1" x-text="service.service_name"></p>
+                                        <a :href="`/hospital/{{ $hospital->slug }}/diagnostics/${service.slug}`" class="flex flex-col sm:flex-row sm:items-center justify-between p-5 hover:bg-sky-50 dark:hover:bg-gray-700/40 transition-colors group/item block border-b border-gray-50 dark:border-gray-700/50 last:border-0 hover:shadow-sm">
+                                            <div class="mb-3 sm:mb-0 pr-4 flex-1">
+                                                <p class="text-base font-black text-gray-800 dark:text-gray-100 group-hover/item:text-sky-600 dark:group-hover/item:text-sky-400 transition-colors mb-1.5" x-text="service.service_name"></p>
                                                 <template x-if="service.description">
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 leading-relaxed" x-text="service.description"></p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed max-w-2xl" x-html="service.description"></p>
                                                 </template>
+                                                <div class="mt-2 text-[11px] font-bold text-sky-500 opacity-80 group-hover/item:opacity-100 flex items-center gap-1 transition-opacity">
+                                                    {{ __('View Test Details') }} <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                                </div>
                                             </div>
-                                            <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
-                                                <span class="inline-block px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm border border-emerald-100 dark:border-emerald-800/50 whitespace-nowrap shadow-sm" x-text="service.price ? '৳ ' + service.price : '-'"></span>
-                                                <span class="text-sky-500 bg-sky-50 dark:bg-gray-800 border border-sky-100 dark:border-gray-700 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity shrink-0">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                                </span>
+                                            <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0 mt-3 sm:mt-0 bg-gray-50 dark:bg-gray-800 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none border border-gray-100 dark:border-transparent sm:border-0">
+                                                <div class="text-xs text-gray-400 font-semibold sm:hidden">{{ __('Cost:') }}</div>
+                                                <span class="inline-block px-4 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm border border-emerald-100 dark:border-emerald-800/50 whitespace-nowrap shadow-sm group-hover/item:border-emerald-200 dark:group-hover/item:border-emerald-700 transition-colors" x-text="service.price ? '৳ ' + service.price : '-'"></span>
                                             </div>
                                         </a>
                                     </template>
@@ -892,7 +893,13 @@ document.addEventListener('alpine:init', () => {
         $activeServices = $hospital->hospitalServices()
             ->select('id', 'slug', 'service_category', 'service_name', 'description', 'price')
             ->where('is_active', true)
-            ->get();
+            ->get()
+            ->map(function ($service) {
+                if ($service->description) {
+                    $service->description = trim(strip_tags($service->description));
+                }
+                return $service;
+            });
     @endphp
 
     Alpine.data('hospitalDiagnosticServices', () => ({
