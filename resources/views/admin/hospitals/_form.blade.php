@@ -256,43 +256,14 @@
         </div>
 
         {{-- ════ CARD: LOCATION & SOCIAL ════ --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6" x-data="{ 
-            showAdvanced: false,
-            isFetchingVideo: false,
-            isFetchingBlog: false,
-            fetchVideo() {
-                let name = document.querySelector('input[name=name]').value;
-                if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
-                this.isFetchingVideo = true;
-                fetch('{{ route('admin.hospitals.fetch-video') }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    body: JSON.stringify({ query: name })
-                }).then(res => res.json()).then(data => {
-                    if (data.url) { document.querySelector('input[name=youtube_url]').value = data.url; }
-                    else { alert('No video found'); }
-                }).catch(() => alert('Error fetching video')).finally(() => this.isFetchingVideo = false);
-            },
-            fetchBlog() {
-                let name = document.querySelector('input[name=name]').value;
-                if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
-                this.isFetchingBlog = true;
-                fetch('{{ route('admin.hospitals.fetch-blog') }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    body: JSON.stringify({ query: name })
-                }).then(res => res.json()).then(data => {
-                    if (data.url) { document.querySelector('input[name=blog_url]').value = data.url; }
-                }).catch(() => alert('Error fetching blog')).finally(() => this.isFetchingBlog = false);
-            }
-        }">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6" x-data="{ showAdvanced: false }">
             <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                 <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Links & Location
             </h3>
 
             {{-- Social Media --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                 <div>
                     <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
                         <svg class="w-4 h-4 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -308,34 +279,6 @@
                     </label>
                     <input type="url" name="instagram_url" value="{{ old('instagram_url', $hospital->instagram_url ?? '') }}" placeholder="https://instagram.com/..."
                            class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5 flex items-center justify-between">
-                        <span class="flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-[#FF0000]" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                            YouTube
-                        </span>
-                        <button type="button" @click="fetchVideo()" class="bg-gray-100 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-gray-200 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800 transition-colors px-2 py-0.5 rounded flex items-center gap-1 cursor-pointer">
-                            <span x-show="isFetchingVideo" class="w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
-                            <span x-show="!isFetchingVideo">Auto Fetch</span>
-                        </button>
-                    </label>
-                    <input type="url" name="youtube_url" value="{{ old('youtube_url', $hospital->youtube_url ?? '') }}" placeholder="https://youtube.com/..."
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5 flex items-center justify-between">
-                        <span class="flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                            Related Blog URL
-                        </span>
-                        <button type="button" @click="fetchBlog()" class="bg-gray-100 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-gray-200 dark:border-gray-700 hover:border-emerald-200 dark:hover:border-emerald-800 transition-colors px-2 py-0.5 rounded flex items-center gap-1 cursor-pointer">
-                            <span x-show="isFetchingBlog" class="w-3 h-3 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
-                            <span x-show="!isFetchingBlog">Auto Link</span>
-                        </button>
-                    </label>
-                    <input type="url" name="blog_url" value="{{ old('blog_url', $hospital->blog_url ?? '') }}" placeholder="https://example.com/blog..."
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">
                 </div>
             </div>
 
@@ -370,6 +313,82 @@
                         To get latitude & longitude: Open Google Maps, right-click on the hospital's pin, select the coordinates at the top (e.g., <span class="font-mono bg-white dark:bg-gray-800 px-1 py-0.5 rounded">23.8103, 90.4125</span>).
                     </p>
                 </div>
+            </div>
+        </div>
+
+        {{-- ════ CARD: MEDIA & CONTENT TABS ════ --}}
+        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-6" x-data="{ 
+            isFetchingVideo: false,
+            isFetchingBlog: false,
+            fetchVideo() {
+                let name = document.querySelector('input[name=name]').value;
+                if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
+                this.isFetchingVideo = true;
+                fetch('{{ route('admin.hospitals.fetch-video') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ query: name })
+                }).then(res => res.json()).then(data => {
+                    if (data.url) { document.querySelector('input[name=youtube_url]').value = data.url; }
+                    else { alert('No video found'); }
+                }).catch(() => alert('Error fetching video')).finally(() => this.isFetchingVideo = false);
+            },
+            fetchBlog() {
+                let name = document.querySelector('input[name=name]').value;
+                if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
+                this.isFetchingBlog = true;
+                fetch('{{ route('admin.hospitals.fetch-blog') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ query: name })
+                }).then(res => res.json()).then(data => {
+                    if (data.url) { document.querySelector('input[name=blog_url]').value = data.url; }
+                }).catch(() => alert('Error fetching blog')).finally(() => this.isFetchingBlog = false);
+            }
+        }">
+            <div class="mb-5">
+                <h3 class="text-sm font-bold text-indigo-900 dark:text-indigo-300 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    Additional Profiles & Tabs
+                </h3>
+                <p class="text-xs text-indigo-600/70 dark:text-indigo-400/70 mt-1">Populate these fields to automatically unlock new tabs (Video, Blog) on the public hospital profile.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5 focus:outline-none">
+                            <span class="w-6 h-6 rounded bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-500">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            </span>
+                            YouTube Video URL
+                        </span>
+                        <button type="button" @click="fetchVideo()" class="bg-indigo-50 dark:bg-indigo-900/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 transition-colors px-2.5 py-1 rounded-md flex items-center gap-1.5 cursor-pointer text-[10px] uppercase tracking-wider font-bold shadow-sm">
+                            <span x-show="isFetchingVideo" class="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
+                            <span x-show="!isFetchingVideo">Search Data</span>
+                        </button>
+                    </label>
+                    <input type="url" name="youtube_url" value="{{ old('youtube_url', $hospital->youtube_url ?? '') }}" placeholder="https://youtube.com/watch..."
+                           class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                    <p class="text-[10px] text-gray-400 mt-1.5">Paste a single primary video link for the hospital to enable the Video tab.</p>
+                </div>
+                
+                <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5 focus:outline-none">
+                            <span class="w-6 h-6 rounded bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            </span>
+                            Related Blog Article
+                        </span>
+                        <button type="button" @click="fetchBlog()" class="bg-indigo-50 dark:bg-indigo-900/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 transition-colors px-2.5 py-1 rounded-md flex items-center gap-1.5 cursor-pointer text-[10px] uppercase tracking-wider font-bold shadow-sm">
+                            <span x-show="isFetchingBlog" class="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
+                            <span x-show="!isFetchingBlog">Auto Map URL</span>
+                        </button>
+                    </label>
+                    <input type="url" name="blog_url" value="{{ old('blog_url', $hospital->blog_url ?? '') }}" placeholder="https://example.com/blog..."
+                           class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                    <p class="text-[10px] text-gray-400 mt-1.5">Map an internal blog post to this hospital profile to enable the Blog tab.</p>
                 </div>
             </div>
         </div>
