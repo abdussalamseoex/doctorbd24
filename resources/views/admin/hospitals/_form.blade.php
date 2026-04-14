@@ -346,9 +346,20 @@
                 videos: {{ isset($hospital) && $hospital->hospitalVideos->count() > 0 ? $hospital->hospitalVideos->map(function($v){ return ['title' => $v->title, 'url' => $v->video_url]; })->toJson() : '[]' }},
                 blogs: {{ empty(isset($hospital) && $hospital->blogs) ? '[]' : (is_string($hospital->blogs[0] ?? null) ? json_encode(array_map(function($url){ return ['title'=>'Linked Content', 'url'=>$url]; }, $hospital->blogs)) : json_encode($hospital->blogs)) }},
                 newVideoUrl: '',
+                newChannelUrl: '',
                 newBlogUrl: '',
                 isFetchingVideo: false,
+                isFetchingChannel: false,
                 isFetchingBlog: false,
+                
+                init() {
+                    this.$watch('videos', value => {
+                        document.querySelector('input[name=videos]').value = JSON.stringify(value);
+                    });
+                    this.$watch('blogs', value => {
+                        document.querySelector('input[name=blogs]').value = JSON.stringify(value);
+                    });
+                },
                 
                 fetchMeta(url, idx, arrayName) {
                     fetch('{{ route('admin.hospitals.fetch-url-meta') }}', {
@@ -374,39 +385,6 @@
                     if(!fetchedUrl) this.newVideoUrl = '';
                 },
                 
-                addBlog(fetchedUrl = null) {
-                    let bUrl = fetchedUrl || this.newBlogUrl.trim();
-                    if(bUrl && !this.blogs.find(b => b.url === bUrl)) {
-                        let obj = { title: 'Fetching title...', url: bUrl };
-                        this.blogs.push(obj);
-                        let idx = this.blogs.length - 1;
-                        this.fetchMeta(bUrl, idx, 'blogs');
-                    }
-                    if(!fetchedUrl) this.newBlogUrl = '';
-                newVideoUrl: '',
-                newChannelUrl: '',
-                newBlogUrl: '',
-                isFetchingVideo: false,
-                isFetchingChannel: false,
-                isFetchingBlog: false,
-                init() {
-                    this.$watch('videos', value => {
-                        document.querySelector('input[name=videos]').value = JSON.stringify(value);
-                    });
-                    this.$watch('blogs', value => {
-                        document.querySelector('input[name=blogs]').value = JSON.stringify(value);
-                    });
-                },
-                addVideo(url = null) {
-                    let vUrl = url || this.newVideoUrl.trim();
-                    if (vUrl) {
-                        let obj = { title: 'Fetching title...', url: vUrl };
-                        this.videos.push(obj);
-                        let idx = this.videos.length - 1;
-                        this.fetchMeta(vUrl, idx, 'videos');
-                    }
-                    if(!url) this.newVideoUrl = '';
-                },
                 fetchChannelVideo() {
                     let cUrl = this.newChannelUrl.trim();
                     if (!cUrl) return;
@@ -420,7 +398,6 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.videos && data.videos.length > 0) {
-                            // Prepend videos to keep the newest ones on top
                             const existingVideos = this.videos;
                             this.videos = [...data.videos, ...existingVideos];
                             this.newChannelUrl = '';
@@ -432,16 +409,18 @@
                     .catch(() => alert('Error fetching channel. Make sure the URL is a valid YouTube Channel.'))
                     .finally(() => this.isFetchingChannel = false);
                 },
-                addBlog(url = null) {
-                    let bUrl = url || this.newBlogUrl.trim();
-                    if (bUrl) {
+
+                addBlog(fetchedUrl = null) {
+                    let bUrl = fetchedUrl || this.newBlogUrl.trim();
+                    if(bUrl && !this.blogs.find(b => b.url === bUrl)) {
                         let obj = { title: 'Fetching title...', url: bUrl };
                         this.blogs.push(obj);
                         let idx = this.blogs.length - 1;
                         this.fetchMeta(bUrl, idx, 'blogs');
                     }
-                    if(!url) this.newBlogUrl = '';
+                    if(!fetchedUrl) this.newBlogUrl = '';
                 },
+
                 fetchVideo() {
                     let name = document.querySelector('input[name=name]').value;
                     if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
@@ -457,6 +436,7 @@
                         else { alert('No video found'); }
                     }).catch(() => alert('Error fetching video')).finally(() => this.isFetchingVideo = false);
                 },
+
                 fetchBlog() {
                     let name = document.querySelector('input[name=name]').value;
                     if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
