@@ -345,26 +345,22 @@
              x-data="{ 
                 videos: {{ isset($hospital) && $hospital->hospitalVideos->count() > 0 ? $hospital->hospitalVideos->map(function($v){ return ['title' => $v->title, 'url' => $v->video_url]; })->toJson() : '[]' }},
                 blogs: {{ empty(isset($hospital) && $hospital->blogs) ? '[]' : json_encode($hospital->blogs) }},
-                newVideoTitle: '',
                 newVideoUrl: '',
                 newBlog: '',
                 isFetchingVideo: false,
                 isFetchingBlog: false,
-                addVideo(fetchedTitle = null, fetchedUrl = null) {
-                    let vTitle = fetchedTitle || this.newVideoTitle.trim();
+                addVideo(fetchedUrl = null) {
                     let vUrl = fetchedUrl || this.newVideoUrl.trim();
-                    
-                    if(vTitle && vUrl) { 
-                        // Only add if not exactly a duplicate URL
-                        if(!this.videos.find(v => v.url === vUrl)) {
-                            this.videos.push({ title: vTitle, url: vUrl }); 
-                        }
+                    if(vUrl && !this.videos.find(v => v.url === vUrl)) {
+                        let obj = { title: 'Fetching title...', url: vUrl };
+                        this.videos.push(obj);
+                        let idx = this.videos.length - 1;
+                        fetch(`https://noembed.com/embed?url=${vUrl}`)
+                            .then(res => res.json())
+                            .then(data => { if(data.title) this.videos[idx].title = data.title; else this.videos[idx].title = 'Video Link'; })
+                            .catch(() => this.videos[idx].title = 'Video Link');
                     }
-                    
-                    if(!fetchedTitle) {
-                        this.newVideoTitle = '';
-                        this.newVideoUrl = '';
-                    }
+                    if(!fetchedUrl) this.newVideoUrl = '';
                 },
                 addBlog(url = null) {
                     let val = url || this.newBlog.trim();
@@ -380,10 +376,8 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         body: JSON.stringify({ query: name })
                     }).then(res => res.json()).then(data => {
-                        // Assuming fetch-video also returns title if possible, otherwise generic title
                         if (data.url) { 
-                            let fetchedTitle = data.title || (name + ' Overview Video');
-                            this.addVideo(fetchedTitle, data.url); 
+                            this.addVideo(data.url); 
                         }
                         else { alert('No video found'); }
                     }).catch(() => alert('Error fetching video')).finally(() => this.isFetchingVideo = false);
@@ -419,19 +413,15 @@
                         <span class="w-6 h-6 rounded bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-500">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                         </span>
-                        Videos (Multi-Platform)
+                        Videos (Multi-Platform Auto Fetch)
                     </label>
                     
-                    <div class="flex flex-col gap-2 mb-3">
-                        <input type="text" x-model="newVideoTitle" placeholder="Video Title (e.g. Overview of Hospital)"
-                               class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
-                        <div class="flex gap-2">
-                            <input type="url" x-model="newVideoUrl" @keydown.enter.prevent="addVideo()" placeholder="https://youtube.com/watch... or facebook.com/..."
-                                   class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
-                            <button type="button" @click="addVideo()" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
-                                Add
-                            </button>
-                        </div>
+                    <div class="flex gap-2 mb-3">
+                        <input type="url" x-model="newVideoUrl" @keydown.enter.prevent="addVideo()" placeholder="https://youtube.com/watch..."
+                               class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                        <button type="button" @click="addVideo()" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
+                            Add
+                        </button>
                     </div>
 
                     <div class="space-y-1.5 mb-3 flex-1 overflow-y-auto max-h-[150px] pr-1">

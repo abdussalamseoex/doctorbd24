@@ -285,10 +285,10 @@ class AdminHospitalController extends Controller
         $keptUrls = [];
 
         foreach ($videosInput as $index => $videoData) {
-            if (!isset($videoData['title']) || !isset($videoData['url'])) continue;
+            if (!isset($videoData['url'])) continue;
             
             $url = $videoData['url'];
-            $title = $videoData['title'];
+            $title = $videoData['title'] ?? 'Video Link';
             $keptUrls[] = $url;
             
             $youtubeId = null;
@@ -297,6 +297,17 @@ class AdminHospitalController extends Controller
                 $youtubeId = $match[1];
                 $thumbnailUrl = 'https://img.youtube.com/vi/' . $youtubeId . '/hqdefault.jpg';
             }
+
+            // Backend fallback fetch if title wasn't fetched in frontend
+            if (in_array($title, ['Fetching title...', 'Video Link']) || empty(trim($title))) {
+                try {
+                    $oembedRes = \Illuminate\Support\Facades\Http::timeout(3)->get("https://noembed.com/embed?url=" . urlencode($url));
+                    if ($oembedRes->successful() && $oembedRes->json('title')) {
+                        $title = $oembedRes->json('title');
+                    }
+                } catch (\Exception $e) {}
+            }
+            if(empty(trim($title)) || $title === 'Fetching title...') { $title = 'Video Link'; }
 
             if ($existingVideos->has($url)) {
                 $existing = $existingVideos->get($url);
