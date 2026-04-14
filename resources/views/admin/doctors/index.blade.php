@@ -97,14 +97,17 @@
     }
 }" class="relative">
     {{-- Top bar --}}
-    <div class="flex items-center justify-between mb-5">
-        <div class="flex items-center gap-3">
-            <form action="{{ route('admin.doctors.index') }}" method="GET" class="flex gap-2">
+    <div class="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 mb-5">
+        <div class="flex items-center w-full xl:w-auto overflow-x-auto pb-2 xl:pb-0">
+            <form action="{{ route('admin.doctors.index') }}" method="GET" class="flex items-center gap-2 w-full">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search doctors..."
-                       class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 w-56">
+                       class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 w-48 xl:w-56 shrink-0">
                 
-                <x-admin.location-filter :showHospital="true" :hospitals="$hospitals ?? []" />
-                <div class="flex border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+                <div class="shrink-0 flex items-center">
+                    <x-admin.location-filter :showHospital="true" :hospitals="$hospitals ?? []" />
+                </div>
+                
+                <div class="flex border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700 shrink-0">
                     <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['status' => 'draft'])) }}" 
                        class="px-3 py-2 text-xs font-semibold hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/20 {{ request('status') === 'draft' ? 'bg-fuchsia-100 dark:bg-fuchsia-900/40 text-fuchsia-700 dark:text-fuchsia-400' : 'text-gray-500' }}">Drafts ({{ $counts['draft'] ?? 0 }})</a>
                     <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['status' => 'published'])) }}" 
@@ -112,33 +115,37 @@
                     <a href="{{ route('admin.doctors.index', array_merge(request()->query(), ['featured' => 1])) }}" 
                        class="px-3 py-2 text-xs font-semibold border-l border-gray-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 {{ request('featured') ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' : 'text-gray-500' }}">Featured</a>
                 </div>
-                <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300">
+                <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 shrink-0">
                     <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20 per page</option>
                     <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 per page</option>
                     <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 per page</option>
                     <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200 per page</option>
                     <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500 per page</option>
                 </select>
-                <button type="submit" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm hover:bg-sky-700 transition-colors font-bold">Filter</button>
-                @if(request()->anyFilled(['search', 'featured', 'verified']))
-                    <a href="{{ route('admin.doctors.index') }}" class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Clear</a>
-                @endif
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm hover:bg-sky-700 transition-colors font-bold shrink-0">Filter</button>
+                    @if(request()->anyFilled(['search', 'featured', 'verified', 'status', 'division_id', 'district_id', 'area_id', 'hospital_id']))
+                        <a href="{{ route('admin.doctors.index') }}" class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shrink-0">Clear</a>
+                    @endif
+                </div>
             </form>
         </div>
-        <div class="flex items-center gap-3">
-            <button type="button" @click="resetImport" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/40 transition-all shadow-sm">
+        <div class="flex flex-wrap items-center gap-2 xl:gap-3 shrink-0">
+            <button type="button" @click="resetImport" class="flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/40 transition-all shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                Force Reset
+                <span class="hidden xl:inline">Force Reset</span>
+                <span class="xl:hidden">Reset</span>
             </button>
-            <button type="button" @click="startImport" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-indigo-100 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-sm font-bold hover:bg-indigo-50 transition-all shadow-sm">
+            <button type="button" @click="startImport" class="flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-indigo-100 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-sm font-bold hover:bg-indigo-50 transition-all shadow-sm">
                 <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                (Run) Import
+                <span class="hidden xl:inline">(Run) Import</span>
+                <span class="xl:hidden">Import</span>
             </button>
-            <button @click="openImportModal = true" type="button" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-sky-100 dark:border-sky-900/30 text-sky-700 dark:text-sky-400 text-sm font-bold hover:bg-sky-50 transition-all shadow-sm">
+            <button @click="openImportModal = true" type="button" class="flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-sky-100 dark:border-sky-900/30 text-sky-700 dark:text-sky-400 text-sm font-bold hover:bg-sky-50 transition-all shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                 Bulk Import
             </button>
-            <a href="{{ route('admin.doctors.create') }}" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 text-white text-sm font-medium hover:opacity-90 shadow transition-all">
+            <a href="{{ route('admin.doctors.create') }}" class="flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 text-white text-sm font-medium hover:opacity-90 shadow transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Add Doctor
             </a>
