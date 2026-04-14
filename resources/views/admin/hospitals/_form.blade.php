@@ -418,7 +418,7 @@
                             if (data.channelId) this.youtubeChannelId = data.channelId;
                             
                             if (this.youtubePageToken) {
-                                alert(`Successfully added ${data.videos.length} videos! You can click "Fetch Next 30" to get more.`);
+                                alert(`Successfully added ${data.videos.length} videos! You can click 'Fetch Next 30' to get more.`);
                             } else {
                                 alert(`Successfully added ${data.videos.length} videos!`);
                             }
