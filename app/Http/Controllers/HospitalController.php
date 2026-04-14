@@ -17,8 +17,11 @@ class HospitalController extends Controller
         return view('hospitals.index');
     }
 
-    public function show(string $slug)
+    public function show(string $slug, string $tab = 'doctors')
     {
+        if (!in_array($tab, ['doctors', 'services'])) {
+            abort(404);
+        }
         $hospital = Hospital::published()
             ->where('slug', $slug)
             ->with(['area.district.division', 'approvedReviews.user', 'chambers.doctor.specialties'])
@@ -87,6 +90,6 @@ class HospitalController extends Controller
 
         $specialties = \App\Models\Specialty::orderBy('name->en')->get();
 
-        return view('hospitals.show', compact('hospital', 'doctors', 'specialties'));
+        return view('hospitals.show', compact('hospital', 'doctors', 'specialties', 'tab'));
     }
 }

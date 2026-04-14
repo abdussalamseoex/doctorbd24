@@ -334,15 +334,22 @@
             </div>
             @endif
 
-            {{-- Doctors at this hospital --}}
-            <div class="mb-8 mt-2">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4 px-2">
-                    <h2 class="font-bold text-gray-800 dark:text-gray-100 text-xl flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 border border-sky-100 dark:border-sky-800/50">
-                            👨‍⚕️
-                        </span>
-                        {{ __('Doctors at this hospital') }} ({{ $doctors->count() }})
-                    </h2>
+            {{-- TAB NAVIGATION (Doctors & Services) --}}
+            <div class="flex items-center gap-2 mb-6 border-b border-gray-100 dark:border-gray-700 pb-px overflow-x-auto hide-scrollbar">
+                <a href="{{ route('hospitals.show', ['slug' => $hospital->slug, 'tab' => 'doctors']) }}" 
+                   class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap {{ ($tab ?? 'doctors') === 'doctors' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300' }}">
+                    👨‍⚕️ {{ __('Doctors') }} ({{ $doctors->count() }})
+                </a>
+                <a href="{{ route('hospitals.show', ['slug' => $hospital->slug, 'tab' => 'services']) }}" 
+                   class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap {{ ($tab ?? 'doctors') === 'services' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300' }}">
+                    💉 {{ __('Services & Tests') }}
+                </a>
+            </div>
+
+            {{-- TAB CONTENT: DOCTORS --}}
+            @if(($tab ?? 'doctors') === 'doctors')
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-end mb-4 px-2">
                     <form method="GET" class="flex flex-shrink-0 items-center gap-2">
                         <select name="specialty" onchange="this.form.submit()" class="text-sm font-medium px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm cursor-pointer">
                             <option value="">{{ __('All Specialties') }}</option>
@@ -468,9 +475,22 @@
                 <div class="text-center py-10 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm">
                     <div class="text-4xl mb-4 opacity-50">🏜️</div>
                     <p class="text-sm font-medium text-gray-400">{{ __('No Doctors Found matching the selected criteria.') }}</p>
-                </div>
                 @endif
             </div>
+            @endif
+
+            {{-- TAB CONTENT: SERVICES & TESTS --}}
+            @if(($tab ?? 'doctors') === 'services')
+            <div class="mb-8">
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center py-16">
+                    <div class="w-20 h-20 mx-auto bg-sky-50 dark:bg-sky-900/20 rounded-full flex items-center justify-center mb-5">
+                        <span class="text-4xl">💉</span>
+                    </div>
+                    <h3 class="text-xl font-black text-gray-900 dark:text-white mb-2">{{ __('Diagnostic Tests & Services') }}</h3>
+                    <p class="text-sm font-medium text-gray-500 max-w-md mx-auto leading-relaxed">{{ __('Detailed pricing and diagnostic service information for this branch will be available soon.') }}</p>
+                </div>
+            </div>
+            @endif
 
             {{-- Map --}}
             @if($hospital->address || ($hospital->lat && $hospital->lng))
