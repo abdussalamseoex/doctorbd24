@@ -17,7 +17,7 @@ class DoctorController extends Controller
         return view('doctors.index');
     }
 
-    public function show(string $slug)
+    public function show(string $slug, $tab = 'overview')
     {
         $doctor = Doctor::published()->where('slug', $slug)
             ->with(['specialties', 'chambers.hospital', 'chambers.area.district.division', 'approvedReviews.user'])
@@ -53,6 +53,16 @@ class DoctorController extends Controller
         if ($seo && $seo->description) {
             $desc = $seo->description;
         }
+        
+        if ($tab === 'videos') {
+            $title = "Videos of {$doctor->name} | DoctorBD24";
+            SEOTools::setCanonical(route('doctors.show', ['slug' => $doctor->slug, 'tab' => 'videos']));
+        } elseif ($tab === 'blog') {
+            $title = "Blog by {$doctor->name} | DoctorBD24";
+            SEOTools::setCanonical(route('doctors.show', ['slug' => $doctor->slug, 'tab' => 'blog']));
+        } else {
+            SEOTools::setCanonical(route('doctors.show', $doctor->slug));
+        }
 
         SEOTools::setTitle($title, false);
         SEOTools::setDescription(\Illuminate\Support\Str::limit($desc, 160));
@@ -60,7 +70,6 @@ class DoctorController extends Controller
             SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
         }
 
-        SEOTools::setCanonical(route('doctors.show', $doctor->slug));
         OpenGraph::setUrl(route('doctors.show', $doctor->slug));
         OpenGraph::setType('profile');
         
@@ -82,6 +91,6 @@ class DoctorController extends Controller
           ->where(function($q) { $q->whereNull('status')->orWhere('status', '!=', 'draft'); })
           ->take(4)->get();
 
-        return view('doctors.show', compact('doctor', 'related'));
+        return view('doctors.show', compact('doctor', 'related', 'tab'));
     }
 }

@@ -68,4 +68,60 @@ class VideoController extends Controller
 
         return view('videos.show', compact('hospital', 'video', 'relatedVideos'));
     }
+    public function showDoctorVideo($doctor_slug, $video_slug)
+    {
+        $doctor = \App\Models\Doctor::where('slug', $doctor_slug)
+            ->where(function($q) { $q->whereNull('status')->orWhere('status', '!=', 'draft'); })
+            ->firstOrFail();
+
+        $video = \App\Models\DoctorVideo::where('doctor_id', $doctor->id)
+            ->where('slug', $video_slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $title = $video->title . ' | ' . $doctor->name;
+        if ($video->description) {
+            $rawDesc = strip_tags($video->description);
+            if (mb_strlen($rawDesc) > 160) {
+                $buffer = mb_substr($rawDesc, 0, 220); // Search for period within 220 chars
+                $lastDari = mb_strrpos($buffer, '।');
+                $lastDot = mb_strrpos($buffer, '.');
+                $cutPos = max($lastDari !== false ? $lastDari : 0, $lastDot !== false ? $lastDot : 0);
+                
+                if ($cutPos > 0) {
+                    $description = mb_substr($buffer, 0, $cutPos + 1);
+                } else {
+                    $lastSpace = mb_strrpos(mb_substr($rawDesc, 0, 160), ' ');
+                    $description = $lastSpace !== false ? mb_substr($rawDesc, 0, $lastSpace) . '...' : mb_substr($rawDesc, 0, 160) . '...';
+                }
+            } else {
+                $description = $rawDesc;
+            }
+        } else {
+            $description = 'Watch ' . escapeshellcmd($video->title) . ' by ' . $doctor->name . '. Comprehensive healthcare insights, treatments, and doctor overview video.';
+        }
+
+        SEOMeta::setTitle($title);
+        SEOMeta::setDescription($description);
+
+        OpenGraph::setTitle($title)
+            ->setDescription($description)
+            ->setType('video.other')
+            ->setUrl(url()->current());
+
+        if ($video->thumbnail_url) {
+            OpenGraph::addImage($video->thumbnail_url);
+        }
+
+        TwitterCard::setTitle($title)->setSite('@DoctorBD24');
+
+        $relatedVideos = \App\Models\DoctorVideo::where('doctor_id', $doctor->id)
+            ->where('id', '!=', $video->id)
+            ->where('is_active', true)
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        return view('videos.doctor_show', ['target' => $doctor, 'video' => $video, 'relatedVideos' => $relatedVideos, 'type' => 'doctor']);
+    }
 }

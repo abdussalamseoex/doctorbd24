@@ -89,7 +89,7 @@ Route::prefix('hospital')->middleware(['auth', 'role:hospital'])->name('hospital
 Route::middleware(['cache.response'])->group(function () {
     // Doctors
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
-    Route::get('/doctor/{slug}', [DoctorController::class, 'show'])->name('doctors.show');
+    Route::get('/doctor/{slug}/{tab?}', [DoctorController::class, 'show'])->where('tab', 'overview|videos|blog')->name('doctors.show');
 
     // Hospitals
     Route::get('/hospitals', [HospitalController::class, 'index'])->name('hospitals.index');
@@ -98,6 +98,7 @@ Route::middleware(['cache.response'])->group(function () {
 
     // Video Single Route
     Route::get('/hospital/{hospital_slug}/video/{video_slug}', [\App\Http\Controllers\VideoController::class, 'show'])->name('video.show');
+    Route::get('/doctor/{doctor_slug}/video/{video_slug}', [\App\Http\Controllers\VideoController::class, 'showDoctorVideo'])->name('doctor.video.show');
 
     // Specialties
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
