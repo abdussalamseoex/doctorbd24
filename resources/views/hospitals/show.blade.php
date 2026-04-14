@@ -335,11 +335,16 @@
             @endif
 
             {{-- Doctors at this hospital --}}
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-gray-800 dark:text-gray-100">{{ __('Doctors at this hospital') }} ({{ $doctors->count() }})</h2>
-                    <form method="GET" class="flex items-center gap-2">
-                        <select name="specialty" onchange="this.form.submit()" class="text-xs px-2 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none">
+            <div class="mb-8 mt-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4 px-2">
+                    <h2 class="font-bold text-gray-800 dark:text-gray-100 text-xl flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 border border-sky-100 dark:border-sky-800/50">
+                            👨‍⚕️
+                        </span>
+                        {{ __('Doctors at this hospital') }} ({{ $doctors->count() }})
+                    </h2>
+                    <form method="GET" class="flex flex-shrink-0 items-center gap-2">
+                        <select name="specialty" onchange="this.form.submit()" class="text-sm font-medium px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm cursor-pointer">
                             <option value="">{{ __('All Specialties') }}</option>
                             @foreach($specialties as $sp)
                                 <option value="{{ $sp->slug }}" @selected(request('specialty')===$sp->slug)>{{ $sp->getTranslation('name', app()->getLocale()) }}</option>
@@ -347,30 +352,123 @@
                         </select>
                     </form>
                 </div>
+
                 @if($doctors->count())
-                <div class="space-y-3">
-                    @foreach($doctors as $doc)
-                    <a href="{{ route('doctors.show', $doc->slug) }}" class="group flex items-center gap-3 p-3 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-sky-300 hover:bg-sky-50 dark:hover:bg-sky-900/10 transition-all">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-100 to-indigo-100 dark:from-sky-900 dark:to-indigo-900 flex-shrink-0 flex items-center justify-center font-bold text-sky-500">{{ mb_substr($doc->name, 0, 1) }}</div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-sm text-gray-800 dark:text-gray-100 group-hover:text-sky-600 truncate">{{ $doc->name }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $doc->designation }}</p>
-                            <div class="flex flex-wrap gap-1 mt-1">
-                                @foreach($doc->specialties->take(2) as $sp)
-                                    <span class="px-1.5 py-0.5 rounded-full bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 text-xs">{{ $sp->getTranslation('name', app()->getLocale()) }}</span>
-                                @endforeach
+                <div class="space-y-4">
+                    @foreach($doctors as $doctor)
+                        <div class="group bg-white dark:bg-gray-800 rounded-[1.5rem] shadow-sm hover:shadow-lg border transition-all duration-300 w-full overflow-hidden flex flex-col sm:flex-row relative {{ $doctor->featured ? 'border-amber-300 dark:border-amber-600/50 shadow-amber-50 dark:shadow-amber-900/10' : 'border-gray-100 dark:border-gray-700' }}">
+
+                            {{-- Featured: top gradient bar --}}
+                            @if($doctor->featured)
+                            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400"></div>
+                            <div class="absolute top-2 right-3 z-10">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[10px] font-black uppercase tracking-wide border border-amber-200 dark:border-amber-700 shadow-sm">
+                                    ⭐ {{ __('Featured') }}
+                                </span>
+                            </div>
+                            @endif
+
+                            {{-- Image Column --}}
+                            <div class="w-full sm:w-48 bg-gray-50/50 dark:bg-gray-900/20 border-b sm:border-b-0 sm:border-r border-gray-100 dark:border-gray-700/50 p-6 flex flex-col items-center justify-center flex-shrink-0">
+                                <a href="{{ route('doctors.show', $doctor->slug) }}" class="block hover:opacity-80 transition-opacity">
+                                    @if($doctor->photo)
+                                        <img loading="lazy" decoding="async" src="{{ asset('storage/' . $doctor->photo) }}" class="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-sm mb-3">
+                                    @else
+                                        <div class="w-24 h-24 rounded-full bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-700 flex items-center justify-center text-4xl shadow-sm mb-3">
+                                            {{ $doctor->gender === 'female' ? '👩‍⚕️' : '👨‍⚕️' }}
+                                        </div>
+                                    @endif
+                                </a>
+                                
+                                @if($doctor->rating_avg >= 4.5)
+                                <div class="bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 rounded-full px-2.5 py-0.5 flex items-center gap-1 border border-amber-200 dark:border-amber-800/50 mt-1 shadow-sm">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                    <span class="text-[10px] font-bold tracking-widest uppercase">TOP</span>
+                                </div>
+                                @endif
+                            </div>
+
+                            {{-- Details Content --}}
+                            <div class="p-6 flex flex-col md:flex-row md:items-start justify-between gap-6 flex-1">
+                                
+                                {{-- Main Details --}}
+                                <div class="flex-1">
+                                    <a href="{{ route('doctors.show', $doctor->slug) }}" class="block">
+                                        <h3 class="font-black text-xl text-gray-900 dark:text-white group-hover:text-sky-600 transition-colors leading-tight mb-1">{{ $doctor->name }}</h3>
+                                    </a>
+                                    <div class="flex flex-wrap items-center gap-3 mb-4">
+                                        {{-- Specialties --}}
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach($doctor->specialties as $sp)
+                                                <a href="{{ route('doctors.index', ['specialty' => $sp->slug]) }}" class="text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest hover:text-sky-700 dark:hover:text-sky-300 hover:underline transition-colors bg-sky-50 dark:bg-sky-900/30 px-2 py-0.5 rounded-full border border-sky-100 dark:border-sky-800/50">
+                                                    {{ $sp->getTranslation('name', app()->getLocale()) }}
+                                                </a>
+                                            @endforeach
+                                        </div>
+
+                                        {{-- Rating (only shown when reviews exist) --}}
+                                        @if($doctor->approvedReviews && $doctor->approvedReviews->count() > 0)
+                                        <div class="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg border border-amber-100 dark:border-amber-800/30">
+                                            <div class="flex text-amber-400">
+                                                @for($i=1; $i<=5; $i++)
+                                                    <svg class="w-2.5 h-2.5 {{ $i <= floor($doctor->average_rating) ? 'fill-current' : 'text-gray-200 dark:text-gray-700' }}" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                @endfor
+                                            </div>
+                                            <span class="text-[10px] font-black text-amber-700 dark:text-amber-400">{{ $doctor->average_rating }}</span>
+                                            <span class="text-[9px] font-bold text-gray-400">({{ $doctor->approvedReviews->count() }})</span>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm text-gray-600 dark:text-gray-400">
+                                        @if($doctor->qualifications)
+                                        <div class="flex items-start gap-2">
+                                            <svg class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                            <div class="flex flex-col">
+                                                <span class="text-[10px] font-bold uppercase text-gray-400 tracking-wider mb-0.5">{{ __('Qualifications') }}</span>
+                                                <span class="leading-relaxed font-semibold text-gray-800 dark:text-gray-200 line-clamp-2">{{ $doctor->qualifications }}</span>
+                                            </div>
+                                        </div>
+                                        @endif
+
+                                        <div class="flex items-start gap-2">
+                                            <svg class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                                            <div class="flex flex-col">
+                                                <span class="text-[10px] font-bold uppercase text-gray-400 tracking-wider mb-0.5">{{ __('Branch Location') }}</span>
+                                                <span class="leading-relaxed font-semibold text-gray-800 dark:text-gray-200">{{ $hospital->name }}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        @if($doctor->experience_years > 0)
+                                        <div class="flex items-start gap-2 md:col-span-2 mt-1">
+                                            <svg class="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] font-bold uppercase text-gray-400 tracking-wider">{{ __('Total Experience') }}:</span>
+                                                <span class="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-black text-xs border border-indigo-100 dark:border-indigo-800/50">
+                                                    {{ $doctor->experience_years }}+ {{ __('Years') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                {{-- Call to Action --}}
+                                <div class="flex flex-col justify-center items-start md:items-end w-full md:w-48 flex-shrink-0 border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700/50 pt-4 md:pt-0 md:pl-6 h-full min-h-[120px]">
+                                    <a href="{{ route('doctors.show', $doctor->slug) }}"
+                                       class="w-full text-center px-4 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-md shadow-sky-500/20 whitespace-nowrap">
+                                        {{ __('Book Appointment') }} &rarr;
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                        @if($doc->verified)
-                            <span class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                            </span>
-                        @endif
-                    </a>
                     @endforeach
                 </div>
                 @else
-                <p class="text-sm text-gray-400">{{ __('No Doctors Found.') }}</p>
+                <div class="text-center py-10 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div class="text-4xl mb-4 opacity-50">🏜️</div>
+                    <p class="text-sm font-medium text-gray-400">{{ __('No Doctors Found matching the selected criteria.') }}</p>
+                </div>
                 @endif
             </div>
 
