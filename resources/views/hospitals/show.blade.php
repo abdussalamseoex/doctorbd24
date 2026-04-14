@@ -111,6 +111,32 @@
             </div>
             {{-- END Header Card --}}
 
+            {{-- SPA TABS COMPONENT --}}
+            <div x-data="hospitalTabs('{{ $tab ?? 'overview' }}', '{{ $hospital->slug }}')" class="w-full">
+                
+                {{-- TAB NAVIGATION BAR --}}
+                <div class="flex items-center gap-2 mb-8 border-b border-gray-100 dark:border-gray-700 pb-px overflow-x-auto hide-scrollbar sticky top-[calc(var(--nav-height,0px))] z-40 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-md pt-2">
+                    <button @click.prevent="switchTab('overview')" 
+                       :class="currentTab === 'overview' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                       class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
+                        🏥 {{ __('Overview & Info') }}
+                    </button>
+                    <button @click.prevent="switchTab('doctors')" 
+                       :class="currentTab === 'doctors' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                       class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
+                        👨‍⚕️ {{ __('Doctors') }}
+                        <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-[10px]">{{ $doctors->count() }}</span>
+                    </button>
+                    <button @click.prevent="switchTab('services')" 
+                       :class="currentTab === 'services' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                       class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
+                        💉 {{ __('Services & Tests') }}
+                    </button>
+                </div>
+
+                {{-- TAB CONTENT: OVERVIEW (Default) --}}
+                <div x-show="currentTab === 'overview'" style="{{ ($tab ?? 'overview') === 'overview' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms>
+
             {{-- Contact Information & Rating --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 mt-4">
                 {{-- Contact Info Box --}}
@@ -334,20 +360,44 @@
             </div>
             @endif
 
-            {{-- TAB NAVIGATION (Doctors & Services) --}}
-            <div class="flex items-center gap-2 mb-6 border-b border-gray-100 dark:border-gray-700 pb-px overflow-x-auto hide-scrollbar">
-                <a href="{{ route('hospitals.show', ['slug' => $hospital->slug, 'tab' => 'doctors']) }}" 
-                   class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap {{ ($tab ?? 'doctors') === 'doctors' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300' }}">
-                    👨‍⚕️ {{ __('Doctors') }} ({{ $doctors->count() }})
-                </a>
-                <a href="{{ route('hospitals.show', ['slug' => $hospital->slug, 'tab' => 'services']) }}" 
-                   class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap {{ ($tab ?? 'doctors') === 'services' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300' }}">
-                    💉 {{ __('Services & Tests') }}
-                </a>
-            </div>
+                    {{-- Mini Doctors Preview for Overview --}}
+                    @if($doctors->count())
+                    <div class="mb-8 mt-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2 text-lg">
+                                <span class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 border border-sky-100 dark:border-sky-800/50">👨‍⚕️</span>
+                                {{ __('Hospital Doctors') }}
+                            </h2>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @foreach($doctors->take(4) as $docPreview)
+                                <a href="{{ route('doctors.show', $docPreview->slug) }}" class="flex items-center gap-4 p-3 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:bg-white dark:hover:bg-gray-700 hover:shadow-sm transition-all group">
+                                    @if($docPreview->photo)
+                                        <img loading="lazy" src="{{ asset('storage/' . $docPreview->photo) }}" class="w-12 h-12 rounded-full object-cover shadow-sm border border-gray-200 dark:border-gray-600">
+                                    @else
+                                        <div class="w-12 h-12 rounded-full bg-white dark:bg-gray-800 bg-gray-200 flex items-center justify-center text-xl shadow-sm border border-gray-200 dark:border-gray-600">
+                                            {{ $docPreview->gender === 'female' ? '👩‍⚕️' : '👨‍⚕️' }}
+                                        </div>
+                                    @endif
+                                    <div class="flex-1 overflow-hidden">
+                                        <h4 class="font-bold text-gray-900 dark:text-white group-hover:text-sky-500 transition-colors truncate">{{ $docPreview->name }}</h4>
+                                        <p class="text-[11px] font-medium text-sky-600 dark:text-sky-400 mt-0.5 truncate uppercase tracking-widest">{{ $docPreview->specialties->first()?->getTranslation('name', app()->getLocale()) ?? 'Specialist' }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                        <div class="mt-5">
+                            <button @click.prevent="switchTab('doctors')" class="w-full bg-sky-50 dark:bg-sky-900/20 hover:bg-sky-100 dark:hover:bg-sky-900/40 border border-sky-100 dark:border-sky-800/50 text-sky-700 dark:text-sky-400 py-3 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 hover:shadow-md">
+                                {{ __('View All :count Doctors', ['count' => $doctors->count()]) }}
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    @endif
+                </div> {{-- END TAB CONTENT: OVERVIEW --}}
 
             {{-- TAB CONTENT: DOCTORS --}}
-            @if(($tab ?? 'doctors') === 'doctors')
+            <div x-show="currentTab === 'doctors'" style="{{ ($tab ?? 'overview') === 'doctors' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
             <div class="mb-8">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-end mb-4 px-2">
                     <form method="GET" class="flex flex-shrink-0 items-center gap-2">
@@ -480,7 +530,7 @@
             @endif
 
             {{-- TAB CONTENT: SERVICES & TESTS --}}
-            @if(($tab ?? 'doctors') === 'services')
+            <div x-show="currentTab === 'services'" style="{{ ($tab ?? 'overview') === 'services' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
             <div class="mb-8">
                 <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center py-16">
                     <div class="w-20 h-20 mx-auto bg-sky-50 dark:bg-sky-900/20 rounded-full flex items-center justify-center mb-5">
@@ -490,7 +540,9 @@
                     <p class="text-sm font-medium text-gray-500 max-w-md mx-auto leading-relaxed">{{ __('Detailed pricing and diagnostic service information for this branch will be available soon.') }}</p>
                 </div>
             </div>
-            @endif
+            </div> {{-- END TAB CONTENT: SERVICES --}}
+
+            </div> {{-- END SPA TABS COMPONENT --}}
 
             {{-- Map --}}
             @if($hospital->address || ($hospital->lat && $hospital->lng))
@@ -713,4 +765,43 @@
     @endif
 
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('hospitalTabs', (initialTab, slug) => ({
+        currentTab: initialTab && initialTab !== '' ? initialTab : 'overview',
+        slug: slug,
+        
+        init() {
+            // Listen for browser back/forward buttons
+            window.addEventListener('popstate', (e) => {
+                if (e.state && e.state.tab) {
+                    this.currentTab = e.state.tab;
+                } else {
+                    this.currentTab = 'overview';
+                }
+            });
+            // Update initial state without reloading (so that back button works predictably)
+            let stateTab = this.currentTab === '' ? 'overview' : this.currentTab;
+            window.history.replaceState({tab: stateTab}, '', window.location.pathname);
+        },
+        
+        switchTab(tab) {
+            if (this.currentTab === tab) return;
+            this.currentTab = tab;
+            let url = '/hospital/' + this.slug;
+            if (tab !== 'overview') {
+                url += '/' + tab;
+            }
+            window.history.pushState({tab: tab}, '', url);
+            
+            // Scroll to top of tabs gracefully
+            window.scrollTo({ top: 250, behavior: 'smooth' });
+        }
+    }));
+});
+</script>
+@endpush
+
 @endsection
