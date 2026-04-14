@@ -16,8 +16,6 @@
         </a>
     </div>
 
-    @include('admin.shared._alerts')
-
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Left Column: Forms --}}
         <div class="space-y-6">
