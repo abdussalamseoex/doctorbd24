@@ -525,9 +525,10 @@
                 <div class="text-center py-10 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm">
                     <div class="text-4xl mb-4 opacity-50">🏜️</div>
                     <p class="text-sm font-medium text-gray-400">{{ __('No Doctors Found matching the selected criteria.') }}</p>
+                </div>
                 @endif
             </div>
-            @endif
+            </div> {{-- END TAB CONTENT: DOCTORS --}}
 
             {{-- TAB CONTENT: SERVICES & TESTS --}}
             <div x-show="currentTab === 'services'" style="{{ ($tab ?? 'overview') === 'services' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
