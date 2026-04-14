@@ -398,22 +398,46 @@
 
             {{-- TAB CONTENT: DOCTORS --}}
             <div x-show="currentTab === 'doctors'" style="{{ ($tab ?? 'overview') === 'doctors' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
-            <div class="mb-8">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-end mb-4 px-2">
-                    <form method="GET" class="flex flex-shrink-0 items-center gap-2">
-                        <select name="specialty" onchange="this.form.submit()" class="text-sm font-medium px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm cursor-pointer">
-                            <option value="">{{ __('All Specialties') }}</option>
-                            @foreach($specialties as $sp)
-                                <option value="{{ $sp->slug }}" @selected(request('specialty')===$sp->slug)>{{ $sp->getTranslation('name', app()->getLocale()) }}</option>
-                            @endforeach
-                        </select>
-                    </form>
+            <div class="mb-8" x-data="hospitalDoctorsFilter()" x-init="update()">
+                <div class="mb-6">
+                    @php
+                        $hospitalSpecialties = collect();
+                        foreach($doctors as $d) {
+                            foreach($d->specialties as $sp) {
+                                if(!$hospitalSpecialties->has($sp->slug)) {
+                                    $hospitalSpecialties->put($sp->slug, [
+                                        'name' => $sp->getTranslation('name', app()->getLocale()),
+                                        'count' => 1
+                                    ]);
+                                } else {
+                                    $hospitalSpecialties[$sp->slug]['count']++;
+                                }
+                            }
+                        }
+                        $hospitalSpecialties = $hospitalSpecialties->sortBy('name');
+                    @endphp
+                    <div class="flex overflow-x-auto hide-scrollbar gap-2 pb-3">
+                        <button @click="setSpecialty('')" 
+                            :class="selectedSpecialty === '' ? 'bg-sky-500 text-white shadow-sm border-sky-500' : 'bg-gray-50 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                            class="whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-bold border transition-colors flex items-center gap-1.5 focus:outline-none shrink-0">
+                            {{ __('All Specialties') }} 
+                            <span :class="selectedSpecialty === '' ? 'bg-white/20 text-white' : 'bg-gray-200/50 dark:bg-gray-700 text-gray-500 dark:text-gray-400'" class="px-1.5 py-0.5 rounded-full text-[10px]">{{ $doctors->count() }}</span>
+                        </button>
+                        @foreach($hospitalSpecialties as $slug => $data)
+                        <button @click="setSpecialty('{{ $slug }}')" 
+                            :class="selectedSpecialty === '{{ $slug }}' ? 'bg-sky-500 text-white shadow-sm border-sky-500' : 'bg-gray-50 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                            class="whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-bold border transition-colors flex items-center gap-1.5 focus:outline-none shrink-0">
+                            {{ $data['name'] }}
+                            <span :class="selectedSpecialty === '{{ $slug }}' ? 'bg-white/20 text-white' : 'bg-gray-200/50 dark:bg-gray-700 text-gray-500 dark:text-gray-400'" class="px-1.5 py-0.5 rounded-full text-[10px]">{{ $data['count'] }}</span>
+                        </button>
+                        @endforeach
+                    </div>
                 </div>
 
                 @if($doctors->count())
-                <div class="space-y-4">
+                <div class="space-y-4" x-ref="doctorList">
                     @foreach($doctors as $doctor)
-                        <div class="group bg-white dark:bg-gray-800 rounded-[1.5rem] shadow-sm hover:shadow-lg border transition-all duration-300 w-full overflow-hidden flex flex-col sm:flex-row relative {{ $doctor->featured ? 'border-amber-300 dark:border-amber-600/50 shadow-amber-50 dark:shadow-amber-900/10' : 'border-gray-100 dark:border-gray-700' }}">
+                        <div class="doctor-card-item group bg-white dark:bg-gray-800 rounded-[1.5rem] shadow-sm hover:shadow-lg border transition-all duration-300 w-full overflow-hidden flex flex-col sm:flex-row relative {{ $doctor->featured ? 'border-amber-300 dark:border-amber-600/50 shadow-amber-50 dark:shadow-amber-900/10' : 'border-gray-100 dark:border-gray-700' }}" data-specialties="{{ $doctor->specialties->pluck('slug')->implode(',') }}">
 
                             {{-- Featured: top gradient bar --}}
                             @if($doctor->featured)
@@ -530,6 +554,13 @@
                             </div>
                         </div>
                     @endforeach
+                </div>
+                <div class="mt-6 text-center" x-show="visibleCount < totalCount" x-cloak>
+                    <button @click="loadMore" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 mx-auto">
+                        {{ __('Load More Doctors') }}
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <p class="text-xs text-gray-400 mt-2" x-text="'Showing ' + visibleCount + ' of ' + totalCount + ' doctors'"></p>
                 </div>
                 @else
                 <div class="text-center py-10 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm">
@@ -857,6 +888,45 @@
 @push('scripts')
 <script>
 document.addEventListener('alpine:init', () => {
+    Alpine.data('hospitalDoctorsFilter', () => ({
+        selectedSpecialty: '',
+        limit: 15,
+        visibleCount: 0,
+        totalCount: 0,
+        
+        update() {
+            let cards = Array.from(this.$refs.doctorList.querySelectorAll('.doctor-card-item'));
+            let count = 0;
+            cards.forEach(card => {
+                let match = this.selectedSpecialty === '' || card.dataset.specialties.split(',').includes(this.selectedSpecialty);
+                if (match) {
+                    if (count < this.limit) {
+                        card.style.display = '';
+                        count++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                    card.classList.add('is-match');
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('is-match');
+                }
+            });
+            this.visibleCount = count;
+            this.totalCount = cards.filter(c => c.classList.contains('is-match')).length;
+        },
+        
+        setSpecialty(slug) {
+            this.selectedSpecialty = slug;
+            this.limit = 15;
+            this.update();
+        },
+        
+        loadMore() {
+            this.limit += 15;
+            this.update();
+        }
+    }));
     Alpine.data('hospitalTabs', (initialTab, slug) => ({
         currentTab: initialTab && initialTab !== '' ? initialTab : 'overview',
         slug: slug,

@@ -78,13 +78,13 @@
                         generating: false,
                         progress: 0,
                         total: 0,
-                        missingIds: {{ $services->getCollection()->filter(fn($s) => empty($s->description))->pluck('id')->values()->toJson() }},
+                        missingIds: {{ $hospital->hospitalServices()->where(function($q) { $q->whereNull('description')->orWhere('description', ''); })->pluck('id')->values()->toJson() }},
                         generateAll() {
                             if (this.missingIds.length === 0) {
-                                alert('All services on this page already have descriptions!');
+                                alert('All services for this hospital already have complete descriptions!');
                                 return;
                             }
-                            if (!confirm('Generate AI descriptions for ' + this.missingIds.length + ' tests on this page? Note: This might take a moment.')) return;
+                            if (!confirm('Generate AI descriptions for ALL ' + this.missingIds.length + ' missing tests in this hospital? Note: This will run across all pages in the background.')) return;
                             
                             this.generating = true;
                             this.total = this.missingIds.length;
