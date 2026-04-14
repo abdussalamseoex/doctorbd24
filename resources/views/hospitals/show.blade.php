@@ -137,6 +137,7 @@
                        :class="currentTab === 'video' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
                        class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
                         🎥 {{ __('Video') }}
+                        <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-[10px]">{{ $hospital->hospitalVideos->count() }}</span>
                     </button>
                     @endif
                     @if(!empty($hospital->blogs) && count($hospital->blogs) > 0)
@@ -144,6 +145,7 @@
                        :class="currentTab === 'blog' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
                        class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
                         📝 {{ __('Blog') }}
+                        <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-[10px]">{{ count($hospital->blogs) }}</span>
                     </button>
                     @endif
                 </div>

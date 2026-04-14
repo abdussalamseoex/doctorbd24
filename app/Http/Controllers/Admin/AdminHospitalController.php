@@ -521,9 +521,11 @@ class AdminHospitalController extends Controller
                     foreach ($matches[1] as $index => $videoId) {
                         if (!isset($seenIds[$videoId])) {
                             $seenIds[$videoId] = true;
+                            $rawTitle = $matches[2][$index] ?? 'Video Link';
+                            $title = json_decode('"' . $rawTitle . '"');
                             $videos[] = [
                                 'url' => "https://www.youtube.com/watch?v=" . $videoId,
-                                'title' => $matches[2][$index] ?? 'Video Link'
+                                'title' => $title ?: $rawTitle
                             ];
                         }
                     }
