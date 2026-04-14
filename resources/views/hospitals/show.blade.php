@@ -457,6 +457,7 @@
                             </button>
                         </div>
                     </div>
+                </div>
 
                 @if($doctors->count())
                 <div class="space-y-4" x-ref="doctorList">
