@@ -132,14 +132,14 @@
                        class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
                         💉 {{ __('Diagnostics') }}
                     </button>
-                    @if($hospital->youtube_url)
+                    @if(!empty($hospital->videos) && count($hospital->videos) > 0)
                     <button @click.prevent="switchTab('video')" 
                        :class="currentTab === 'video' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
                        class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
                         🎥 {{ __('Video') }}
                     </button>
                     @endif
-                    @if($hospital->blog_url)
+                    @if(!empty($hospital->blogs) && count($hospital->blogs) > 0)
                     <button @click.prevent="switchTab('blog')" 
                        :class="currentTab === 'blog' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
                        class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
@@ -709,51 +709,63 @@
             @endif
             </div> {{-- END TAB CONTENT: DIAGNOSTICS --}}
 
-            @if($hospital->youtube_url)
+            @if(!empty($hospital->videos) && count($hospital->videos) > 0)
             {{-- TAB CONTENT: VIDEO --}}
             <div x-show="currentTab === 'video'" style="{{ ($tab ?? 'overview') === 'video' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
                 <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-8">
                     <h3 class="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2 mb-6">
                         <span class="bg-red-100 dark:bg-red-900/30 text-red-500 w-8 h-8 rounded-full flex items-center justify-center text-lg">🎥</span>
-                        {{ __('Hospital Video') }}
+                        {{ __('Hospital Videos') }}
                     </h3>
                     
-                    @php
-                        $youtubeId = '';
-                        preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $hospital->youtube_url, $match);
-                        if(isset($match[1])) {
-                            $youtubeId = $match[1];
-                        }
-                    @endphp
+                    <div class="grid grid-cols-1 {{ count($hospital->videos) > 1 ? 'md:grid-cols-2' : '' }} gap-6">
+                        @foreach($hospital->videos as $videoUrl)
+                        <div class="w-full">
+                            @php
+                                $youtubeId = '';
+                                preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $videoUrl, $match);
+                                if(isset($match[1])) {
+                                    $youtubeId = $match[1];
+                                }
+                            @endphp
 
-                    @if($youtubeId)
-                    <div class="relative w-full rounded-2xl overflow-hidden shadow-md" style="padding-top: 56.25%;">
-                        <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/{{ $youtubeId }}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            @if($youtubeId)
+                            <div class="relative w-full rounded-2xl overflow-hidden shadow-md" style="padding-top: 56.25%;">
+                                <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/{{ $youtubeId }}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            @else
+                            <div class="text-center py-10 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-100 dark:border-gray-700 h-full flex items-center justify-center">
+                                <a href="{{ $videoUrl }}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all shadow-sm">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                    {{ __('Watch on YouTube') }}
+                                </a>
+                            </div>
+                            @endif
+                        </div>
+                        @endforeach
                     </div>
-                    @else
-                    <div class="text-center py-10 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-100 dark:border-gray-700">
-                        <a href="{{ $hospital->youtube_url }}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all shadow-sm">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                            {{ __('Watch on YouTube') }}
-                        </a>
-                    </div>
-                    @endif
                 </div>
             </div> {{-- END TAB CONTENT: VIDEO --}}
             @endif
 
-            @if($hospital->blog_url)
+            @if(!empty($hospital->blogs) && count($hospital->blogs) > 0)
             {{-- TAB CONTENT: BLOG --}}
             <div x-show="currentTab === 'blog'" style="{{ ($tab ?? 'overview') === 'blog' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
-                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-8 text-center flex flex-col items-center">
-                    <div class="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center text-4xl mb-4 shadow-sm border border-emerald-100 dark:border-emerald-800/50">📝</div>
-                    <h3 class="text-2xl font-black text-gray-900 dark:text-white mb-2">{{ __('Read our Articles & Blogs') }}</h3>
-                    <p class="text-gray-500 dark:text-gray-400 max-w-lg mb-8">{{ __('Explore in-depth articles, health tips, and hospital updates. Click below to continue reading.') }}</p>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-8">
+                    <div class="text-center flex flex-col items-center mb-8">
+                        <div class="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center text-4xl mb-4 shadow-sm border border-emerald-100 dark:border-emerald-800/50">📝</div>
+                        <h3 class="text-2xl font-black text-gray-900 dark:text-white mb-2">{{ __('Read our Articles & Blogs') }}</h3>
+                        <p class="text-gray-500 dark:text-gray-400 max-w-lg mb-4">{{ __('Explore in-depth articles, health tips, and hospital updates.') }}</p>
+                    </div>
                     
-                    <a href="{{ $hospital->blog_url }}" target="_blank" class="inline-flex items-center gap-2 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-95">
-                        {{ __('Visit Official Blog') }}
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </a>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        @foreach($hospital->blogs as $index => $blogUrl)
+                        <a href="{{ $blogUrl }}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-1">
+                            {{ __('Read Article') }} {{ count($hospital->blogs) > 1 ? '#' . ($index + 1) : '' }}
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                        @endforeach
+                    </div>
                 </div>
             </div> {{-- END TAB CONTENT: BLOG --}}
             @endif

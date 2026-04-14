@@ -32,7 +32,9 @@ class Hospital extends Model
         'phone', 'email', 'website', 'address', 'area_id',
         'lat', 'lng', 'google_maps_url', 'verified', 'featured', 'view_count',
         'rating_avg', 'rating_count',
-        'facebook_url', 'instagram_url', 'youtube_url', 'blog_url', 'services', 'opening_hours',
+        'facebook_url', 'instagram_url', 'youtube_url', 'blog_url', 
+        'linkedin_url', 'twitter_url', 'videos', 'blogs',
+        'services', 'opening_hours',
     ];
 
     protected $casts = [
@@ -45,6 +47,8 @@ class Hospital extends Model
         'services'      => 'array',
         'opening_hours' => 'array',
         'gallery'       => 'array',
+        'videos'        => 'array',
+        'blogs'         => 'array',
     ];
 
 

@@ -263,7 +263,7 @@
             </h3>
 
             {{-- Social Media --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
                 <div>
                     <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
                         <svg class="w-4 h-4 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -279,6 +279,30 @@
                     </label>
                     <input type="url" name="instagram_url" value="{{ old('instagram_url', $hospital->instagram_url ?? '') }}" placeholder="https://instagram.com/..."
                            class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        LinkedIn
+                    </label>
+                    <input type="url" name="linkedin_url" value="{{ old('linkedin_url', $hospital->linkedin_url ?? '') }}" placeholder="https://linkedin.com/..."
+                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#0A66C2]">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-gray-800 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        X (Twitter)
+                    </label>
+                    <input type="url" name="twitter_url" value="{{ old('twitter_url', $hospital->twitter_url ?? '') }}" placeholder="https://x.com/..."
+                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-[#FF0000]" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        YouTube Channel
+                    </label>
+                    <input type="url" name="youtube_url" value="{{ old('youtube_url', $hospital->youtube_url ?? '') }}" placeholder="https://youtube.com/@..."
+                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400">
                 </div>
             </div>
 
@@ -317,78 +341,128 @@
         </div>
 
         {{-- ════ CARD: MEDIA & CONTENT TABS ════ --}}
-        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-6" x-data="{ 
-            isFetchingVideo: false,
-            isFetchingBlog: false,
-            fetchVideo() {
-                let name = document.querySelector('input[name=name]').value;
-                if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
-                this.isFetchingVideo = true;
-                fetch('{{ route('admin.hospitals.fetch-video') }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    body: JSON.stringify({ query: name })
-                }).then(res => res.json()).then(data => {
-                    if (data.url) { document.querySelector('input[name=youtube_url]').value = data.url; }
-                    else { alert('No video found'); }
-                }).catch(() => alert('Error fetching video')).finally(() => this.isFetchingVideo = false);
-            },
-            fetchBlog() {
-                let name = document.querySelector('input[name=name]').value;
-                if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
-                this.isFetchingBlog = true;
-                fetch('{{ route('admin.hospitals.fetch-blog') }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    body: JSON.stringify({ query: name })
-                }).then(res => res.json()).then(data => {
-                    if (data.url) { document.querySelector('input[name=blog_url]').value = data.url; }
-                }).catch(() => alert('Error fetching blog')).finally(() => this.isFetchingBlog = false);
-            }
-        }">
+        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-6" 
+             x-data="{ 
+                videos: {{ empty(isset($hospital) && $hospital->videos) ? '[]' : json_encode($hospital->videos) }},
+                blogs: {{ empty(isset($hospital) && $hospital->blogs) ? '[]' : json_encode($hospital->blogs) }},
+                newVideo: '',
+                newBlog: '',
+                isFetchingVideo: false,
+                isFetchingBlog: false,
+                addVideo(url = null) {
+                    let val = url || this.newVideo.trim();
+                    if(val && !this.videos.includes(val)) { this.videos.push(val); }
+                    if(!url) this.newVideo = '';
+                },
+                addBlog(url = null) {
+                    let val = url || this.newBlog.trim();
+                    if(val && !this.blogs.includes(val)) { this.blogs.push(val); }
+                    if(!url) this.newBlog = '';
+                },
+                fetchVideo() {
+                    let name = document.querySelector('input[name=name]').value;
+                    if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
+                    this.isFetchingVideo = true;
+                    fetch('{{ route('admin.hospitals.fetch-video') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ query: name })
+                    }).then(res => res.json()).then(data => {
+                        if (data.url) { this.addVideo(data.url); }
+                        else { alert('No video found'); }
+                    }).catch(() => alert('Error fetching video')).finally(() => this.isFetchingVideo = false);
+                },
+                fetchBlog() {
+                    let name = document.querySelector('input[name=name]').value;
+                    if (!name) { alert('Please enter the Hospital/Diagnostic Name first.'); return; }
+                    this.isFetchingBlog = true;
+                    fetch('{{ route('admin.hospitals.fetch-blog') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ query: name })
+                    }).then(res => res.json()).then(data => {
+                        if (data.url) { this.addBlog(data.url); }
+                    }).catch(() => alert('Error fetching blog')).finally(() => this.isFetchingBlog = false);
+                }
+            }">
             <div class="mb-5">
                 <h3 class="text-sm font-bold text-indigo-900 dark:text-indigo-300 flex items-center gap-2">
                     <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                     Additional Profiles & Tabs
                 </h3>
-                <p class="text-xs text-indigo-600/70 dark:text-indigo-400/70 mt-1">Populate these fields to automatically unlock new tabs (Video, Blog) on the public hospital profile.</p>
+                <p class="text-xs text-indigo-600/70 dark:text-indigo-400/70 mt-1">Add multiple dynamic content arrays (Videos, Blogs) to automatically unlock and populate new tabs on the public hospital profile.</p>
             </div>
 
+            <input type="hidden" name="videos" :value="JSON.stringify(videos)">
+            <input type="hidden" name="blogs" :value="JSON.stringify(blogs)">
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 flex items-center justify-between">
-                        <span class="flex items-center gap-1.5 focus:outline-none">
-                            <span class="w-6 h-6 rounded bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-500">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                            </span>
-                            YouTube Video URL
+                {{-- Videos Section --}}
+                <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col h-full">
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-1.5 focus:outline-none">
+                        <span class="w-6 h-6 rounded bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-500">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                         </span>
-                        <button type="button" @click="fetchVideo()" class="bg-indigo-50 dark:bg-indigo-900/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 transition-colors px-2.5 py-1 rounded-md flex items-center gap-1.5 cursor-pointer text-[10px] uppercase tracking-wider font-bold shadow-sm">
-                            <span x-show="isFetchingVideo" class="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
-                            <span x-show="!isFetchingVideo">Search Data</span>
-                        </button>
+                        YouTube Videos Array
                     </label>
-                    <input type="url" name="youtube_url" value="{{ old('youtube_url', $hospital->youtube_url ?? '') }}" placeholder="https://youtube.com/watch..."
-                           class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
-                    <p class="text-[10px] text-gray-400 mt-1.5">Paste a single primary video link for the hospital to enable the Video tab.</p>
+                    
+                    <div class="flex gap-2 mb-3">
+                        <input type="url" x-model="newVideo" @keydown.enter.prevent="addVideo()" placeholder="https://youtube.com/watch..."
+                               class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                        <button type="button" @click="addVideo()" class="px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
+                            Add
+                        </button>
+                    </div>
+
+                    <div class="space-y-1 mb-3 flex-1">
+                        <template x-for="(vid, index) in videos" :key="index">
+                            <div class="flex items-center justify-between gap-2 p-2 rounded bg-gray-50/80 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                                <span class="text-xs text-gray-600 dark:text-gray-300 truncate" x-text="vid"></span>
+                                <button type="button" @click="videos.splice(index, 1)" class="text-red-400 hover:text-red-600 transition-colors shrink-0 p-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+
+                    <button type="button" @click="fetchVideo()" class="w-full bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 transition-colors px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer text-xs font-bold shadow-sm">
+                        <span x-show="isFetchingVideo" class="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
+                        <span x-show="!isFetchingVideo">Search Data & Add</span>
+                    </button>
                 </div>
                 
-                <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 flex items-center justify-between">
-                        <span class="flex items-center gap-1.5 focus:outline-none">
-                            <span class="w-6 h-6 rounded bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-500">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                            </span>
-                            Related Blog Article
+                {{-- Blogs Section --}}
+                <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col h-full">
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-1.5 focus:outline-none">
+                        <span class="w-6 h-6 rounded bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                         </span>
-                        <button type="button" @click="fetchBlog()" class="bg-indigo-50 dark:bg-indigo-900/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 transition-colors px-2.5 py-1 rounded-md flex items-center gap-1.5 cursor-pointer text-[10px] uppercase tracking-wider font-bold shadow-sm">
-                            <span x-show="isFetchingBlog" class="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
-                            <span x-show="!isFetchingBlog">Auto Map URL</span>
-                        </button>
+                        Related Blog Articles Array
                     </label>
-                    <input type="url" name="blog_url" value="{{ old('blog_url', $hospital->blog_url ?? '') }}" placeholder="https://example.com/blog..."
-                           class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
-                    <p class="text-[10px] text-gray-400 mt-1.5">Map an internal blog post to this hospital profile to enable the Blog tab.</p>
+
+                    <div class="flex gap-2 mb-3">
+                        <input type="url" x-model="newBlog" @keydown.enter.prevent="addBlog()" placeholder="https://example.com/blog..."
+                               class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                        <button type="button" @click="addBlog()" class="px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
+                            Add
+                        </button>
+                    </div>
+
+                    <div class="space-y-1 mb-3 flex-1">
+                        <template x-for="(bg, index) in blogs" :key="index">
+                            <div class="flex items-center justify-between gap-2 p-2 rounded bg-gray-50/80 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                                <span class="text-xs text-gray-600 dark:text-gray-300 truncate" x-text="bg"></span>
+                                <button type="button" @click="blogs.splice(index, 1)" class="text-red-400 hover:text-red-600 transition-colors shrink-0 p-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+
+                    <button type="button" @click="fetchBlog()" class="w-full bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 transition-colors px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer text-xs font-bold shadow-sm">
+                        <span x-show="isFetchingBlog" class="w-3.5 h-3.5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
+                        <span x-show="!isFetchingBlog">Auto Map URL</span>
+                    </button>
                 </div>
             </div>
         </div>
