@@ -357,6 +357,7 @@
                         body: JSON.stringify({ url: url })
                     }).then(res => res.json()).then(data => {
                         if(data.title) { this[arrayName][idx].title = data.title; }
+                        if(data.image) { this[arrayName][idx].image = data.image; }
                     }).catch(() => {
                         this[arrayName][idx].title = 'Linked Article/Media';
                     });
@@ -473,22 +474,36 @@
                     </label>
 
                     <div class="flex gap-2 mb-3">
-                        <input type="url" x-model="newBlog" @keydown.enter.prevent="addBlog()" placeholder="https://example.com/blog..."
+                        <input type="url" x-model="newBlogUrl" @keydown.enter.prevent="addBlog()" placeholder="https://example.com/blog..."
                                class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
                         <button type="button" @click="addBlog()" class="px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
                             Add
                         </button>
                     </div>
 
-                    <div class="space-y-1 mb-3 flex-1">
+                    <div class="space-y-1.5 mb-3 flex-1 overflow-y-auto max-h-[150px] pr-1">
                         <template x-for="(bg, index) in blogs" :key="index">
-                            <div class="flex items-center justify-between gap-2 p-2 rounded bg-gray-50/80 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
-                                <span class="text-xs text-gray-600 dark:text-gray-300 truncate" x-text="bg"></span>
-                                <button type="button" @click="blogs.splice(index, 1)" class="text-red-400 hover:text-red-600 transition-colors shrink-0 p-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <div class="group flex items-start justify-between gap-2 p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
+                                <div class="w-10 h-10 shrink-0 rounded bg-gray-100 dark:bg-gray-700 overflow-hidden flex items-center justify-center text-gray-400">
+                                    <template x-if="bg.image">
+                                        <img :src="bg.image" class="w-full h-full object-cover">
+                                    </template>
+                                    <template x-if="!bg.image">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
+                                    </template>
+                                </div>
+                                <div class="overflow-hidden flex-1">
+                                    <p class="text-xs font-bold text-gray-800 dark:text-gray-200 truncate pr-6" x-text="bg.title"></p>
+                                    <p class="text-[10px] text-gray-500 truncate" x-text="bg.url"></p>
+                                </div>
+                                <button type="button" @click="blogs.splice(index, 1)" class="absolute top-2.5 right-2.5 text-gray-400 hover:text-red-600 bg-white dark:bg-gray-800 rounded transition-colors p-0.5" title="Remove Blog">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </div>
                         </template>
+                        <div x-show="blogs.length === 0" class="text-center py-4 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+                            <p class="text-xs text-gray-400">No blogs added yet.</p>
+                        </div>
                     </div>
 
                     <button type="button" @click="fetchBlog()" class="w-full bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 transition-colors px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer text-xs font-bold shadow-sm">

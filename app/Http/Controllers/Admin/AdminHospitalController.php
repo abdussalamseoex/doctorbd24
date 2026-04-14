@@ -360,6 +360,7 @@ class AdminHospitalController extends Controller
             if (!$url) continue;
 
             $title = is_string($link) ? 'Linked Content' : ($link['title'] ?? 'Linked Content');
+            $image = is_string($link) ? null : ($link['image'] ?? null);
             
             // Re-fetch only if title is generic
             if (in_array($title, ['Fetching title...', 'Linked Content', 'Linked Article/Media']) || empty(trim($title))) {
@@ -371,16 +372,23 @@ class AdminHospitalController extends Controller
                     if ($response->successful()) {
                         $html = $response->body();
                         if (preg_match('/<meta[^>]*property=[\'"]og:title[\'"][^>]*content=[\'"]([^\'"]+)[\'"][^>]*>/i', $html, $matches) ||
+                            preg_match('/<meta[^>]*content=[\'"]([^\'"]+)[\'"][^>]*property=[\'"]og:title[\'"][^>]*>/i', $html, $matches) ||
                             preg_match('/<title[^>]*>(.*?)<\/title>/is', $html, $matches)) {
                             $titleChunk = explode(' |', $matches[1])[0];
                             $title = trim(html_entity_decode(strip_tags(explode(' -', $titleChunk)[0]), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                        }
+                        
+                        if (!$image && preg_match('/<meta[^>]*property=[\'"]og:image[\'"][^>]*content=[\'"]([^\'"]+)[\'"][^>]*>/i', $html, $matches)) {
+                            $image = $matches[1];
+                        } elseif (!$image && preg_match('/<meta[^>]*content=[\'"]([^\'"]+)[\'"][^>]*property=[\'"]og:image[\'"][^>]*>/i', $html, $matches)) {
+                            $image = $matches[1];
                         }
                     }
                 } catch (\Exception $e) {}
             }
             if(empty(trim($title))) { $title = 'Linked Article/Media'; }
 
-            $processed[] = ['title' => $title, 'url' => $url];
+            $processed[] = ['title' => $title, 'url' => $url, 'image' => $image];
         }
         return $processed;
     }
@@ -445,10 +453,14 @@ class AdminHospitalController extends Controller
         if (!$url) return response()->json(['error' => 'URL is required'], 400);
 
         try {
+            $meta = ['title' => 'Linked Content', 'image' => null];
+
             // check for oembed first as it's cleaner for media
             $oembedRes = \Illuminate\Support\Facades\Http::timeout(3)->get("https://noembed.com/embed?url=" . urlencode($url));
             if ($oembedRes->successful() && $oembedRes->json('title')) {
-                return response()->json(['title' => $oembedRes->json('title')]);
+                $meta['title'] = $oembedRes->json('title');
+                $meta['image'] = $oembedRes->json('thumbnail_url');
+                return response()->json($meta);
             }
 
             $response = \Illuminate\Support\Facades\Http::timeout(5)
@@ -460,22 +472,25 @@ class AdminHospitalController extends Controller
                 
                 // Try OpenGraph title first
                 if (preg_match('/<meta[^>]*property=[\'"]og:title[\'"][^>]*content=[\'"]([^\'"]+)[\'"][^>]*>/i', $html, $matches)) {
-                    return response()->json(['title' => html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8')]);
-                }
-                if (preg_match('/<meta[^>]*content=[\'"]([^\'"]+)[\'"][^>]*property=[\'"]og:title[\'"][^>]*>/i', $html, $matches)) {
-                    return response()->json(['title' => html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8')]);
-                }
-
-                // Fallback to <title>
-                if (preg_match('/<title[^>]*>(.*?)<\/title>/is', $html, $matches)) {
+                    $meta['title'] = html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                } elseif (preg_match('/<meta[^>]*content=[\'"]([^\'"]+)[\'"][^>]*property=[\'"]og:title[\'"][^>]*>/i', $html, $matches)) {
+                    $meta['title'] = html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                } elseif (preg_match('/<title[^>]*>(.*?)<\/title>/is', $html, $matches)) {
+                    // Fallback to <title>
                     $title = explode(' |', $matches[1])[0]; // try to get core title
                     $title = explode(' -', $title)[0];
-                    return response()->json(['title' => trim(html_entity_decode(strip_tags($title), ENT_QUOTES | ENT_HTML5, 'UTF-8'))]);
+                    $meta['title'] = trim(html_entity_decode(strip_tags($title), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                }
+
+                if (preg_match('/<meta[^>]*property=[\'"]og:image[\'"][^>]*content=[\'"]([^\'"]+)[\'"][^>]*>/i', $html, $matches)) {
+                    $meta['image'] = $matches[1];
+                } elseif (preg_match('/<meta[^>]*content=[\'"]([^\'"]+)[\'"][^>]*property=[\'"]og:image[\'"][^>]*>/i', $html, $matches)) {
+                    $meta['image'] = $matches[1];
                 }
             }
-            return response()->json(['title' => 'Linked Content']);
+            return response()->json($meta);
         } catch (\Exception $e) {
-            return response()->json(['title' => 'Linked Content', 'error' => $e->getMessage()], 500);
+            return response()->json(['title' => 'Linked Content', 'image' => null, 'error' => $e->getMessage()], 500);
         }
     }
 }
