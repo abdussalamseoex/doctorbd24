@@ -720,7 +720,12 @@
                     
                     <div class="flex flex-col gap-4">
                         @foreach($hospital->hospitalVideos as $video)
-                        <a href="{{ route('video.show', ['hospital_slug' => $hospital->slug, 'video_slug' => $video->slug]) }}" class="group flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md transition-all">
+                        @php
+                            $isFacebook = str_contains(strtolower($video->video_url ?? $video->url), 'facebook.com') || str_contains(strtolower($video->video_url ?? $video->url), 'fb.watch');
+                            $videoHref = $isFacebook ? ($video->video_url ?? $video->url) : route('video.show', ['hospital_slug' => $hospital->slug, 'video_slug' => $video->slug]);
+                            $targetAttr = $isFacebook ? 'target="_blank" rel="nofollow noopener"' : '';
+                        @endphp
+                        <a href="{{ $videoHref }}" {!! $targetAttr !!} class="group flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md transition-all">
                             <div class="relative w-full sm:w-48 aspect-video rounded-xl bg-black overflow-hidden shrink-0">
                                 @if($video->thumbnail_url)
                                     <img src="{{ $video->thumbnail_url }}" alt="{{ $video->title }}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300">
@@ -728,8 +733,14 @@
                                     <div class="w-full h-full flex items-center justify-center text-gray-600 bg-gray-800"><svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
                                 @endif
                                 <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-100 sm:opacity-80 group-hover:opacity-100 transition-opacity">
-                                    <div class="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                        <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    <div class="w-12 h-12 rounded-full {{ $isFacebook ? 'bg-blue-600' : 'bg-red-600' }} text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                        @if($isFacebook)
+                                            {{-- Facebook External Link Icon --}}
+                                            <svg class="w-6 h-6 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        @else
+                                            {{-- YouTube Play Icon --}}
+                                            <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

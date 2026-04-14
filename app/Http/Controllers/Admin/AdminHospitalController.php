@@ -297,9 +297,16 @@ class AdminHospitalController extends Controller
             
             $youtubeId = null;
             $thumbnailUrl = null;
+            $isFacebook = str_contains(strtolower($url), 'facebook.com') || str_contains(strtolower($url), 'fb.watch');
+
             if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $url, $match)) {
                 $youtubeId = $match[1];
                 $thumbnailUrl = 'https://img.youtube.com/vi/' . $youtubeId . '/hqdefault.jpg';
+            } elseif ($isFacebook) {
+                $thumbnailUrl = 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg';
+                if (in_array($title, ['Fetching title...', 'Video Link']) || empty(trim($title))) {
+                    $title = str_contains($url, '/reel/') ? 'Facebook Reel' : 'Facebook Video';
+                }
             }
 
             // Backend fallback fetch if title wasn't fetched in frontend
