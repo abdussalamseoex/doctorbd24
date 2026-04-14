@@ -187,41 +187,41 @@
             </div>
             {{-- END Profile Header Card --}}
 
-            {{-- Tabs --}}
-            <div x-data="{ currentTab: '{{ $tab ?? 'overview' }}' }" class="w-full space-y-5">
+            {{-- SPA TABS COMPONENT --}}
+            <div x-data="doctorTabs('{{ $tab ?? 'overview' }}', '{{ $doctor->slug }}')" class="w-full">
             @php
                 $hasVideos = isset($doctor) && $doctor->doctorVideos->count() > 0;
                 $hasBlogs = isset($doctor) && !empty($doctor->blogs);
                 $showTabs = $hasVideos || $hasBlogs;
             @endphp
             @if($showTabs)
-                <div class="flex items-center gap-1 overflow-x-auto hide-scrollbar border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1.5 rounded-2xl shadow-sm sticky top-16 z-30">
-                    <a href="{{ route('doctors.show', $doctor->slug) }}"
-                            :class="currentTab === 'overview' ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 font-bold shadow-sm' : 'text-gray-500 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200'"
-                            class="px-5 py-2.5 rounded-xl text-sm transition-all whitespace-nowrap flex items-center gap-2 flex-shrink-0 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        {{ __('Overview') }}
-                    </a>
+                {{-- TAB NAVIGATION BAR --}}
+                <div class="flex items-center gap-2 mb-8 border-b border-gray-100 dark:border-gray-700 pb-px overflow-x-auto hide-scrollbar sticky top-[calc(var(--nav-height,0px))] z-40 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-md pt-2">
+                    <button @click.prevent="switchTab('overview')" 
+                       :class="currentTab === 'overview' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                       class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
+                        👨‍⚕️ {{ __('Overview & Info') }}
+                    </button>
                     @if($hasVideos)
-                    <a href="{{ route('doctors.show', ['slug' => $doctor->slug, 'tab' => 'videos']) }}"
-                            :class="currentTab === 'videos' ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 font-bold shadow-sm' : 'text-gray-500 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200'"
-                            class="px-5 py-2.5 rounded-xl text-sm transition-all whitespace-nowrap flex items-center gap-2 flex-shrink-0 cursor-pointer">
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                        {{ __('Videos') }} <span class="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded text-[10px] ml-1">{{ $doctor->doctorVideos->count() }}</span>
-                    </a>
+                    <button @click.prevent="switchTab('videos')" 
+                       :class="currentTab === 'videos' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                       class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
+                        🎥 {{ __('Video') }}
+                        <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-[10px]">{{ $doctor->doctorVideos->count() }}</span>
+                    </button>
                     @endif
                     @if($hasBlogs)
-                    <a href="{{ route('doctors.show', ['slug' => $doctor->slug, 'tab' => 'blog']) }}"
-                            :class="currentTab === 'blog' ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 font-bold shadow-sm' : 'text-gray-500 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200'"
-                            class="px-5 py-2.5 rounded-xl text-sm transition-all whitespace-nowrap flex items-center gap-2 flex-shrink-0 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 002-2V9a2 2 0 00-2-2h14a2 2 0 002 2v10a2 2 0 002 2z"/></svg>
-                        {{ __('Blog') }} <span class="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded text-[10px] ml-1">{{ count($doctor->blogs) }}</span>
-                    </a>
+                    <button @click.prevent="switchTab('blog')" 
+                       :class="currentTab === 'blog' ? 'border-sky-500 text-sky-600 dark:text-sky-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                       class="px-5 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap outline-none flex items-center gap-2">
+                        📝 {{ __('Blog') }}
+                        <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-[10px]">{{ count($doctor->blogs) }}</span>
+                    </button>
                     @endif
                 </div>
             @endif
 
-            <div x-show="currentTab === 'overview'" style="display: {{ ($tab ?? 'overview') === 'overview' ? 'block' : 'none' }};" x-transition.opacity.duration.300ms class="space-y-5">
+            <div x-show="currentTab === 'overview'" style="{{ ($tab ?? 'overview') === 'overview' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms class="space-y-5">
 
             {{-- Bio --}}
             <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
@@ -491,104 +491,115 @@
             </div>{{-- END OVERVIEW TAB --}}
 
             @if(isset($doctor) && $doctor->doctorVideos->count() > 0)
-            {{-- TAB CONTENT: VIDEOS --}}
-            <div x-cloak x-show="currentTab === 'videos'" style="display: {{ ($tab ?? 'overview') === 'videos' ? 'block' : 'none' }};" x-transition.opacity.duration.300ms class="space-y-5 mt-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    @foreach($doctor->doctorVideos as $video)
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow group flex flex-col h-full relative p-3 gap-3">
-                        <a href="{{ route('doctor.video.show', ['doctor_slug' => $doctor->slug, 'video_slug' => $video->slug]) }}" class="block w-full aspect-video rounded-xl overflow-hidden relative shadow-sm border border-gray-100 dark:border-gray-700 bg-gray-900 group-hover:border-red-200 dark:group-hover:border-red-900/50 transition-colors shrink-0">
-                            @if(str_contains($video->video_url, 'youtube.com') || str_contains($video->video_url, 'youtu.be'))
-                                @php
-                                    preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i', $video->video_url, $match);
-                                    $youtube_id = $match[1] ?? null;
-                                @endphp
-                                @if($youtube_id)
-                                    <img src="https://img.youtube.com/vi/{{ $youtube_id }}/mqdefault.jpg" alt="{{ $video->title }}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                                            <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                        </div>
-                                    </div>
+            {{-- TAB CONTENT: VIDEO --}}
+            <div x-show="currentTab === 'videos'" style="{{ ($tab ?? 'overview') === 'videos' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-8 mt-4">
+                    <h3 class="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2 mb-6">
+                        <span class="bg-red-100 dark:bg-red-900/30 text-red-500 w-8 h-8 rounded-full flex items-center justify-center text-lg">🎥</span>
+                        {{ __('Doctor Videos') }}
+                    </h3>
+                    
+                    <div x-data="{ limit: 12 }" class="flex flex-col gap-4">
+                        @foreach($doctor->doctorVideos as $index => $video)
+                        @php
+                            $isFacebook = str_contains(strtolower($video->video_url ?? $video->url ?? ''), 'facebook.com') || str_contains(strtolower($video->video_url ?? $video->url ?? ''), 'fb.watch');
+                            $videoHref = $isFacebook ? ($video->video_url ?? $video->url ?? '#') : route('doctor.video.show', ['doctor_slug' => $doctor->slug, 'video_slug' => $video->slug]);
+                            $targetAttr = $isFacebook ? 'target="_blank" rel="nofollow noopener"' : '';
+                        @endphp
+                        <a href="{{ $videoHref }}" {!! $targetAttr !!} x-show="limit > {{ $index }}" x-collapse.duration.500ms class="group flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md transition-all" style="display: none;">
+                            <div class="relative w-full sm:w-48 aspect-video rounded-xl bg-black overflow-hidden shrink-0">
+                                @if($video->thumbnail_url)
+                                    <img src="{{ $video->thumbnail_url }}" alt="{{ $video->title }}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300">
                                 @else
-                                    <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
-                                        <svg class="w-12 h-12 text-red-500 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                                        <span class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ __('Watch Video') }}</span>
-                                    </div>
+                                    <div class="w-full h-full flex items-center justify-center text-gray-600 bg-gray-800"><svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
                                 @endif
-                            @else
-                                <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
-                                    <svg class="w-10 h-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">{{ __('External Video') }}</span>
+                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-100 sm:opacity-80 group-hover:opacity-100 transition-opacity">
+                                    <div class="w-12 h-12 rounded-full {{ $isFacebook ? 'bg-blue-600' : 'bg-red-600' }} text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                        @if($isFacebook)
+                                            <svg class="w-6 h-6 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        @else
+                                            <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        @endif
+                                    </div>
                                 </div>
-                            @endif
-                        </a>
-                        <div class="px-2 pb-1 flex-1 flex flex-col">
-                            <a href="{{ route('doctor.video.show', ['doctor_slug' => $doctor->slug, 'video_slug' => $video->slug]) }}">
-                                <h3 class="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2 title-tooltip group-hover:text-red-500 transition-colors" title="{{ $video->title }}">
-                                    {{ $video->title }}
-                                </h3>
-                            </a>
-                            @if($video->description)
-                            <div class="mt-2 text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed flex-1">
-                                {!! nl2br(e($video->description)) !!}
                             </div>
-                            @endif
-                            <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between gap-3">
-                                <a href="{{ route('doctor.video.show', ['doctor_slug' => $doctor->slug, 'video_slug' => $video->slug]) }}" class="text-[11px] font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    {{ __('Watch') }}
-                                </a>
-                                @auth
-                                    @if(auth()->user()->hasRole('admin'))
-                                        <a href="{{ route('admin.doctors.edit', $doctor->id) }}" class="text-[10px] bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded transition-colors" target="_blank">{{ __('Edit') }}</a>
+                            <div class="flex-1 w-full text-center sm:text-left">
+                                <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-emerald-600 transition-colors leading-snug">{{ $video->title }}</h4>
+                                @if($video->description)
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{{ $video->description }}</p>
+                                @endif
+                                <p class="text-xs text-gray-500 flex items-center justify-center sm:justify-start gap-1">
+                                    @if($doctor->photo)
+                                        <img src="{{ Storage::url($doctor->photo) }}" class="w-4 h-4 rounded-full object-cover">
                                     @endif
-                                @endauth
+                                    {{ $doctor->name }} &bull; {{ $video->created_at->diffForHumans() }}
+                                </p>
                             </div>
+                        </a>
+                        @endforeach
+                        
+                        @if($doctor->doctorVideos->count() > 12)
+                        <div class="text-center mt-6">
+                            <button type="button" x-show="limit < {{ $doctor->doctorVideos->count() }}" @click.prevent="limit += 12" 
+                                class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
+                                <span>Load More Videos</span>
+                                <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
                         </div>
+                        @endif
                     </div>
-                    @endforeach
                 </div>
             </div>
             @endif
 
-            @if(isset($doctor) && !empty($doctor->blogs))
-            {{-- TAB CONTENT: BLOGS --}}
-            <div x-cloak x-show="currentTab === 'blog'" style="display: {{ ($tab ?? 'overview') === 'blog' ? 'block' : 'none' }};" x-transition.opacity.duration.300ms class="space-y-5 mt-4">
-                <div class="grid grid-cols-1 gap-4">
-                    @foreach($doctor->blogs as $blog)
+            @if(isset($doctor) && !empty($doctor->blogs) && count($doctor->blogs) > 0)
+            {{-- TAB CONTENT: BLOG --}}
+            <div x-show="currentTab === 'blog'" style="{{ ($tab ?? 'overview') === 'blog' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-4">
+                    <div class="text-center flex flex-col items-center mb-6">
+                        <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center text-3xl mb-3 shadow-sm border border-emerald-100 dark:border-emerald-800/50">📝</div>
+                        <h3 class="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-1.5">{{ __('Read our Articles & Blogs') }}</h3>
+                        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 max-w-lg mb-2">{{ __('Explore in-depth articles, health tips, and updates.') }}</p>
+                    </div>
+                    
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                        @foreach($doctor->blogs as $index => $blogData)
                         @php
-                            $bTitle = is_array($blog) ? ($blog['title'] ?? 'Linked Content') : 'Linked Content';
-                            $bUrl = is_array($blog) ? ($blog['url'] ?? $blog) : $blog;
-                            $bImage = is_array($blog) ? ($blog['image'] ?? null) : null;
+                            $bUrl = is_string($blogData) ? $blogData : ($blogData['url'] ?? '#');
+                            $bTitle = is_string($blogData) ? __('Read Article') . (count($doctor->blogs) > 1 ? ' #' . ($index + 1) : '') : ($blogData['title'] ?? __('Read Article'));
+                            $bImage = is_string($blogData) ? null : ($blogData['image'] ?? null);
+                            $parsedUrl = parse_url($bUrl);
+                            $domain = $parsedUrl['host'] ?? '';
+                            $isInternal = empty($domain) || str_contains($domain, 'doctorbd24.com');
+                            $relAttr = $isInternal ? 'dofollow' : 'nofollow noopener noreferrer';
                         @endphp
-                        <a href="{{ $bUrl }}" target="_blank" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all group flex items-start gap-4">
-                            @if($bImage)
-                                <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-xl overflow-hidden shadow-sm shrink-0 border border-gray-100 dark:border-gray-700">
-                                    <img src="{{ $bImage }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            @else
-                                <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-xl shrink-0 border border-gray-100 dark:border-gray-700 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h14a2 2 0 002 2v10a2 2 0 002 2z"/></svg>
-                                </div>
-                            @endif
-                            <div class="flex-1 min-w-0">
-                                <h3 class="font-bold text-gray-900 dark:text-white text-base leading-tight group-hover:text-emerald-600 transition-colors line-clamp-2">
-                                    {{ $bTitle }}
-                                </h3>
-                                <p class="text-[11px] font-medium text-gray-400 mt-2 truncate max-w-[250px] sm:max-w-full">
-                                    {{ parse_url($bUrl, PHP_URL_HOST) ?? $bUrl }}
-                                </p>
-                                <div class="mt-2.5">
-                                    <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg">
-                                        {{ __('Read Article') }}
-                                        <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        <a href="{{ $bUrl }}" target="_blank" rel="{{ $relAttr }}" class="group flex flex-col rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-700 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <div class="w-full h-40 bg-gray-100 dark:bg-gray-900 overflow-hidden relative">
+                                @if($bImage)
+                                    <img src="{{ $bImage }}" alt="{{ $bTitle }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                @else
+                                    <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600">
+                                        <svg class="w-12 h-12 mb-2 opacity-50" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
+                                    </div>
+                                @endif
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div class="p-5 flex flex-col flex-1">
+                                <h4 class="text-base font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors line-clamp-2 leading-snug mb-2">{{ $bTitle }}</h4>
+                                <div class="mt-auto flex items-center justify-between">
+                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                                        {{ $isInternal ? 'Internal Article' : ($domain ?: 'External Link') }}
+                                    </span>
+                                    <span class="text-emerald-500 shrink-0 transform group-hover:translate-x-1 transition-transform">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                                     </span>
                                 </div>
                             </div>
                         </a>
-                    @endforeach
+                        @endforeach
+                        </div>
                 </div>
-            </div>
+            </div> {{-- END TAB CONTENT: BLOG --}}
             @endif
 
             </div> {{-- END TABS WRAPPER --}}
@@ -886,4 +897,43 @@
     @endif
 
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('doctorTabs', (initialTab, slug) => ({
+        currentTab: initialTab,
+        slug: slug,
+        
+        init() {
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', (e) => {
+                if (e.state && e.state.tab) {
+                    this.currentTab = e.state.tab;
+                } else {
+                    this.currentTab = 'overview';
+                }
+            });
+            // Update initial state without reloading 
+            let stateTab = this.currentTab === '' ? 'overview' : this.currentTab;
+            window.history.replaceState({tab: stateTab}, '', window.location.pathname);
+        },
+        
+        switchTab(tab) {
+            if (this.currentTab === tab) return;
+            this.currentTab = tab;
+            let url = '/doctor/' + this.slug;
+            if (tab !== 'overview') {
+                url += '/' + tab;
+            }
+            window.history.pushState({tab: tab}, '', url);
+            
+            // Scroll to top of tabs gracefully
+            window.scrollTo({ top: 250, behavior: 'smooth' });
+        }
+    }));
+});
+</script>
+@endpush
+
 @endsection

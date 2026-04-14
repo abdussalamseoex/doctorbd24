@@ -60,14 +60,14 @@
                             </div>
                         @endif
                         <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4 mt-2">
-                            <a href="{{ route('doctors.show', $hospital->slug) }}" class="flex items-center gap-3 group">
-                                @if($hospital->logo)
-                                    <img src="{{ Storage::url($hospital->logo) }}" alt="{{ $hospital->name }}" class="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-600 group-hover:scale-105 transition-transform">
+                            <a href="{{ route('doctors.show', $target->slug) }}" class="flex items-center gap-3 group">
+                                @if($target->photo)
+                                    <img src="{{ Storage::url($target->photo) }}" alt="{{ $target->name }}" class="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-600 group-hover:scale-105 transition-transform">
                                 @else
                                     <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 group-hover:scale-105 transition-transform"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
                                 @endif
                                 <div>
-                                    <p class="font-bold text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 transition-colors">{{ $hospital->name }}</p>
+                                    <p class="font-bold text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 transition-colors">{{ $target->name }}</p>
                                     <p class="text-xs">{{ $video->created_at->diffForHumans() }}</p>
                                 </div>
                             </a>
@@ -78,10 +78,10 @@
                 {{-- Related Videos Widget --}}
                 @if($relatedVideos->count() > 0)
                 <div>
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">More Videos from {{ $hospital->name }}</h3>
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">More Videos from {{ $target->name }}</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($relatedVideos as $relVideo)
-                        <a href="{{ route('doctor.video.show', ['doctor_slug' => $hospital->slug, 'video_slug' => $relVideo->slug]) }}" class="group block bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                        <a href="{{ route('doctor.video.show', ['doctor_slug' => $target->slug, 'video_slug' => $relVideo->slug]) }}" class="group block bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
                             <div class="relative aspect-video bg-black overflow-hidden">
                                 @if($relVideo->thumbnail_url)
                                     <img src="{{ $relVideo->thumbnail_url }}" alt="{{ $relVideo->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
