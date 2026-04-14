@@ -720,14 +720,14 @@
                         {{ __('Hospital Videos') }}
                     </h3>
                     
-                    <div class="flex flex-col gap-4">
-                        @foreach($hospital->hospitalVideos as $video)
+                    <div x-data="{ limit: 12 }" class="flex flex-col gap-4">
+                        @foreach($hospital->hospitalVideos as $index => $video)
                         @php
                             $isFacebook = str_contains(strtolower($video->video_url ?? $video->url), 'facebook.com') || str_contains(strtolower($video->video_url ?? $video->url), 'fb.watch');
                             $videoHref = $isFacebook ? ($video->video_url ?? $video->url) : route('video.show', ['hospital_slug' => $hospital->slug, 'video_slug' => $video->slug]);
                             $targetAttr = $isFacebook ? 'target="_blank" rel="nofollow noopener"' : '';
                         @endphp
-                        <a href="{{ $videoHref }}" {!! $targetAttr !!} class="group flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md transition-all">
+                        <a href="{{ $videoHref }}" {!! $targetAttr !!} x-show="limit > {{ $index }}" x-collapse.duration.500ms class="group flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md transition-all" style="display: none;">
                             <div class="relative w-full sm:w-48 aspect-video rounded-xl bg-black overflow-hidden shrink-0">
                                 @if($video->thumbnail_url)
                                     <img src="{{ $video->thumbnail_url }}" alt="{{ $video->title }}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300">
@@ -737,10 +737,8 @@
                                 <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-100 sm:opacity-80 group-hover:opacity-100 transition-opacity">
                                     <div class="w-12 h-12 rounded-full {{ $isFacebook ? 'bg-blue-600' : 'bg-red-600' }} text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                                         @if($isFacebook)
-                                            {{-- Facebook External Link Icon --}}
                                             <svg class="w-6 h-6 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                         @else
-                                            {{-- YouTube Play Icon --}}
                                             <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                         @endif
                                     </div>
@@ -757,6 +755,16 @@
                             </div>
                         </a>
                         @endforeach
+                        
+                        @if($hospital->hospitalVideos->count() > 12)
+                        <div class="text-center mt-6">
+                            <button type="button" x-show="limit < {{ $hospital->hospitalVideos->count() }}" @click.prevent="limit += 12" 
+                                class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
+                                <span>Load More Videos</span>
+                                <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div> {{-- END TAB CONTENT: VIDEO --}}
@@ -765,11 +773,11 @@
             @if(!empty($hospital->blogs) && count($hospital->blogs) > 0)
             {{-- TAB CONTENT: BLOG --}}
             <div x-show="currentTab === 'blog'" style="{{ ($tab ?? 'overview') === 'blog' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
-                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-8">
-                    <div class="text-center flex flex-col items-center mb-8">
-                        <div class="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center text-4xl mb-4 shadow-sm border border-emerald-100 dark:border-emerald-800/50">📝</div>
-                        <h3 class="text-2xl font-black text-gray-900 dark:text-white mb-2">{{ __('Read our Articles & Blogs') }}</h3>
-                        <p class="text-gray-500 dark:text-gray-400 max-w-lg mb-4">{{ __('Explore in-depth articles, health tips, and hospital updates.') }}</p>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-4">
+                    <div class="text-center flex flex-col items-center mb-6">
+                        <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center text-3xl mb-3 shadow-sm border border-emerald-100 dark:border-emerald-800/50">📝</div>
+                        <h3 class="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-1.5">{{ __('Read our Articles & Blogs') }}</h3>
+                        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 max-w-lg mb-2">{{ __('Explore in-depth articles, health tips, and hospital updates.') }}</p>
                     </div>
                     
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
