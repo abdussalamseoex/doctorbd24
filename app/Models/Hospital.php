@@ -58,6 +58,11 @@ class Hospital extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function hospitalServices(): HasMany
+    {
+        return $this->hasMany(HospitalService::class);
+    }
+
     // Doctors who have chambers at this hospital
     public function chambers(): HasMany
     {

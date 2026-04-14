@@ -542,15 +542,83 @@
 
             {{-- TAB CONTENT: SERVICES & TESTS --}}
             <div x-show="currentTab === 'services'" style="{{ ($tab ?? 'overview') === 'services' ? '' : 'display: none;' }}" x-transition.opacity.duration.300ms x-cloak>
-            <div class="mb-8">
-                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center py-16">
-                    <div class="w-20 h-20 mx-auto bg-sky-50 dark:bg-sky-900/20 rounded-full flex items-center justify-center mb-5">
-                        <span class="text-4xl">💉</span>
+            
+            @if(isset($hospital) && $hospital->hospitalServices()->count() > 0)
+                <div x-data="hospitalDiagnosticServices()" class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-8">
+                    
+                    {{-- Header & Search --}}
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h3 class="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2">
+                                <span class="bg-sky-100 dark:bg-sky-900/30 text-sky-500 w-8 h-8 rounded-full flex items-center justify-center text-lg">💉</span>
+                                {{ __('Diagnostic Tests & Pricing') }}
+                            </h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ __('Find real-time pricing for tests and services at this branch.') }}</p>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <!-- Category Filter -->
+                            <select x-model="selectedCategory" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-semibold text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500 max-w-[180px]">
+                                <option value="">{{ __('All Categories') }}</option>
+                                <template x-for="cat in categories" :key="cat">
+                                    <option :value="cat" x-text="cat"></option>
+                                </template>
+                            </select>
+                            
+                            <!-- Search -->
+                            <div class="relative w-full md:w-64">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                </div>
+                                <input type="text" x-model.debounce.250ms="searchQuery" placeholder="{{ __('Search tests...') }}" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <button x-show="searchQuery !== ''" @click="searchQuery = ''" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-black text-gray-900 dark:text-white mb-2">{{ __('Diagnostic Tests & Services') }}</h3>
-                    <p class="text-sm font-medium text-gray-500 max-w-md mx-auto leading-relaxed">{{ __('Detailed pricing and diagnostic service information for this branch will be available soon.') }}</p>
+
+                    {{-- Data Loading/Empty State --}}
+                    <div x-show="filteredServicesCount === 0" class="text-center py-10" x-cloak>
+                        <div class="text-4xl mb-4 opacity-50">🔍</div>
+                        <p class="text-gray-500 dark:text-gray-400">{{ __('No tests found matching your search criteria.') }}</p>
+                        <button @click="searchQuery = ''; selectedCategory = '';" class="mt-4 text-sky-500 hover:underline text-sm font-semibold">{{ __('Clear Filters') }}</button>
+                    </div>
+
+                    {{-- Data List --}}
+                    <div class="space-y-6">
+                        <template x-for="group in groupedFilteredServices" :key="group.name">
+                            <div class="border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm">
+                                <div class="bg-gray-50/80 dark:bg-gray-800/80 px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                                    <h4 class="font-bold text-gray-800 dark:text-gray-200 text-sm" x-text="group.name"></h4>
+                                    <span class="text-[10px] font-bold bg-white dark:bg-gray-700 px-2.5 py-1 rounded-full text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600" x-text="group.services.length + ' Tests'"></span>
+                                </div>
+                                <div class="divide-y divide-gray-100 dark:divide-gray-700/50 max-h-[400px] overflow-y-auto hide-scrollbar">
+                                    <template x-for="service in group.services" :key="service.id">
+                                        <div class="flex items-center justify-between p-4 hover:bg-sky-50/50 dark:hover:bg-gray-700/30 transition-colors">
+                                            <p class="text-sm font-medium text-gray-700 dark:text-gray-200" x-text="service.service_name"></p>
+                                            <div class="text-right ml-4">
+                                                <span class="inline-block px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm border border-emerald-100 dark:border-emerald-800/50 whitespace-nowrap" x-text="service.price ? '৳ ' + service.price : '-'"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
                 </div>
-            </div>
+            @else
+                <div class="mb-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center py-16">
+                        <div class="w-20 h-20 mx-auto bg-sky-50 dark:bg-sky-900/20 rounded-full flex items-center justify-center mb-5">
+                            <span class="text-4xl">💉</span>
+                        </div>
+                        <h3 class="text-xl font-black text-gray-900 dark:text-white mb-2">{{ __('Diagnostic Tests & Services') }}</h3>
+                        <p class="text-sm font-medium text-gray-500 max-w-md mx-auto leading-relaxed">{{ __('Detailed pricing and diagnostic service information for this branch will be available soon.') }}</p>
+                    </div>
+                </div>
+            @endif
             </div> {{-- END TAB CONTENT: SERVICES --}}
 
             </div> {{-- END SPA TABS COMPONENT --}}
@@ -809,6 +877,46 @@ document.addEventListener('alpine:init', () => {
             
             // Scroll to top of tabs gracefully
             window.scrollTo({ top: 250, behavior: 'smooth' });
+        }
+    }));
+
+    Alpine.data('hospitalDiagnosticServices', () => ({
+        searchQuery: '',
+        selectedCategory: '',
+        allServices: @json($hospital->hospitalServices()->select('id', 'service_category', 'service_name', 'price')->where('is_active', true)->get()),
+        
+        get categories() {
+            // Extract unique categories, remove any empty/falsy ones, and sort alphabetically
+            return [...new Set(this.allServices.map(s => s.service_category).filter(Boolean))].sort();
+        },
+
+        get filteredServices() {
+            return this.allServices.filter(s => {
+                const searchTxt = this.searchQuery.toLowerCase();
+                const matchesSearch = s.service_name.toLowerCase().includes(searchTxt) || 
+                                      (s.service_category || '').toLowerCase().includes(searchTxt);
+                const matchesCategory = this.selectedCategory === '' || s.service_category === this.selectedCategory;
+                return matchesSearch && matchesCategory;
+            });
+        },
+
+        get filteredServicesCount() {
+            return this.filteredServices.length;
+        },
+
+        get groupedFilteredServices() {
+            // Group the filtered services by category
+            const groups = {};
+            this.filteredServices.forEach(s => {
+                const cat = s.service_category || 'Uncategorized';
+                if(!groups[cat]) groups[cat] = [];
+                groups[cat].push(s);
+            });
+            // Convert to array and sort categories alphabetically
+            return Object.keys(groups).sort().map(cat => ({
+                name: cat,
+                services: groups[cat]
+            }));
         }
     }));
 });

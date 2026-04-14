@@ -1,0 +1,3093 @@
+SL,Service Category,Service Name,Price
+1,AMBULANCE,Ambulance Service (DMCH/ BSMMU Area),500
+2,,,700
+3,AMBULANCE,Ambulance Service (within Savar area),800
+4,,,600
+5,BLOOD BANK,Blood Screening+Drawing+Grouping,2100
+6,,,1500
+7,COLONOSCOPY,CLO Test (DFARUQUE),600
+8,,,45000
+9,COLONOSCOPY,Colonoscopy Polypectomy EMR/ESD Large (R),45000
+10,,,40000
+11,COLONOSCOPY,Colonoscopy Polypectomy EMR/ESD small (R),40000
+12,,,35000
+13,COLONOSCOPY,Colonoscopy Polypectomy Large (R),35000
+14,,,11000
+15,COLONOSCOPY,Colonoscopy with Polypectomy (MR),11000
+16,,,11000
+17,COLONOSCOPY,Colposcopy,4000
+18,,,12000
+19,COLONOSCOPY,Full Video Colonoscopy (A),10000
+20,,,6000
+21,COLONOSCOPY,Full Video Colonoscopy (DDEWAN),9500
+22,,,8000
+23,COLONOSCOPY,Full Video Colonoscopy (DMASUD),6000
+24,,,6000
+25,COLONOSCOPY,Full Video Colonoscopy (DROSI),6000
+26,,,8000
+27,COLONOSCOPY,Full Video Colonoscopy (DSWAPAN),6000
+28,,,8000
+29,COLONOSCOPY,Full Video Colonoscopy (MR),6000
+30,,,6000
+31,COLONOSCOPY,Full Video Colonoscopy (P),6000
+32,,,10000
+33,COLONOSCOPY,Full Video Colonoscopy and Ileoscopy (R),12000
+34,,,13000
+35,COLONOSCOPY,Sedation (P),600
+36,,,6500
+37,COLONOSCOPY,Short Video Colonoscopy (DDEWAN),3500
+38,,,5000
+39,COLONOSCOPY,Short Video Colonoscopy (DMASUD),3500
+40,,,5000
+41,COLONOSCOPY,Short Video Colonoscopy (DSWAPAN),3500
+42,,,5000
+43,COLONOSCOPY,Short Video Colonoscopy (MR),3500
+44,,,3500
+45,COLONOSCOPY,Short Video Colonoscopy (P),3500
+46,,,7000
+47,COLONOSCOPY,Video Clonoscopic Polypectomy Multiple (M),18000
+48,,,40000
+49,COLONOSCOPY,Video Colonoscopy of Polypectomy. (Extra Multiple) (K),40000
+50,,,35000
+51,COLONOSCOPY,Video Colonoscopy of Polypectomy. (Multiple) (K),35000
+52,,,24000
+53,COLONOSCOPY,Video Colonoscopy of Polypectomy.(EMR/ESD Large) (K),45000
+54,,,18000
+55,COLONOSCOPY,Video Colonoscopy of Polypectomy.(Single),15000
+56,,,40000
+57,COLONOSCOPY,Video Colonoscopy Polypectomy (Extra Multiple) (R),40000
+58,,,35000
+59,COLONOSCOPY,Video Colonoscopy Polypectomy (Multiple) (R),35000
+60,,,11000
+61,COLONOSCOPY,Video Colonoscopy with Polypectomy (DHABIB),11000
+62,,,11000
+63,COLONOSCOPY,Video Colonoscopy with Polypectomy (DMIAN),11000
+64,,,11000
+65,COLONOSCOPY,Video Colonoscopy with Polypectomy (DSWAPAN),11000
+66,,,15000
+67,COLONOSCOPY,Video Colonoscopy with Polypectomy (Single) (A),25000
+68,,,24000
+69,COLONOSCOPY,Video Colonoscopy with Polypectomy Multiple(DRFARUQUE),18000
+70,,,18000
+71,COLONOSCOPY,Video Colonoscopy with Polypectomy Single(DRFARUQUE),15000
+72,,,15000
+73,COLONOSCOPY,Video Full Colonoscopy & Iloscopy. (K),12000
+74,,,10000
+75,COLONOSCOPY,Video Procto-sigmoidscopy (A),4800
+76,,,5000
+77,COLONOSCOPY,Video Proctoscopy (M),4000
+78,,,5000
+79,COLONOSCOPY,Video Proctosigmiodscopy (M),4000
+80,,,7000
+81,COLONOSCOPY,Video Sigmoidscopy (DAROB),3000
+82,,,3000
+83,COLONOSCOPY,Video Sigmoidscopy (DFARUQUE),4000
+84,,,3000
+85,COLONOSCOPY,Video Sigmoidscopy (DMIAN),3000
+86,,,3000
+87,COLONOSCOPY,Video Sigmoidscopy (DROWSHAN),4000
+88,,,3000
+89,COLONOSCOPY,Video Varicial Banding (MR),6000
+90,,,1000
+91,Consultant,Consultation Fee                           Asst. Prof. Dr. Morsalin Rahman (Surgery),1000
+92,,,1200
+93,Consultant,Consultation Fee                          Assoc. Prof. Dr. Sumaya Akter (Gynae),1200
+94,,,1000
+95,Consultant,Consultation Fee                          Asst. Prof. Dr. Nripen Kumar Kundu (Orthopedics),1000
+96,,,1000
+97,Consultant,Consultation Fee                          Asst. Prof. Jesmin Ara (Gynae),1000
+98,,,1000
+99,Consultant,Consultation Fee                          Dr. Humayra (Medicine),1000
+100,,,1000
+101,Consultant,Consultation Fee                          Dr. Navid Farhan (Psychology),1000
+102,,,1000
+103,Consultant,Consultation Fee                          Dr. Rishad (Medicine),1000
+104,,,1000
+105,Consultant,Consultation Fee                          Dr. Tasmia (Medicine),1000
+106,,,1000
+107,Consultant,Consultation Fee                          Prof. Dr. Abdul Matin (Pediatric),1400
+108,,,1400
+109,Consultant,Consultation Fee                          Prof. Dr. Anzirun Nahar Asma (Skin),1400
+110,,,1400
+111,Consultant,Consultation Fee                          Prof. Dr. Farzana Rahman Chowdhury (Pediatric),1400
+112,,,1400
+113,Consultant,Consultation Fee                          Prof. Dr. Iffat Ara (Gynae),1400
+114,,,1400
+115,Consultant,Consultation Fee                          Prof. Dr. Kamil Ara Khanom (Gynae),1400
+116,,,1400
+117,Consultant,Consultation Fee                          Prof. Dr. Khabir Uddin Ahmed (ENT),1400
+118,,,1400
+119,DIAGNOSTIC CHARGES,Anesthesia,1500
+120,,,1600
+121,DIAGNOSTIC CHARGES,Anesthesia for colonoscopy,1400
+122,,,1400
+123,DIAGNOSTIC CHARGES,Anesthesia for Colonoscopy Polypectomy Extra multiple (A),2000
+124,,,1800
+125,DIAGNOSTIC CHARGES,Anesthesia for Colonoscopy Polypectomy Single (A),1600
+126,,,1200
+127,DIAGNOSTIC CHARGES,Anesthesia for CT.Scan of Brain,1300
+128,,,2500
+129,DIAGNOSTIC CHARGES,Anesthesia for CT.Scan of Brain+PNS/Orbit,2000
+130,,,2500
+131,DIAGNOSTIC CHARGES,Anesthesia for CT.Scan of Ear+MRI of Ear+Echo,3000
+132,,,1500
+133,DIAGNOSTIC CHARGES,Anesthesia for CT.Scan of Upper/Lower Abdomen,1500
+134,,,1500
+135,DIAGNOSTIC CHARGES,Anesthesia for Dilatation,1600
+136,,,1400
+137,DIAGNOSTIC CHARGES,Anesthesia for Endoscopy,900
+138,,,900
+139,DIAGNOSTIC CHARGES,Anesthesia for Endoscopy + Colonoscopy,1800
+140,,,1200
+141,DIAGNOSTIC CHARGES,Anesthesia for Endoscopy Polypectomy Extra Multiple (A),1800
+142,,,1500
+143,DIAGNOSTIC CHARGES,Anesthesia for Endoscopy Polypectomy single (A),1300
+144,,,1800
+145,DIAGNOSTIC CHARGES,Anesthesia for ERCP (Critical),3000
+146,,,2200
+147,DIAGNOSTIC CHARGES,Anesthesia for ERCP Critical (A),3000
+148,,,2200
+149,DIAGNOSTIC CHARGES,Anesthesia for Esophageal stenting (A),1600
+150,,,1400
+151,DIAGNOSTIC CHARGES,Anesthesia for Foreign Body,2000
+152,,,1400
+153,DIAGNOSTIC CHARGES,Anesthesia for Foreign body Meatbolus (A),1600
+154,,,1800
+155,DIAGNOSTIC CHARGES,Anesthesia for MRI of Brain,1500
+156,,,2500
+157,DIAGNOSTIC CHARGES,Anesthesia for MRI of Joint(Shoulder/Hip/Knee/Ankle etc),1500
+158,,,1500
+159,DIAGNOSTIC CHARGES,Anesthesia for MRI of Whole Spine,3000
+160,,,1500
+161,DIAGNOSTIC CHARGES,Anesthesia for Polypectomy,2000
+162,,,1000
+163,DIAGNOSTIC CHARGES,Bone Marrow Collection Charge (1846) (596),2000
+164,,,500
+165,DIAGNOSTIC CHARGES,Bone Marrow Trephine Biopsy Instrument (Disposable),3000
+166,,,2000
+167,DIAGNOSTIC CHARGES,Butterfly with Syringe,40
+168,,,200
+169,DIAGNOSTIC CHARGES,CD of CT-Scan,200
+170,,,200
+171,DIAGNOSTIC CHARGES,CD OF USG 2D/4D(F763),1200
+172,,,1000
+173,DIAGNOSTIC CHARGES,Collection Charge-2,200
+174,,,200
+175,DIAGNOSTIC CHARGES,Collection Charge-3,300
+176,,,300
+177,DIAGNOSTIC CHARGES,Collection Charge-4,400
+178,,,500
+179,DIAGNOSTIC CHARGES,Collection of Endoscopy & Biopsy,500
+180,,,200
+181,DIAGNOSTIC CHARGES,Collection-300,300
+182,,,50
+183,DIAGNOSTIC CHARGES,Consultant Fee,4000
+184,,,1500
+185,DIAGNOSTIC CHARGES,Consultation Fee for X-ray Hysterosalpingography,1500
+186,,,2500
+187,DIAGNOSTIC CHARGES,Core Biopsy Instrument (Disposable),3000
+188,,,2500
+189,DIAGNOSTIC CHARGES,CT / MRI Extra Film-1,500
+190,,,1000
+191,DIAGNOSTIC CHARGES,CT / MRI Extra Film-3,1500
+192,,,2000
+193,DIAGNOSTIC CHARGES,CT / MRI Extra Film-5,2500
+194,,,3000
+195,DIAGNOSTIC CHARGES,"CT Contrast - 100 ml with procedure, appliances & extra film",2500
+196,,,1300
+197,DIAGNOSTIC CHARGES,"CT Contrast Angio with procedure, appliances & extra film",2500
+198,,,2500
+199,DIAGNOSTIC CHARGES,"CT of GE Visipaque Contrast-100 ml with procedure, appliances & extra film",7000
+200,,,4950
+201,DIAGNOSTIC CHARGES,CT Scan Test Review Reporting Charge,500
+202,,,600
+203,DIAGNOSTIC CHARGES,D/ Syringe 10 CC,10
+204,,,50
+205,DIAGNOSTIC CHARGES,Diabetics (Service Charge),100
+206,,,100
+207,DIAGNOSTIC CHARGES,Disposable Syringe Set,1500
+208,,,50
+209,DIAGNOSTIC CHARGES,Disposible Sheet-1,30
+210,,,60
+211,DIAGNOSTIC CHARGES,Doctor Fee,5000
+212,,,5000
+213,DIAGNOSTIC CHARGES,Doctor Fee (Aspiration) (R),6000
+214,,,2000
+215,DIAGNOSTIC CHARGES,Doctors Fee- 2,2000
+216,,,2000
+217,DIAGNOSTIC CHARGES,Doctors Fee-3,800
+218,,,800
+219,DIAGNOSTIC CHARGES,Enema Preparation Charge,100
+220,,,2000
+221,DIAGNOSTIC CHARGES,FNAC Collection 1,500
+222,,,15000
+223,DIAGNOSTIC CHARGES,I/V cannula 22 G,34
+224,,,250
+225,DIAGNOSTIC CHARGES,Inj. Atropin / Adrin,10
+226,,,30
+227,DIAGNOSTIC CHARGES,Inj. POFOL,275
+228,,,29
+229,DIAGNOSTIC CHARGES,Inj. Sedil /Easium,7
+230,,,100
+231,DIAGNOSTIC CHARGES,Instrument and Procedure Charge for ERCP Diagnostic-1,2000
+232,,,3000
+233,DIAGNOSTIC CHARGES,Instrument Charge for procedure,700
+234,,,115
+235,DIAGNOSTIC CHARGES,MRI Test Review Reporting Charge,1000
+236,,,120
+237,DIAGNOSTIC CHARGES,ORS - S pcs,30
+238,,,155
+239,DIAGNOSTIC CHARGES,Pathology Charge 1,1300
+240,,,3000
+241,DIAGNOSTIC CHARGES,Physical Examination (Certificate),100
+242,,,200
+243,DIAGNOSTIC CHARGES,Physical Examination (Certificate)_300,300
+244,,,100
+245,DIAGNOSTIC CHARGES,Service Charge-3,300
+246,,,3000
+247,DIAGNOSTIC CHARGES,Slide Delivery for Core Biopasy,2000
+248,,,1000
+249,DIAGNOSTIC CHARGES,Slide Delivery for Histopathology Intermediate tumor blcoks,1000
+250,,,1500
+251,DIAGNOSTIC CHARGES,Slide Delivery for Histopathology Small tumor blocks,800
+252,,,500
+253,DIAGNOSTIC CHARGES,Syp Flacol,40
+254,,,200
+255,DIAGNOSTIC CHARGES,USG Core Biopsy Consultation Fee,4500
+256,,,3000
+257,DIAGNOSTIC CHARGES,"X-Ray Contrast- 350 - 100 ml with procedure, appliances & extra film (10001)",2500
+258,,,1300
+259,ECG,ECG,400
+260,,,400
+261,ECG,ECG (N) (up to 5 years)(24),400
+262,,,400
+263,ECG,Holter ECG 120hrs,8000
+264,,,4000
+265,ECG,Holter ECG 48hrs,5000
+266,,,6000
+267,ECG,Holter ECG 96hrs,7000
+268,,,4000
+269,ECHO,2D Echo,1600
+270,,,1500
+271,ECHO,Anesthesia Charge for EEG,1500
+272,,,2250
+273,ECHO,Colour Doppler Echo CFM,2600
+274,,,3000
+275,ECHO,Echo Colour Doppler (Child),3600
+276,,,4000
+277,ECHO,Pulmonary Function Test/Lung Function Test/Spirometry,1500
+278,,,1500
+279,ECHO,Transthoracic Echo-Doppler Study,3000
+280,,,26000
+281,ENDOSCOPY,Balloon Dilatation of Duodenum (A),26000
+282,,,10000
+283,ENDOSCOPY,Balloon Dilatation of Duodenum (DDEWAN),10000
+284,,,10000
+285,ENDOSCOPY,Balloon Dilatation of Duodenum (DMASUD),10000
+286,,,10000
+287,ENDOSCOPY,Balloon Dilatation of Duodenum (DROSI),10000
+288,,,10000
+289,ENDOSCOPY,Balloon Dilatation of Duodenum (DSWAPAN),10000
+290,,,15000
+291,ENDOSCOPY,Balloon Dilatation of Duodenum (MRAHMAN),10000
+292,,,15000
+293,ENDOSCOPY,Balloon Dilatation of Oesophageal (DAROB),10000
+294,,,10000
+295,ENDOSCOPY,Balloon Dilatation of Oesophageal (DFARUQUE),10000
+296,,,10000
+297,ENDOSCOPY,Balloon Dilatation of Oesophageal (DMIAN),10000
+298,,,10000
+299,ENDOSCOPY,Balloon Dilatation of Oesophageal (DROWSHAN),10000
+300,,,10000
+301,ENDOSCOPY,Balloon Dilatation of Oesophageal (MR),10000
+302,,,10000
+303,ENDOSCOPY,Balloon Dilatation of Oesophageal (R),10000
+304,,,10000
+305,ENDOSCOPY,Bronchoscopy,6500
+306,,,500
+307,ENDOSCOPY,CLO  Test (A),600
+308,,,600
+309,ENDOSCOPY,CLO Test (DAROB),600
+310,,,600
+311,ENDOSCOPY,CLO Test (DMASUD),600
+312,,,600
+313,ENDOSCOPY,CLO Test (DROSI),600
+314,,,600
+315,ENDOSCOPY,CLO Test (DSWAPAN),600
+316,,,600
+317,ENDOSCOPY,CLO Test (MRAHMAN),600
+318,,,600
+319,ENDOSCOPY,CLO Test (R),600
+320,,,600
+321,ENDOSCOPY,Endoscopic Glu Injuction of Fundal Varix (K),15000
+322,,,15000
+323,ENDOSCOPY,Endoscopic Glue Injection of Fundal Varix (R),15000
+324,,,22000
+325,ENDOSCOPY,Endoscopic Removal of Foreign body Fish Bone/Meat Bone (R),22000
+326,,,30000
+327,ENDOSCOPY,Endoscopic Removal of Foreign body Teeth (R),30000
+328,,,4000
+329,ENDOSCOPY,Endoscopy Polypectomy EMR/ESD Large (A),48000
+330,,,48000
+331,ENDOSCOPY,Endoscopy Polypectomy EMR/ESD small (A),40000
+332,,,40000
+333,ENDOSCOPY,Endoscopy Polypectomy Large (A),35000
+334,,,35000
+335,ENDOSCOPY,Endoscopy Removal of Foregon Body (Meat bolus) (K),26000
+336,,,22000
+337,ENDOSCOPY,Endoscopy Removal of Foregon Body Fish/Meat bone (K),22000
+338,,,30000
+339,ENDOSCOPY,Endoscopy Removal of Foregone Body Coin /Pin /Key (A),22000
+340,,,22000
+341,ENDOSCOPY,Endoscopy Removal of Foregone Body Meat bolus (A),26000
+342,,,26000
+343,ENDOSCOPY,ERCP & Papilotomy (DAROB),18000
+344,,,18000
+345,ENDOSCOPY,ERCP & Papilotomy (DFARUQUE),18000
+346,,,18000
+347,ENDOSCOPY,ERCP & Papilotomy (DMIAN),18000
+348,,,18000
+349,ENDOSCOPY,ERCP & Papilotomy (DROWSHAN),18000
+350,,,18000
+351,ENDOSCOPY,ERCP & Papilotomy (MR),18000
+352,,,15400
+353,ENDOSCOPY,ERCP & Papilotomy (R),25000
+354,,,27000
+355,ENDOSCOPY,ERCP & Stenting (DDEWAN),27000
+356,,,27000
+357,ENDOSCOPY,ERCP & Stenting (DMASUD),27000
+358,,,27000
+359,ENDOSCOPY,ERCP & Stenting (DROSI),27000
+360,,,27000
+361,ENDOSCOPY,ERCP & Stenting (DSWAPAN),27000
+362,,,27000
+363,ENDOSCOPY,ERCP & Stenting (MRAHMAN),27000
+364,,,40000
+365,ENDOSCOPY,ERCP & Stone Extraction (DAROB),28000
+366,,,28000
+367,ENDOSCOPY,ERCP & Stone Extraction (DFARUQUE),28000
+368,,,28000
+369,ENDOSCOPY,ERCP & Stone Extraction (DMIAN),28000
+370,,,28000
+371,ENDOSCOPY,ERCP & Stone Extraction (DROWSHAN),28000
+372,,,28000
+373,ENDOSCOPY,ERCP & Stone Extraction (MR),28000
+374,,,28000
+375,ENDOSCOPY,ERCP & Stone Extraction (R),40000
+376,,,18000
+377,ENDOSCOPY,ERCP + NBDT (A),20000
+378,,,15400
+379,ENDOSCOPY,ERCP and Ascaris Extraction (A),44000
+380,,,27000
+381,ENDOSCOPY,ERCP and Stenting (A),44000
+382,,,44000
+383,ENDOSCOPY,ERCP Diagnostic (A),18000
+384,,,10000
+385,ENDOSCOPY,ERCP Diagnostic (DDEWAN),10000
+386,,,10000
+387,ENDOSCOPY,ERCP Diagnostic (DMASUD),10000
+388,,,10000
+389,ENDOSCOPY,ERCP Diagnostic (DROSI),10000
+390,,,10000
+391,ENDOSCOPY,ERCP Diagnostic (DSWAPAN),10000
+392,,,10000
+393,ENDOSCOPY,ERCP Diagnostic (MRAHMAN),10000
+394,,,12000
+395,ENDOSCOPY,ERCP Re-Stent (A),28000
+396,,,18000
+397,ENDOSCOPY,ERCP Removal of stent & stone extraction (A),30000
+398,,,55000
+399,ENDOSCOPY,Esophageal Reflux Study (A),5500
+400,,,16000
+401,ENDOSCOPY,Fibre Optic Larynxgoscopy (FOL),2000
+402,,,14000
+403,ENDOSCOPY,Haemistasis of Ulcer Bleeding Injection,7000
+404,,,18000
+405,ENDOSCOPY,Haemostasis of Ulcer bleeding (Haemoclip) (R),18000
+406,,,15000
+407,ENDOSCOPY,Haemostasis of Ulcer bleeding with Injection (R),15000
+408,,,18000
+409,ENDOSCOPY,Heamostasis O Ulcer Bleeding with inj. (K),15000
+410,,,4000
+411,ENDOSCOPY,Oesophageal Dilatation of Ballon (CRE),15000
+412,,,26000
+413,ENDOSCOPY,Oesophegeal Dilatation of Balloon (Achelasia ) (A)(1823),20000
+414,,,15000
+415,ENDOSCOPY,Oesophegeal Dilatation of Balloon (DDEWAN),15000
+416,,,15000
+417,ENDOSCOPY,Oesophegeal Dilatation of Balloon (DMASUD),15000
+418,,,15000
+419,ENDOSCOPY,Oesophegeal Dilatation of Balloon (DROSI),15000
+420,,,15000
+421,ENDOSCOPY,Oesophegeal Dilatation of Balloon (DSWAPAN),15000
+422,,,10000
+423,ENDOSCOPY,Oesophegeal Dilatation of Balloon (MRAHMAN),15000
+424,,,20000
+425,ENDOSCOPY,Oesophegeal Dilatation of Balloon(p),15000
+426,,,16000
+427,ENDOSCOPY,Oesophegeal Dilatation of Savary Giliard(p),5000
+428,,,20000
+429,ENDOSCOPY,Oesophegel Dilation Of Sarvary Giliard. (K),16000
+430,,,26000
+431,ENDOSCOPY,Oesphageal Stenting,26000
+432,,,18000
+433,ENDOSCOPY,Sedation (M),600
+434,,,600
+435,ENDOSCOPY,Sedation Test Only.,600
+436,,,4000
+437,ENDOSCOPY,Short Video Colonoscopy (DMIAN),4000
+438,,,4000
+439,ENDOSCOPY,Video Endooscopic Varicial Band Ligation (A),9500
+440,,,7500
+441,ENDOSCOPY,Video Endoscopic Varicial Band Ligation (M),7000
+442,,,2500
+443,ENDOSCOPY,Video Endoscopy and CLO Test (DAROB),2600
+444,,,3000
+445,ENDOSCOPY,Video Endoscopy and CLO Test (DFARUQUE),2600
+446,,,2600
+447,ENDOSCOPY,Video Endoscopy and CLO Test (DMIAN),2600
+448,,,2600
+449,ENDOSCOPY,Video Endoscopy and CLO Test (DROWSHAN),2600
+450,,,2600
+451,ENDOSCOPY,Video Endoscopy and CLO Test (MR),2600
+452,,,2600
+453,ENDOSCOPY,Video Endoscopy and CLO Test (R),4000
+454,,,6800
+455,ENDOSCOPY,Video Endoscopy B/V (Front View & Lateral View) (A),6800
+456,,,6800
+457,ENDOSCOPY,Video Endoscopy of Polypectomy.(EMR / ESD Large)  (K),48000
+458,,,40000
+459,ENDOSCOPY,Video Endoscopy of Polypectomy.(Extra Multiple) (K),40000
+460,,,35000
+461,ENDOSCOPY,Video Endoscopy of Polypectomy.(Multiple),18000
+462,,,30000
+463,ENDOSCOPY,Video Endoscopy of Polypectomy.(Single),15000
+464,,,24000
+465,ENDOSCOPY,Video Endoscopy of Removal of Foregone Body,14000
+466,,,3500
+467,ENDOSCOPY,Video Endoscopy of Upper GIT (DDEWAN),2000
+468,,,2500
+469,ENDOSCOPY,Video Endoscopy of Upper GIT (DMASUD),2000
+470,,,2000
+471,ENDOSCOPY,Video Endoscopy of Upper GIT (DROSI),2000
+472,,,2500
+473,ENDOSCOPY,Video Endoscopy of Upper GIT (DSWAPAN),2000
+474,,,3500
+475,ENDOSCOPY,Video Endoscopy Of Upper GIT (M),2500
+476,,,2000
+477,ENDOSCOPY,Video Endoscopy of Upper GIT (MRAHMAN),2000
+478,,,3500
+479,ENDOSCOPY,Video Endoscopy of upper GIT with CLO Test (A),4000
+480,,,3400
+481,ENDOSCOPY,"Video Endoscopy of upper GIT, CLO and Sedation Test (A)",3700
+482,,,2500
+483,ENDOSCOPY,Video Endoscopy of Upper GIT.(DEW),3500
+484,,,4000
+485,ENDOSCOPY,Video Endoscopy Upper GIT with CLO (M),3100
+486,,,3100
+487,ENDOSCOPY,"Video Endoscopy Upper GIT, CLO and Sedation (M)",3700
+488,,,4200
+489,ENDOSCOPY,Video Endoscopy with Polypectomy,11000
+490,,,11000
+491,ENDOSCOPY,Video Endoscopy with Polypectomy (DDEWAN),11000
+492,,,11000
+493,ENDOSCOPY,Video Endoscopy with Polypectomy (DMIAN),11000
+494,,,11000
+495,ENDOSCOPY,Video Endoscopy with Polypectomy (DSWAPAN),11000
+496,,,40000
+497,ENDOSCOPY,Video Endoscopy with Polypectomy (Extra multiple) (R),35000
+498,,,15000
+499,ENDOSCOPY,Video Endoscopy with Polypectomy (MR),11000
+500,,,11000
+501,ENDOSCOPY,Video Endoscopy with Polypectomy (Multiple) (A)  (2702),30000
+502,,,30000
+503,ENDOSCOPY,Video Endoscopy with polypectomy (Single) (A),24000
+504,,,24000
+505,ENDOSCOPY,Video Endoscopy with polypectomy Multiple (M),18000
+506,,,18000
+507,ENDOSCOPY,Video Endoscopy with Polypectomy Multiple(DRROWSHAN),18000
+508,,,15000
+509,ENDOSCOPY,Video Endoscopy with Polypectomy Single(DRROWSHAN),15000
+510,,,2600
+511,ENDOSCOPY,Video Endoscopy with Sedation (DDEWAN),2600
+512,,,3100
+513,ENDOSCOPY,Video Endoscopy with Sedation (DMASUD),2600
+514,,,2600
+515,ENDOSCOPY,Video Endoscopy with Sedation (DROSI),2600
+516,,,3100
+517,ENDOSCOPY,Video Endoscopy with Sedation (DSWAPAN),2600
+518,,,2600
+519,ENDOSCOPY,Video Endoscopy with Sedation (MRAHMAN),2600
+520,,,4200
+521,ENDOSCOPY,Video Sclerotherapy (DAROB),6000
+522,,,6000
+523,ENDOSCOPY,Video Sclerotherapy (DFARUQUE),6000
+524,,,6000
+525,ENDOSCOPY,Video Sclerotherapy (DMIAN),6000
+526,,,6000
+527,ENDOSCOPY,Video Sclerotherapy (DROWSHAN),6000
+528,,,6000
+529,ENDOSCOPY,Video Sclerotherapy (M),6000
+530,,,6000
+531,ENDOSCOPY,Video Sclerotherapy (MRAHMAN),6000
+532,,,3500
+533,ENDOSCOPY,Video Sclerotherapy (R),7500
+534,,,7500
+535,ENDOSCOPY,Video Sigmoidscopy (MR),4000
+536,,,3000
+537,ENDOSCOPY,Video Varical Banding,7000
+538,,,10000
+539,ENDOSCOPY,Video Varicial Banding (DAROB),6000
+540,,,6000
+541,ENDOSCOPY,Video Varicial Banding (DFARUQUE),7000
+542,,,6000
+543,ENDOSCOPY,Video Varicial Banding (DMIAN),6000
+544,,,6000
+545,ENDOSCOPY,Video Varicial Banding (DROWSHAN),7000
+546,,,6000
+547,ENDOSCOPY,Video Varicial Banding (MRAHMAN),6000
+548,,,10000
+549,Exercise Tolerance Test,ETT,3000
+550,,,4500
+551,FIBROSCAN,Fibroscan with CAP,5000
+552,,,3000
+553,MOLECULAR DIAGNOSTIC LABORATORY,Collection fee,100
+554,,,26000
+555,MOLECULAR DIAGNOSTIC LABORATORY,HBV-DNA (Quantitative),7000
+556,,,12000
+557,MOLECULAR DIAGNOSTIC LABORATORY,HCV-RNA  (Qn.)  PCR,12000
+558,,,4000
+559,MOLECULAR DIAGNOSTIC LABORATORY,HPV DNA (Qualitative),6000
+560,,,8000
+561,MOLECULAR DIAGNOSTIC LABORATORY,"PCR for BCR-ABL1 Major, Minor & Micro (Ql.)",14000
+562,,,15000
+563,MOLECULAR DIAGNOSTIC LABORATORY,PCR for CLOPIDOGREL(PGx),4000
+564,,,15000
+565,MOLECULAR DIAGNOSTIC LABORATORY,PCR for JAK2,8000
+566,,,5000
+567,MOLECULAR DIAGNOSTIC LABORATORY,Respiratory Panel,15000
+568,,,3000
+569,NEUROLOGY,Digital EEG (01 Hour ),8000
+570,,,18000
+571,NEUROLOGY,Digital EEG (30 Minutes),3500
+572,,,2500
+573,NEUROLOGY,Digital EEG (Sleep & Awake ),3000
+574,,,2000
+575,NEUROLOGY,EMG (Multiple Sites),1000
+576,,,14000
+577,NEUROLOGY,EMG Lower Limb (Left & Right),7000
+578,,,3500
+579,NEUROLOGY,EMG Lower Limb (Right Side),3500
+580,,,22000
+581,NEUROLOGY,EMG Upper Limb (Left & Right),7000
+582,,,3500
+583,NEUROLOGY,EMG Upper Limb (Right Side),3500
+584,,,5000
+585,NEUROLOGY,NCV (Both Multiple Side),2000
+586,,,1000
+587,NEUROLOGY,NCV Both Limb (Upper & Lower),14000
+588,,,7000
+589,NEUROLOGY,NCV Lower Limb (Left Side),3500
+590,,,3500
+591,NEUROLOGY,NCV Single Part,7000
+592,,,7000
+593,NEUROLOGY,NCV Upper Limb (Left Side),3500
+594,,,3500
+595,NEUROLOGY,RNS,9000
+596,,,600
+597,PACKAGE,Akij Footwear Ltd (Above 40 Years),7929
+598,,,6369
+599,PACKAGE,Bangladesh Bank (Package) Female,14018
+600,,,12270
+601,PACKAGE,Bengal Plastic Pipe Ltd.,10440
+602,,,10440
+603,PACKAGE,Comprehensive Health Check-up Package For Female,13180
+604,,,10950
+605,PACKAGE,Essential investigation list for Male & Female (35 years and above),4293
+606,,,3468
+607,PACKAGE,Executive Package for Female (Bangladesh Krishi Bank),21480
+608,,,19305
+609,PACKAGE,Health Check-Up (Market Access Providers Limited),1400
+610,,,14700
+611,PACKAGE,Health check-up Package-01 for Policy Holder of (NRB Islamic Insurance Ltd.),375
+612,,,775
+613,PACKAGE,Health check-up Package-03 for Policy Holder of (NRB Islamic Insurance Ltd.),1075
+614,,,1525
+615,PACKAGE,Health check-up Package-05 for Policy Holder of (NRB Islamic Insurance Ltd.),3175
+616,,,5200
+617,PACKAGE,Health check-up Package-07 for Policy Holder of (NRB Islamic Insurance Ltd.),6250
+618,,,700
+619,PACKAGE,Incepta Pharmaceutical PLC,3500
+620,,,6060
+621,PACKAGE,Manpower Health Check-Up Female,4900
+622,,,4900
+623,PACKAGE,Manpower Health CheckUp Female,7950
+624,,,7950
+625,PACKAGE,Medical Health Check-up Packages for Elite Customer for ROBI AXIATA LIMITED (A),9257
+626,,,5560
+627,PACKAGE,Medical Health Check-up Packages for Elite Customer for ROBI AXIATA LIMITED (C),2785
+628,,,7410
+629,PACKAGE,Medical Health Check-up Packages for Walton 'Kisti Kreta' project (A),2785
+630,,,5560
+631,PACKAGE,Medical Health Check-up Packages for Walton 'Kisti Kreta' project (C),9257
+632,,,2000
+633,PACKAGE,Multi Centric Cross-Sectional Study,2250
+634,,,10110
+635,PACKAGE,Pre & Post Covid-19 Health Checkup Package (Only for Bkash Payment),4050
+636,,,6665
+637,PACKAGE,Pre-Employment Health Checkup for Brac Bank PLC,1300
+638,,,3250
+639,PACKAGE,Pre-Health Checkup Package (British American Tobacco),10910
+640,,,4918
+641,PACKAGE,Primary Health Check-up Package-1,6080
+642,,,7350
+643,PACKAGE,Pubali Bank PLC Health Check-up Package,14440
+644,,,2150
+645,PACKAGE,Sheltech Group-Annual Health check-up (Male/Female),9685
+646,,,6085
+647,PACKAGE,Standard Bank Ltd.,2635
+648,,,2800
+649,PACKAGE,Trust Bank Health Check-up Package(Regular),1950
+650,,,1550
+651,PACKAGE,ZXY International FZCO (Category A),3000
+652,,,3500
+653,PATHOLOGY,1 hour postprandial Plasma glucose,200
+654,,,200
+655,PATHOLOGY,17a - OH Progesterone,2500
+656,,,200
+657,PATHOLOGY,24 hours Urine Protein Creatinine Ratio,1200
+658,,,1200
+659,PATHOLOGY,24 hrs Urinary Metanephrine,4000
+660,,,400
+661,PATHOLOGY,24 hrs. Urinary Creatinine,500
+662,,,400
+663,PATHOLOGY,24 hrs. Urinary Sodium (Na),400
+664,,,500
+665,PATHOLOGY,24 hrs. Urine for Albumin,500
+666,,,500
+667,PATHOLOGY,24 hrs. Urine for Electrolytes,1000
+668,,,1300
+669,PATHOLOGY,24 hrs. Urine for Phosphate,600
+670,,,500
+671,PATHOLOGY,24 hrs. Urine for Uric Acid,500
+672,,,6000
+673,PATHOLOGY,Abdomenal Discharge Fluid for C/S,1500
+674,,,600
+675,PATHOLOGY,Abscess Fluid for Anti TB IgA,1500
+676,,,1500
+677,PATHOLOGY,Abscess Fluid for Anti TB IgM,1500
+678,,,1300
+679,PATHOLOGY,ACTH,1500
+680,,,1500
+681,PATHOLOGY,Aldehyde Test,1300
+682,,,1300
+683,PATHOLOGY,Aldosterone (Supine),4000
+684,,,4000
+685,PATHOLOGY,Aldosterone/Renin Ratio(ARR),8000
+686,,,500
+687,PATHOLOGY,Allergy profile,6000
+688,,,1500
+689,PATHOLOGY,ALT (SGPT),500
+690,,,1300
+691,PATHOLOGY,Amphetamine,1500
+692,,,1300
+693,PATHOLOGY,ANA Profile(25 Antibodies),15000
+694,,,3000
+695,PATHOLOGY,Angiotensin Converting Enzyme (ACE),4000
+696,,,1500
+697,PATHOLOGY,Anti HBc - IgM,1500
+698,,,1500
+699,PATHOLOGY,Anti HBe,1500
+700,,,1500
+701,PATHOLOGY,Anti HCV,1500
+702,,,1500
+703,PATHOLOGY,Anti Thyroid Ab,2500
+704,,,1500
+705,PATHOLOGY,Anti-Cardiolipin antibody,2000
+706,,,2000
+707,PATHOLOGY,Anti-ds DNA,1600
+708,,,1500
+709,PATHOLOGY,Anti-Mitochondrial Antibody,1800
+710,,,4000
+711,PATHOLOGY,Anti-Nuclear Ab (ANA),1500
+712,,,2000
+713,PATHOLOGY,Anti-RNP,1500
+714,,,1500
+715,PATHOLOGY,Anti-Sm,1500
+716,,,1000
+717,PATHOLOGY,Anti-SS-A,1500
+718,,,1500
+719,PATHOLOGY,Anti-TG Ab,1500
+720,,,2000
+721,PATHOLOGY,Antibody Against Chicken Pox(Vericella),800
+722,,,1500
+723,PATHOLOGY,APTT,1200
+724,,,1200
+725,PATHOLOGY,Ascitic Fluid for AFB,600
+726,,,1500
+727,PATHOLOGY,Ascitic Fluid for Anti TB IgG,1500
+728,,,1500
+729,PATHOLOGY,Ascitic Fluid for Biochemical test,800
+730,,,1500
+731,PATHOLOGY,Ascitic Fluid for Cytology,1200
+732,,,6000
+733,PATHOLOGY,Ascitic Fluid for Gram Stain,600
+734,,,1200
+735,PATHOLOGY,ASO Titre,800
+736,,,1500
+737,PATHOLOGY,Aspirated fluid for C/S,1500
+738,,,600
+739,PATHOLOGY,Aspiration Fluid for AFB Stain,600
+740,,,500
+741,PATHOLOGY,Aural Swab for CS,1500
+742,,,600
+743,PATHOLOGY,Aural/Swab for Gram Stain,600
+744,,,1500
+745,PATHOLOGY,B-cell T-cell crossmatch by flow cytometry,9000
+746,,,1500
+747,PATHOLOGY,Basal Cortisol,1500
+748,,,800
+749,PATHOLOGY,Benzodiazepines,1500
+750,,,300
+751,PATHOLOGY,Bile for C/S,1500
+752,,,500
+753,PATHOLOGY,Bilirubin (Total),400
+754,,,200
+755,PATHOLOGY,Blood C/S (Lysis Method),1500
+756,,,2500
+757,PATHOLOGY,Blood for ADA,1400
+758,,,2000
+759,PATHOLOGY,Blood for C/S (FAN Method) (C),2000
+760,,,1300
+761,PATHOLOGY,Blood for Osmolality,1400
+762,,,300
+763,PATHOLOGY,Bone Marrow Examination,2000
+764,,,600
+765,PATHOLOGY,Bone Marrow for C/S,2000
+766,,,400
+767,PATHOLOGY,Bone Marrow for Fungus C/S,2000
+768,,,500
+769,PATHOLOGY,Bone Marrow Trephine Biopsy,2000
+770,,,1500
+771,PATHOLOGY,Both  breast nipple discharge cytology for malignant cells,2400
+772,,,1500
+773,PATHOLOGY,"Breast Tumor Profile-1 (ER, PR & HER2)",9000
+774,,,12000
+775,PATHOLOGY,"Breast Tumor Profile-3 (ER,PR,Her-2 & Ki-67 & E-Cadherin)",16000
+776,,,600
+777,PATHOLOGY,Bronchial Lavage C/S for Fungus,2000
+778,,,1200
+779,PATHOLOGY,Bronchial Lavage Cytology for Malignant Cells,1200
+780,,,1200
+781,PATHOLOGY,Bronchial Washing for AFB,600
+782,,,1500
+783,PATHOLOGY,Bronchial Washing for Fungus,600
+784,,,6000
+785,PATHOLOGY,Bronchial Washing for Gram Stain,600
+786,,,600
+787,PATHOLOGY,Broncho-alveolai Lavage for C/S,1500
+788,,,600
+789,PATHOLOGY,Broncho-alveolai Lavage for Gram Stain,600
+790,,,6000
+791,PATHOLOGY,Bronchoscope of washing for C/S,1500
+792,,,1000
+793,PATHOLOGY,Brucella & Rickettsia,800
+794,,,1500
+795,PATHOLOGY,BUN,500
+796,,,1500
+797,PATHOLOGY,C-Peptide,1800
+798,,,600
+799,PATHOLOGY,C.V. Tip for C/S,1500
+800,,,1500
+801,PATHOLOGY,CA 15-3,1500
+802,,,1500
+803,PATHOLOGY,Calory Function Tests,1400
+804,,,1500
+805,PATHOLOGY,CAPD Fluid for AFB,600
+806,,,1500
+807,PATHOLOGY,CAPD Fluid for Anti TB IgG,1500
+808,,,1500
+809,PATHOLOGY,CAPD Fluid for Biochemical Test,1000
+810,,,1500
+811,PATHOLOGY,CAPD Fluid for Cytology,1200
+812,,,600
+813,PATHOLOGY,CAPD Fluid for Gram Stain,600
+814,,,300
+815,PATHOLOGY,Cardiac Troponin I (ES),1400
+816,,,1500
+817,PATHOLOGY,CBC,400
+818,,,600
+819,PATHOLOGY,"CBC, ESR with Blood Film (A)",800
+820,,,4000
+821,PATHOLOGY,CD15,4000
+822,,,4000
+823,PATHOLOGY,CD3,4000
+824,,,4000
+825,PATHOLOGY,CD34,4000
+826,,,9000
+827,PATHOLOGY,CD99,4000
+828,,,1500
+829,PATHOLOGY,Ceruloplasmin,1400
+830,,,1200
+831,PATHOLOGY,Cervical Smear for AFB,600
+832,,,1500
+833,PATHOLOGY,Cervical Smear for Gram Stain,600
+834,,,500
+835,PATHOLOGY,Cervix (Resected),1500
+836,,,300
+837,PATHOLOGY,Cholesterol (Total),400
+838,,,400
+839,PATHOLOGY,CK 20,4000
+840,,,4000
+841,PATHOLOGY,CK-MB,1400
+842,,,200
+843,PATHOLOGY,CMV - IgG,1500
+844,,,1500
+845,PATHOLOGY,Cocaine,1500
+846,,,1500
+847,PATHOLOGY,Complement 4 (C4),1500
+848,,,600
+849,PATHOLOGY,Conjunctival Swab (Lt.) for Gram Stain,600
+850,,,600
+851,PATHOLOGY,Conjunctival Swab (Rt.) for Gram Stain,600
+852,,,1500
+853,PATHOLOGY,Conjunctival Swab(Rt.) for C/S,1500
+854,,,1200
+855,PATHOLOGY,Coombs Test Direct,600
+856,,,600
+857,PATHOLOGY,Core Biopsy,1500
+858,,,1500
+859,PATHOLOGY,Corneal Scraping for Fungus,600
+860,,,1500
+861,PATHOLOGY,Corneal Swab (Rt.) for C/S,1500
+862,,,50
+863,PATHOLOGY,Corresponding Urine Sugar with 1 hr. ABF,50
+864,,,50
+865,PATHOLOGY,Corresponding Urine Sugar with 1.5 hr. after 75 gm Glucose,50
+866,,,50
+867,PATHOLOGY,Corresponding Urine Sugar with 1.h after 75 gm Glucose,50
+868,,,50
+869,PATHOLOGY,Corresponding Urine Sugar with 2 hrs. after Diner,50
+870,,,50
+871,PATHOLOGY,Corresponding Urine Sugar with 2HABF,50
+872,,,50
+873,PATHOLOGY,Corresponding Urine Sugar with before Lunch,50
+874,,,50
+875,PATHOLOGY,Corresponding Urine sugar with postprandial plasma glucose,50
+876,,,50
+877,PATHOLOGY,Cortisol,1500
+878,,,1500
+879,PATHOLOGY,Cortisol (Morning),1500
+880,,,1500
+881,PATHOLOGY,Cortisol level 1hr After Injection,1500
+882,,,1500
+883,PATHOLOGY,Cortisol level before Injection,1500
+884,,,500
+885,PATHOLOGY,CPK,1400
+886,,,1100
+887,PATHOLOGY,CSF Analysis,1500
+888,,,2000
+889,PATHOLOGY,CSF Cytology for Malignant Cells,1200
+890,,,1200
+891,PATHOLOGY,CSF for AFB,600
+892,,,1500
+893,PATHOLOGY,CSF for Anti TB IgG,1500
+894,,,1500
+895,PATHOLOGY,CSF for Biochemical Test,1000
+896,,,1500
+897,PATHOLOGY,CSF for Cytology,1200
+898,,,6000
+899,PATHOLOGY,CSF for Gram Stain,600
+900,,,800
+901,PATHOLOGY,CSF for VDRL,800
+902,,,1300
+903,PATHOLOGY,Cyclosporine,3000
+904,,,3000
+905,PATHOLOGY,Cyclosporine ( C2 )(A245),3000
+906,,,1000
+907,PATHOLOGY,Cyst Fluid for Cytology,1200
+908,,,600
+909,PATHOLOGY,Cystic Fluid for AFB,600
+910,,,1500
+911,PATHOLOGY,Cytology,1200
+912,,,1500
+913,PATHOLOGY,Dengue NS1 Ag,300
+914,,,1500
+915,PATHOLOGY,DHT (0 hr.),1500
+916,,,1500
+917,PATHOLOGY,DHT (96 hrs),1500
+918,,,1500
+919,PATHOLOGY,Dialysis Fluid for C/S,1500
+920,,,1500
+921,PATHOLOGY,Discharge for AFB,600
+922,,,1500
+923,PATHOLOGY,Discharge for Gram Stain,600
+924,,,600
+925,PATHOLOGY,DLC,300
+926,,,8000
+927,PATHOLOGY,Drain tube fluid for C/S,1500
+928,,,1500
+929,PATHOLOGY,Ear Swab(Lt.) for AFB,600
+930,,,1500
+931,PATHOLOGY,Ear Swab(Lt.) for Gram Stain,600
+932,,,600
+933,PATHOLOGY,Ear Swab(Rt.) for C/S,1500
+934,,,600
+935,PATHOLOGY,eGFR (MDRD),1000
+936,,,1400
+937,PATHOLOGY,ENA Panel (25  Antibodies),15000
+938,,,8000
+939,PATHOLOGY,Endometrium (CURETTAGE),1000
+940,,,1000
+941,PATHOLOGY,Endoscopic Biopsy of Stomach,1000
+942,,,1500
+943,PATHOLOGY,ER,4000
+944,,,4000
+945,PATHOLOGY,ESR,200
+946,,,1500
+947,PATHOLOGY,ET tube tip for C/S,1500
+948,,,1400
+949,PATHOLOGY,FACTOR VII,3000
+950,,,1400
+951,PATHOLOGY,Fasting Plasma glucose,200
+952,,,1300
+953,PATHOLOGY,Febrile Antigens,1200
+954,,,5000
+955,PATHOLOGY,Ferritin,1200
+956,,,1100
+957,PATHOLOGY,Film/Cell Morphology,400
+958,,,24000
+959,PATHOLOGY,Flow Cytometry for Acute Leukemia panel,17000
+960,,,20000
+961,PATHOLOGY,Flow Cytometry for follow up panel-any 5 markers,8000
+962,,,1200
+963,PATHOLOGY,Fluid for ADA,1400
+964,,,600
+965,PATHOLOGY,Fluid for Albumin,500
+966,,,1200
+967,PATHOLOGY,Fluid for Biochemical Test,1000
+968,,,1500
+969,PATHOLOGY,Fluid for Creatinine,500
+970,,,1200
+971,PATHOLOGY,Fluid for Fungal C/S,2000
+972,,,600
+973,PATHOLOGY,Fluid for GeneXpert(MTB),6000
+974,,,600
+975,PATHOLOGY,Fluid for LDH,1100
+976,,,300
+977,PATHOLOGY,Fluid for Urea,400
+978,,,1300
+979,PATHOLOGY,FNAC (Both Breast),3000
+980,,,1300
+981,PATHOLOGY,FNAC (Left Breast),1300
+982,,,1300
+983,PATHOLOGY,FNAC (Small Tumour),1300
+984,,,3000
+985,PATHOLOGY,FNAC from Lung,1300
+986,,,1600
+987,PATHOLOGY,Free Light Chain Ratio,10000
+988,,,1500
+989,PATHOLOGY,Free PSA/ PSA Ratio,2000
+990,,,1500
+991,PATHOLOGY,Free T4,1500
+992,,,2000
+993,PATHOLOGY,Free Testosterone (Pooled Serum),2000
+994,,,1500
+995,PATHOLOGY,Full Breast (Resected),2500
+996,,,1500
+997,PATHOLOGY,Gall Bladder Fluid Analysis,1200
+998,,,1200
+999,PATHOLOGY,Gall Blader Fluid Analysis,1300
+1000,,,600
+1001,PATHOLOGY,Gall Blader Fluid for Anti TB IgA,1400
+1002,,,1400
+1003,PATHOLOGY,Gall Blader Fluid for Anti TB IgM,1400
+1004,,,1000
+1005,PATHOLOGY,Gall Blader Fluid for C/S,1500
+1006,,,1200
+1007,PATHOLOGY,Gall Blader Fluid for Gram Stain,600
+1008,,,600
+1009,PATHOLOGY,Gastric Lavage for GeneXpert(MTB),6000
+1010,,,4000
+1011,PATHOLOGY,Gentamicin,1500
+1012,,,1400
+1013,PATHOLOGY,GGT,1200
+1014,,,8000
+1015,PATHOLOGY,Globulin,1000
+1016,,,650
+1017,PATHOLOGY,Glucose Tolerance Test 2.5 hrs,250
+1018,,,250
+1019,PATHOLOGY,Growth Hormone,1500
+1020,,,1500
+1021,PATHOLOGY,Growth Hormone Stimulation Test 0 hr.,1500
+1022,,,1500
+1023,PATHOLOGY,Growth Hormone Stimulation Test 30 Minute,1500
+1024,,,1500
+1025,PATHOLOGY,GTT 2nd,250
+1026,,,250
+1027,PATHOLOGY,GTT 4th,160
+1028,,,160
+1029,PATHOLOGY,GTT1st,250
+1030,,,1500
+1031,PATHOLOGY,Gum Swab for Gram Stain,600
+1032,,,1500
+1033,PATHOLOGY,H. Pylori Antibody,1500
+1034,,,200
+1035,PATHOLOGY,Hair Clipping for Fungus,600
+1036,,,1500
+1037,PATHOLOGY,Hair Root C/S for Fungus,2000
+1038,,,600
+1039,PATHOLOGY,Hb A1c,1500
+1040,,,2000
+1041,PATHOLOGY,HBe Ag,1500
+1042,,,1000
+1043,PATHOLOGY,HBsAgQ2,2500
+1044,,,250
+1045,PATHOLOGY,HDL - Cholesterol,400
+1046,,,4000
+1047,PATHOLOGY,High Sensitive Troponin-I,1500
+1048,,,6000
+1049,PATHOLOGY,Histopathology Intermediate,2000
+1050,,,2500
+1051,PATHOLOGY,Histopathology Small,1500
+1052,,,1500
+1053,PATHOLOGY,HMB45,4000
+1054,,,1500
+1055,PATHOLOGY,Homocysteine,3000
+1056,,,1500
+1057,PATHOLOGY,HSV 1 - IgM,1500
+1058,,,1500
+1059,PATHOLOGY,HSV 1 & 2 - IgM,1500
+1060,,,1500
+1061,PATHOLOGY,HSV 2 - IgM,1500
+1062,,,1000
+1063,PATHOLOGY,HVS C/S for Anerobic,1500
+1064,,,2000
+1065,PATHOLOGY,HVS Cytology for Malignanat Cells,1200
+1066,,,600
+1067,PATHOLOGY,HVS for C/S,1500
+1068,,,600
+1069,PATHOLOGY,HVS for Wet Film,600
+1070,,,500
+1071,PATHOLOGY,ICT for Amphitamine,700
+1072,,,700
+1073,PATHOLOGY,ICT for Cannabinoids,700
+1074,,,1200
+1075,PATHOLOGY,ICT for Chikungunya: (IgG & IgM),1200
+1076,,,1500
+1077,PATHOLOGY,ICT for Cocaine,700
+1078,,,300
+1079,PATHOLOGY,ICT For Filaria,1500
+1080,,,500
+1081,PATHOLOGY,ICT For Kalazar,1500
+1082,,,1500
+1083,PATHOLOGY,ICT for Morphine,1500
+1084,,,700
+1085,PATHOLOGY,ICT for TPHA,800
+1086,,,1500
+1087,PATHOLOGY,IgA,1500
+1088,,,1500
+1089,PATHOLOGY,IgM,1500
+1090,,,10000
+1091,PATHOLOGY,Immunohistochemistry (IHC) panel-2,15000
+1092,,,18000
+1093,PATHOLOGY,Immunohistochemistry (IHC) panel-4,20000
+1094,,,25000
+1095,PATHOLOGY,Immunohistochemistry (IHC) panel-6,30000
+1096,,,1500
+1097,PATHOLOGY,Insulin(Fasting),1500
+1098,,,1500
+1099,PATHOLOGY,Intact PTH,1500
+1100,,,2200
+1101,PATHOLOGY,Intra Ocular Fluid C/S for Fungus,2000
+1102,,,1500
+1103,PATHOLOGY,Intra Ocular Fluid for Gram Stain,600
+1104,,,1400
+1105,PATHOLOGY,Kidny (Needle Biopsy),1500
+1106,,,1500
+1107,PATHOLOGY,Lactate,1400
+1108,,,2500
+1109,PATHOLOGY,Latex Agglutination Test For Bacterial Antigens,2000
+1110,,,1400
+1111,PATHOLOGY,LDL - Cholesterol,400
+1112,,,300
+1113,PATHOLOGY,Left Breast (Biopsy),1500
+1114,,,3000
+1115,PATHOLOGY,Lesion for C/S,1500
+1116,,,600
+1117,PATHOLOGY,LH,1500
+1118,,,1400
+1119,PATHOLOGY,Lipid Profile (F),1400
+1120,,,1400
+1121,PATHOLOGY,Lipoprotein (a),1500
+1122,,,2000
+1123,PATHOLOGY,Lithium,1300
+1124,,,1500
+1125,PATHOLOGY,Liver Abscess Fluid for Biochemical Tests,1000
+1126,,,1500
+1127,PATHOLOGY,Liver Abscess Fluid for Cytology,1200
+1128,,,500
+1129,PATHOLOGY,Liver Function Test,1000
+1130,,,1200
+1131,PATHOLOGY,Lupus Anticoagulants,5000
+1132,,,1500
+1133,PATHOLOGY,Magnesium,1300
+1134,,,300
+1135,PATHOLOGY,MCH,200
+1136,,,200
+1137,PATHOLOGY,MCV,200
+1138,,,1300
+1139,PATHOLOGY,Midnight Salivary Cortisol,1500
+1140,,,4000
+1141,PATHOLOGY,MRD Monitoring B-ALL,16000
+1142,,,4000
+1143,PATHOLOGY,MSH6,4000
+1144,,,4000
+1145,PATHOLOGY,Nail Cliping C/S for Fungus,2000
+1146,,,600
+1147,PATHOLOGY,Nail for C/S,1500
+1148,,,600
+1149,PATHOLOGY,Nasal Sawab Gram Stain,600
+1150,,,600
+1151,PATHOLOGY,Nasal Secretion for Biochemical,1300
+1152,,,1500
+1153,PATHOLOGY,Nasal Swab for Fungus,600
+1154,,,1500
+1155,PATHOLOGY,Nasopharynx (Rt.) Swab for C/S,1500
+1156,,,1200
+1157,PATHOLOGY,Nipple Discharge for AFB Stain,600
+1158,,,1500
+1159,PATHOLOGY,Nipple Discharge for Cytology,1000
+1160,,,6000
+1161,PATHOLOGY,Nipple Discharge for Gram Stain,600
+1162,,,1500
+1163,PATHOLOGY,Nipple Discharge(Right) for C/S,1500
+1164,,,3000
+1165,PATHOLOGY,Opiates,1500
+1166,,,600
+1167,PATHOLOGY,Oral Lassion Scrapping for Gram Stain,600
+1168,,,600
+1169,PATHOLOGY,Oral Swab for C/S,1500
+1170,,,2000
+1171,PATHOLOGY,Oral Swab for Gram Stain,600
+1172,,,1200
+1173,PATHOLOGY,Otomycotic Plug (Ear) for Microscopy,600
+1174,,,1500
+1175,PATHOLOGY,Ovary (Resected),2500
+1176,,,1500
+1177,PATHOLOGY,P-ANCA,1500
+1178,,,1500
+1179,PATHOLOGY,P/S C/S for Fungus,2000
+1180,,,600
+1181,PATHOLOGY,P/S for C/S,1500
+1182,,,600
+1183,PATHOLOGY,P/S for Gram Stain,600
+1184,,,600
+1185,PATHOLOGY,P53,4000
+1186,,,4000
+1187,PATHOLOGY,Pan CK,4000
+1188,,,1500
+1189,PATHOLOGY,PAX8,4000
+1190,,,400
+1191,PATHOLOGY,PCN Tube (Urine) for PH,400
+1192,,,300
+1193,PATHOLOGY,PCN tube for C/S,1500
+1194,,,1500
+1195,PATHOLOGY,Pericardial Fluid for AFB Stain,600
+1196,,,1500
+1197,PATHOLOGY,Pericardial Fluid for Anti TB IgG,1500
+1198,,,1500
+1199,PATHOLOGY,Pericardial Fluid for Biochemical test,1000
+1200,,,1500
+1201,PATHOLOGY,Pericardial Fluid for Cytology,1200
+1202,,,6000
+1203,PATHOLOGY,Pericardial Fluid for Gram Stain,600
+1204,,,1200
+1205,PATHOLOGY,Peritoneal Fluid Analysis,1500
+1206,,,600
+1207,PATHOLOGY,Peritoneal Fluid for Anti TB IgA,1500
+1208,,,1500
+1209,PATHOLOGY,Peritoneal Fluid for Anti TB IgM,1500
+1210,,,1000
+1211,PATHOLOGY,Peritoneal Fluid for C/S,1500
+1212,,,1200
+1213,PATHOLOGY,Peritoneal Fluid for Gram Stain,600
+1214,,,1200
+1215,PATHOLOGY,PH,500
+1216,,,200
+1217,PATHOLOGY,Plasma glucose 1 hour after 50gm glu.,250
+1218,,,250
+1219,PATHOLOGY,Plasma glucose 1 hour after 75gm glucose.,250
+1220,,,200
+1221,PATHOLOGY,Plasma glucose 1 hr after meal,200
+1222,,,200
+1223,PATHOLOGY,Plasma glucose 1.5 hrs ABF,200
+1224,,,250
+1225,PATHOLOGY,Plasma glucose 1.5 hrs after 70 gm glu.,250
+1226,,,250
+1227,PATHOLOGY,Plasma glucose 1hr after lunch,200
+1228,,,230
+1229,PATHOLOGY,Plasma glucose 2 hrs ABF,200
+1230,,,200
+1231,PATHOLOGY,Plasma glucose 2 hrs after 50gm glu.,250
+1232,,,250
+1233,PATHOLOGY,Plasma glucose 2 hrs after 75gm glu.,250
+1234,,,200
+1235,PATHOLOGY,Plasma glucose 2 hrs after Iftar,200
+1236,,,200
+1237,PATHOLOGY,Plasma glucose 2 hrs after meal,200
+1238,,,250
+1239,PATHOLOGY,Plasma glucose 3 hrs after 75 gm glucose,250
+1240,,,250
+1241,PATHOLOGY,Plasma glucose 4 hrs after 75 gm glucose,250
+1242,,,200
+1243,PATHOLOGY,Plasma glucose before lunch,200
+1244,,,300
+1245,PATHOLOGY,Pleural Fluid Analysis,1500
+1246,,,1200
+1247,PATHOLOGY,Pleural Fluid for AFB,600
+1248,,,1500
+1249,PATHOLOGY,Pleural Fluid for Anti TB IgG,1500
+1250,,,1500
+1251,PATHOLOGY,Pleural Fluid for Biochemical test,1000
+1252,,,1500
+1253,PATHOLOGY,Pleural Fluid for Cytology,1500
+1254,,,6000
+1255,PATHOLOGY,Pleural Fluid for Gram Stain,600
+1256,,,1200
+1257,PATHOLOGY,Pleural Fluid for PH,500
+1258,,,4000
+1259,PATHOLOGY,Postprandial Plasma glucose,200
+1260,,,300
+1261,PATHOLOGY,PR,4000
+1262,,,1400
+1263,PATHOLOGY,Preputial Smear for C/S,1500
+1264,,,600
+1265,PATHOLOGY,Progesterone,1500
+1266,,,1500
+1267,PATHOLOGY,Prolactin with 100 time dilution,1400
+1268,,,1500
+1269,PATHOLOGY,Prostatic smear Cytology for Malignant Cells,1200
+1270,,,4000
+1271,PATHOLOGY,Protein Electrophoresis,2000
+1272,,,4000
+1273,PATHOLOGY,Prothrombin Time (INR),800
+1274,,,1500
+1275,PATHOLOGY,Pus C/S for Anerobic,1500
+1276,,,2000
+1277,PATHOLOGY,Pus Cytology For Malignant Cell,1200
+1278,,,600
+1279,PATHOLOGY,Pus for C/S,1500
+1280,,,600
+1281,PATHOLOGY,Pus for Fungus Culture,2000
+1282,,,6000
+1283,PATHOLOGY,Pus for Gram Stain,600
+1284,,,1500
+1285,PATHOLOGY,QuantiFERON-TB Gold Plus,8000
+1286,,,800
+1287,PATHOLOGY,Random Plasma glucose,200
+1288,,,600
+1289,PATHOLOGY,Rectal Swab for C/S,1500
+1290,,,600
+1291,PATHOLOGY,Renin (Supine),4000
+1292,,,4000
+1293,PATHOLOGY,Reticulocyte Count,300
+1294,,,1200
+1295,PATHOLOGY,Right Breast (Biopsy),1500
+1296,,,700
+1297,PATHOLOGY,Rt. Breast nipple  discharge cytology for malignant cells,1200
+1298,,,1500
+1299,PATHOLOGY,Rubella - IgM,1500
+1300,,,4000
+1301,PATHOLOGY,Saliva for Fungus,600
+1302,,,2500
+1303,PATHOLOGY,SARS_CoV-2,3000
+1304,,,1500
+1305,PATHOLOGY,Scrapping from Rt. Cheek for C/S,1500
+1306,,,1500
+1307,PATHOLOGY,Scrapping from Tongue for Gram Stain,600
+1308,,,600
+1309,PATHOLOGY,Semen Analysis,1500
+1310,,,600
+1311,PATHOLOGY,Semen for C/S,1500
+1312,,,6000
+1313,PATHOLOGY,Semen for Gram Stain,600
+1314,,,600
+1315,PATHOLOGY,Serum Calcium,600
+1316,,,1400
+1317,PATHOLOGY,Serum Copper,1500
+1318,,,400
+1319,PATHOLOGY,Serum Electrolytes,1000
+1320,,,5000
+1321,PATHOLOGY,Serum Inorganic Phosphate (PO4),600
+1322,,,2000
+1323,PATHOLOGY,Serum Uric Acid,600
+1324,,,1000
+1325,PATHOLOGY,SHBG,1500
+1326,,,4000
+1327,PATHOLOGY,Sickly Test,200
+1328,,,4000
+1329,PATHOLOGY,Skin Biopsy,1200
+1330,,,1500
+1331,PATHOLOGY,Skin Scrapping C/S for AFB,1500
+1332,,,2000
+1333,PATHOLOGY,Skin Scrapping Cytology for Malignant Cells,1200
+1334,,,600
+1335,PATHOLOGY,Skin Scrapping for Cytology,1200
+1336,,,600
+1337,PATHOLOGY,Skin Scrapping for Fungus from Lips,600
+1338,,,1500
+1339,PATHOLOGY,Slide Delivery for Cytology,500
+1340,,,800
+1341,PATHOLOGY,Slide Review for Cytology (10 Slides),2000
+1342,,,1000
+1343,PATHOLOGY,Slide Review for Histopathology (1 SLIDE).,800
+1344,,,1000
+1345,PATHOLOGY,Slit smear from skin nodule for L.D. bodies,200
+1346,,,1000
+1347,PATHOLOGY,Sodium (Na),300
+1348,,,500
+1349,PATHOLOGY,Spot Urine Calcium Creatinine Ratio,1100
+1350,,,500
+1351,PATHOLOGY,Spot Urine Creatinine,500
+1352,,,1200
+1353,PATHOLOGY,Spot Urine for Urea,400
+1354,,,600
+1355,PATHOLOGY,Spot Urine Potassium (K),400
+1356,,,700
+1357,PATHOLOGY,Spot Urine Protein Creatinine Ratio,1100
+1358,,,400
+1359,PATHOLOGY,Spot Urine Uric Acid,500
+1360,,,1500
+1361,PATHOLOGY,Sputum C/S for Anerobic,1500
+1362,,,2000
+1363,PATHOLOGY,Sputum Cytology for Malignant Cells,1200
+1364,,,600
+1365,PATHOLOGY,Sputum for C/S,1500
+1366,,,500
+1367,PATHOLOGY,Sputum For Fungal Hyphee,600
+1368,,,600
+1369,PATHOLOGY,Sputum for GeneXpert(MTB),4000
+1370,,,600
+1371,PATHOLOGY,SS C/S for Fungus from Lt. Palm,2000
+1372,,,1500
+1373,PATHOLOGY,SS C/S for Fungus from Rt. Hand,2000
+1374,,,2000
+1375,PATHOLOGY,SSF from Abdomen,600
+1376,,,600
+1377,PATHOLOGY,SSF from Axilla,600
+1378,,,600
+1379,PATHOLOGY,SSF from Breast,600
+1380,,,600
+1381,PATHOLOGY,SSF From Ear (Lt.),600
+1382,,,600
+1383,PATHOLOGY,SSF from Elbow,600
+1384,,,600
+1385,PATHOLOGY,SSF from Forehead,600
+1386,,,600
+1387,PATHOLOGY,SSF from Groin,600
+1388,,,600
+1389,PATHOLOGY,SSF from Left Eye,600
+1390,,,600
+1391,PATHOLOGY,SSF from Left Sole,600
+1392,,,600
+1393,PATHOLOGY,SSF from Lt. Foot,600
+1394,,,600
+1395,PATHOLOGY,SSF from Lt. Leg,600
+1396,,,600
+1397,PATHOLOGY,SSF from Lt. Toe,600
+1398,,,600
+1399,PATHOLOGY,SSF from Right Sole,600
+1400,,,600
+1401,PATHOLOGY,SSF from Rt. Cheek,600
+1402,,,600
+1403,PATHOLOGY,SSF from Rt. Hand,600
+1404,,,600
+1405,PATHOLOGY,SSF from Rt. Shoulder,600
+1406,,,600
+1407,PATHOLOGY,SSF from Scalp,600
+1408,,,600
+1409,PATHOLOGY,SSF from Tongue,600
+1410,,,600
+1411,PATHOLOGY,Stool for C/S,1500
+1412,,,400
+1413,PATHOLOGY,Stool for GeneXpert (MTB),6000
+1414,,,1500
+1415,PATHOLOGY,Stool for Occult Blood Test,400
+1416,,,300
+1417,PATHOLOGY,Stool Routine Examination,300
+1418,,,1300
+1419,PATHOLOGY,Sub Dural Fluid for AFB,600
+1420,,,1500
+1421,PATHOLOGY,Sub Dural Fluid for Gram Stain,600
+1422,,,6000
+1423,PATHOLOGY,Suction Tip for C/S,1500
+1424,,,6000
+1425,PATHOLOGY,Swab C/S for AFB,1500
+1426,,,2000
+1427,PATHOLOGY,Swab Cytology  for Malignant Cells,1200
+1428,,,1500
+1429,PATHOLOGY,Swab from A/C for C/S,1500
+1430,,,1500
+1431,PATHOLOGY,Swab from Cot for C/S,1500
+1432,,,1500
+1433,PATHOLOGY,Swab from wall for C/S,1500
+1434,,,4000
+1435,PATHOLOGY,Synovial Fluid for AFB,600
+1436,,,1500
+1437,PATHOLOGY,Synovial Fluid for Anti TB IgG,1500
+1438,,,1500
+1439,PATHOLOGY,Synovial Fluid for Biochemical test,1000
+1440,,,1500
+1441,PATHOLOGY,Synovial Fluid for Cytology,1200
+1442,,,6000
+1443,PATHOLOGY,Synovial Fluid for Gram Stain,600
+1444,,,1200
+1445,PATHOLOGY,T / E Tube For C/S,1500
+1446,,,1400
+1447,PATHOLOGY,T3,1000
+1448,,,1000
+1449,PATHOLOGY,Tacrolimus,4000
+1450,,,200
+1451,PATHOLOGY,TC - WBC,200
+1452,,,500
+1453,PATHOLOGY,Testosterone,1500
+1454,,,1500
+1455,PATHOLOGY,Testosterone (72 hrs.),1500
+1456,,,1500
+1457,PATHOLOGY,Throat swab cytology for malignant cells,1200
+1458,,,600
+1459,PATHOLOGY,Throat Swab for C/S,1500
+1460,,,600
+1461,PATHOLOGY,Throat Swab for Gram Stain,600
+1462,,,600
+1463,PATHOLOGY,Tissue C/S for AFB,1500
+1464,,,2000
+1465,PATHOLOGY,Tissue for AFB,600
+1466,,,1500
+1467,PATHOLOGY,Tissue for Fungus,600
+1468,,,4000
+1469,PATHOLOGY,Tissue for Gram Stain,600
+1470,,,1000
+1471,PATHOLOGY,Tongue Scrapping C/S for Fungus,2000
+1472,,,1200
+1473,PATHOLOGY,Tongue Scrapping for Cutology for Cellular Study,1200
+1474,,,600
+1475,PATHOLOGY,Tongue Swab C/S for Fungus,2000
+1476,,,1500
+1477,PATHOLOGY,Tongue Swab for Fungus,600
+1478,,,1000
+1479,PATHOLOGY,Total HCG,1500
+1480,,,1500
+1481,PATHOLOGY,Total Kidny (Resected),2500
+1482,,,700
+1483,PATHOLOGY,Total PSA,1500
+1484,,,1500
+1485,PATHOLOGY,Toxo - IgM,1500
+1486,,,800
+1487,PATHOLOGY,Tracheal Aspirate for AFB Stain,600
+1488,,,1500
+1489,PATHOLOGY,Tracheal Aspirate for GeneXpert(MTB),6000
+1490,,,600
+1491,PATHOLOGY,Trachiostomy Tube Swab for C/S,1500
+1492,,,2000
+1493,PATHOLOGY,Triglycerides,400
+1494,,,1200
+1495,PATHOLOGY,TSH receptor antibodies (TRAb),3000
+1496,,,4000
+1497,PATHOLOGY,Tuberculin Test (0.1 ml = 10 TU),700
+1498,,,1500
+1499,PATHOLOGY,Umbilical Swab for Gram Stain,600
+1500,,,500
+1501,PATHOLOGY,Urethral Discharge for AFB,600
+1502,,,1500
+1503,PATHOLOGY,Urethral Discharge for Genexpert,6000
+1504,,,600
+1505,PATHOLOGY,Urethral Discharge for Wet Film,600
+1506,,,1300
+1507,PATHOLOGY,Urinary Calcium,600
+1508,,,600
+1509,PATHOLOGY,Urinary Osmolality,1300
+1510,,,600
+1511,PATHOLOGY,Urinary V.M.A (Vanilmandelic Acid),2500
+1512,,,400
+1513,PATHOLOGY,Urine C/S for AFB,1500
+1514,,,1500
+1515,PATHOLOGY,Urine C/S for Fungus,2000
+1516,,,1200
+1517,PATHOLOGY,Urine for AFB,600
+1518,,,400
+1519,PATHOLOGY,Urine for Bile Salts,400
+1520,,,400
+1521,PATHOLOGY,Urine for C/S,1500
+1522,,,400
+1523,PATHOLOGY,Urine for GeneXpert (MTB),6000
+1524,,,600
+1525,PATHOLOGY,Urine for Haemoglobin,300
+1526,,,400
+1527,PATHOLOGY,Urine For Leu (Leukocytes),400
+1528,,,1300
+1529,PATHOLOGY,Urine for Microalbumin,1300
+1530,,,400
+1531,PATHOLOGY,Urine for Occult blood Test,400
+1532,,,400
+1533,PATHOLOGY,Urine for Phase Contrast Microscopy of RBC,500
+1534,,,300
+1535,PATHOLOGY,Urine for RBC (Morphology),300
+1536,,,400
+1537,PATHOLOGY,Urine for Sugar,250
+1538,,,400
+1539,PATHOLOGY,Urine for Wet Film,500
+1540,,,400
+1541,PATHOLOGY,Uterus (Resected),1500
+1542,,,2500
+1543,PATHOLOGY,Vaginal Scrapping for fungus,600
+1544,,,600
+1545,PATHOLOGY,Vaginal Swab for C/S,1500
+1546,,,600
+1547,PATHOLOGY,Vaginal Swab for Gram Stain,600
+1548,,,1500
+1549,PATHOLOGY,Vault smear Cytology for Malignant Cells,1200
+1550,,,1500
+1551,PATHOLOGY,Vault Smear for Gram Stain,600
+1552,,,600
+1553,PATHOLOGY,VDRL (Qty),1200
+1554,,,1200
+1555,PATHOLOGY,VIA (Visual Inspection of the Cervix with Acetic Acid),700
+1556,,,2500
+1557,PATHOLOGY,Vitamin D ( 25 - OH ),4000
+1558,,,6000
+1559,PATHOLOGY,Vitreous Aspirate C/S for Fungus,2000
+1560,,,1500
+1561,PATHOLOGY,Vitreous Aspirate for Fungus,600
+1562,,,600
+1563,PATHOLOGY,Vulval scrapping for fungus,600
+1564,,,1500
+1565,PATHOLOGY,Vulval Swab For Cytology,1200
+1566,,,1200
+1567,PATHOLOGY,Vulval Swab for Gram Stain,600
+1568,,,500
+1569,PATHOLOGY,Wound Swab for AFB,600
+1570,,,1500
+1571,PATHOLOGY,Wound Swab for Fungus,600
+1572,,,6000
+1573,PATHOLOGY,Wound Swab for Gram Stain,600
+1574,,,4000
+1575,RADIOLOGY,AP Spine 2 (Two) side measurement of bone densitometer (Dexa Scan)(2203),3000
+1576,,,1500
+1577,RADIOLOGY,Both Foot Weight Bearing,1500
+1578,,,600
+1579,RADIOLOGY,Both Leg B/V,1500
+1580,,,500
+1581,RADIOLOGY,Cardiac CT for Calcium Scoring,6000
+1582,,,25000
+1583,RADIOLOGY,Cardiac MRI with CMR Perfusion,30000
+1584,,,2000
+1585,RADIOLOGY,CBCT Scan  of TMJ,4500
+1586,,,1500
+1587,RADIOLOGY,CBCT Scan of Face,6500
+1588,,,3000
+1589,RADIOLOGY,CBCT Scan of Lower Jaw,3500
+1590,,,3000
+1591,RADIOLOGY,CBCT Scan of Lower Right Quadrant,3000
+1592,,,4000
+1593,RADIOLOGY,CBCT Scan of Upper & Lower Jaw,5500
+1594,,,3000
+1595,RADIOLOGY,CBCT Scan of Upper Jaw,3500
+1596,,,3000
+1597,RADIOLOGY,CBCT Scan of Upper Right Quadrant,3000
+1598,,,500
+1599,RADIOLOGY,CHILD CT OF K.U.B,9000
+1600,,,9000
+1601,RADIOLOGY,CHILD CT OF WHOLE ABDOMEN,10000
+1602,,,14000
+1603,RADIOLOGY,Child MRI of undescended Testis,14000
+1604,,,14000
+1605,RADIOLOGY,Choanogram (Nasal),2000
+1606,,,10000
+1607,RADIOLOGY,Contrast : Gadolinium,2500
+1608,,,4000
+1609,RADIOLOGY,Contrast Meal of Upper GIT,3000
+1610,,,4000
+1611,RADIOLOGY,CT Angio + Perfusion,15000
+1612,,,16000
+1613,RADIOLOGY,CT Angio of Aortogram,16000
+1614,,,12000
+1615,RADIOLOGY,CT Angio of Brain & Neck Vessel,18000
+1616,,,18000
+1617,RADIOLOGY,CT Angio of Brain perfusion With Acetazolamide Challenge & Neck vessel,25000
+1618,,,14000
+1619,RADIOLOGY,CT Angio of cardio-pulmonary,14000
+1620,,,14000
+1621,RADIOLOGY,CT Angio of Neck and Brain + Perfusion,22000
+1622,,,12000
+1623,RADIOLOGY,CT Angio of Peripheral Lower Limbs,14000
+1624,,,14000
+1625,RADIOLOGY,CT Angio of Pulmonary Vessel,14000
+1626,,,14000
+1627,RADIOLOGY,CT ANGIOGRAM OF NECK VESSEL & CRENIOVERTEBRAL SPIN,14000
+1628,,,16000
+1629,RADIOLOGY,CT Cisternography / Cistetnogram,12000
+1630,,,10000
+1631,RADIOLOGY,CT Enterography,15000
+1632,,,5000
+1633,RADIOLOGY,CT GUIDED CORE BIOPSY-1,5000
+1634,,,5000
+1635,RADIOLOGY,CT Guided FNAC-1,4000
+1636,,,4000
+1637,RADIOLOGY,CT Myelogram of Cervical Spine,10000
+1638,,,10000
+1639,RADIOLOGY,CT Myelogram of Lumber Spine,10000
+1640,,,7000
+1641,RADIOLOGY,CT Oesophagus,7000
+1642,,,4950
+1643,RADIOLOGY,CT of Oral Cavity,7000
+1644,,,7000
+1645,RADIOLOGY,CT of Thyroid Gland,7000
+1646,,,10000
+1647,RADIOLOGY,CT POLY TRAUMA ( Head+Neck+Chest+Whole Abdomin Including Spine),35000
+1648,,,10000
+1649,RADIOLOGY,CT SCAN DORSAL SPINE SCREENING WHOLE SPINE,10000
+1650,,,10000
+1651,RADIOLOGY,CT Scan of  Larynx,7000
+1652,,,7000
+1653,RADIOLOGY,CT Scan of Brain & Base of Skull,10000
+1654,,,9000
+1655,RADIOLOGY,CT SCAN OF BRAIN & PNS,9000
+1656,,,8000
+1657,RADIOLOGY,CT Scan of Brain with Screen Cervical Spine,8000
+1658,,,12000
+1659,RADIOLOGY,CT Scan of Calcium Scoring,9000
+1660,,,8000
+1661,RADIOLOGY,CT Scan of chest with Liver,12000
+1662,,,15000
+1663,RADIOLOGY,CT Scan of Ears,7000
+1664,,,14000
+1665,RADIOLOGY,CT Scan of Left Ankle,7000
+1666,,,7000
+1667,RADIOLOGY,CT Scan of Left Ear/Mastoid,7000
+1668,,,7000
+1669,RADIOLOGY,CT Scan of Left Femur,7000
+1670,,,7000
+1671,RADIOLOGY,CT Scan of Left Forearm,7000
+1672,,,7000
+1673,RADIOLOGY,Ct Scan of Left Heel (Calcaneum),7000
+1674,,,7000
+1675,RADIOLOGY,CT Scan of Left Knee Joint,7000
+1676,,,7000
+1677,RADIOLOGY,CT Scan of Left Petromastoid Region,6000
+1678,,,7000
+1679,RADIOLOGY,CT Scan of Left Shoulder Joint,7000
+1680,,,7000
+1681,RADIOLOGY,CT Scan of Left Wrist Joint,7000
+1682,,,8000
+1683,RADIOLOGY,CT Scan of Mandible/Maxilla,8000
+1684,,,8000
+1685,RADIOLOGY,CT Scan of Maxillofacial / Mandible (3D),8000
+1686,,,7000
+1687,RADIOLOGY,CT Scan of Orbits,7000
+1688,,,7000
+1689,RADIOLOGY,CT Scan of Petromastoid Brain,10000
+1690,,,7000
+1691,RADIOLOGY,CT Scan of Right Arm,7000
+1692,,,7000
+1693,RADIOLOGY,CT Scan of Right Elbow Joint,7000
+1694,,,7000
+1695,RADIOLOGY,CT Scan of Right Foot,7000
+1696,,,7000
+1697,RADIOLOGY,CT Scan of Right Hand,7000
+1698,,,7000
+1699,RADIOLOGY,CT Scan of Right Hip Joint,7000
+1700,,,7000
+1701,RADIOLOGY,CT Scan of Right Leg,7000
+1702,,,8000
+1703,RADIOLOGY,CT Scan of Right Scapula,7000
+1704,,,7000
+1705,RADIOLOGY,CT Scan of Right Thigh,7000
+1706,,,7000
+1707,RADIOLOGY,CT Scan of Sacro-Cocegeal Region,7000
+1708,,,10000
+1709,RADIOLOGY,CT Scan of Styloid Process,7000
+1710,,,10000
+1711,RADIOLOGY,CT Scan of Temporal Bone,8000
+1712,,,7000
+1713,RADIOLOGY,CT Scan of Undescending Testis,12000
+1714,,,8000
+1715,RADIOLOGY,CT Stroke Protocol (MRI of DWI),8000
+1716,,,7000
+1717,RADIOLOGY,CT Urography,15000
+1718,,,15000
+1719,RADIOLOGY,CT VENOGRAM OF LOWER LIMB,15000
+1720,,,200
+1721,RADIOLOGY,Dental film - Three film,600
+1722,,,400
+1723,RADIOLOGY,Digital  Micturating Cysto Urethrogram ( M.C. U ),3000
+1724,,,600
+1725,RADIOLOGY,Digital 24 Hrs. late Film for I.V.U.,600
+1726,,,2800
+1727,RADIOLOGY,"Digital Ba-meal study of Stomach, Duodenum, Follow through(G.I. Tract)",3000
+1728,,,3000
+1729,RADIOLOGY,Digital Barium enema of colon (large gut) Double contrast,3000
+1730,,,3000
+1731,RADIOLOGY,"Digital Barium meal study of Stomach, Duodenum",3000
+1732,,,3000
+1733,RADIOLOGY,"Digital Barium meal study of Stomach, Duodenum & Hiatus Hernia",3000
+1734,,,3000
+1735,RADIOLOGY,Digital Barium Swallow of Oesophagus,2800
+1736,,,2800
+1737,RADIOLOGY,Digital Cologram/Loopogram (Barium enema) through colostomy opening,3000
+1738,,,600
+1739,RADIOLOGY,Digital X - Ray of Flexion and Extension,1200
+1740,,,600
+1741,RADIOLOGY,Digital X-Ray for 100% (One Film),600
+1742,,,1800
+1743,RADIOLOGY,Digital X-Ray for 100% (Two Films),1200
+1744,,,600
+1745,RADIOLOGY,Digital X-Ray of  Both Shoulder joint Lateral view,1200
+1746,,,600
+1747,RADIOLOGY,Digital X-Ray of Abdomen Erect Posture AP & Lat. View,1500
+1748,,,600
+1749,RADIOLOGY,Digital X-Ray of Acoustic meatus perorbital view,600
+1750,,,600
+1751,RADIOLOGY,Digital X-Ray of Atlanton Axial O.M & Lateral View ( B / V ),1200
+1752,,,3000
+1753,RADIOLOGY,Digital X-Ray of Ba-Followthrough double contrast,3000
+1754,,,3000
+1755,RADIOLOGY,Digital X-Ray of Bone age ( Adult Clavicle & Pelvis),1200
+1756,,,1000
+1757,RADIOLOGY,Digital X-Ray of Both Ankle Joint (B/V),1200
+1758,,,2200
+1759,RADIOLOGY,Digital X-Ray of Both Ankle Joint AP View,600
+1760,,,600
+1761,RADIOLOGY,Digital X-Ray of Both Clavicle AP View,600
+1762,,,600
+1763,RADIOLOGY,Digital X-Ray of Both feet both view,1200
+1764,,,600
+1765,RADIOLOGY,Digital X-Ray of Both foot (B/V),1200
+1766,,,1200
+1767,RADIOLOGY,Digital X-Ray of Both Hand AP View,600
+1768,,,1200
+1769,RADIOLOGY,Digital X-Ray of Both hand for bone age,1200
+1770,,,600
+1771,RADIOLOGY,Digital X-Ray of Both hand with wrist joint AP view,1200
+1772,,,1200
+1773,RADIOLOGY,Digital X-Ray of Both heel lateral view for soft tissue,600
+1774,,,1200
+1775,RADIOLOGY,Digital X-Ray of Both hip joint Lat view,1200
+1776,,,2200
+1777,RADIOLOGY,Digital X-Ray of Both Knee Joint and Oblique View,2200
+1778,,,2200
+1779,RADIOLOGY,Digital X-Ray of Both Knee Joint AP View,600
+1780,,,1200
+1781,RADIOLOGY,Digital X-Ray of Both Knee Joint B/V (Child),1200
+1782,,,600
+1783,RADIOLOGY,Digital X-Ray of Both Knee Joint skyline position,600
+1784,,,1600
+1785,RADIOLOGY,Digital X-Ray of Both Leg AP View,1200
+1786,,,1800
+1787,RADIOLOGY,Digital X-Ray of Both Mastoid AP oblique & Lateral Oblique view,1200
+1788,,,2200
+1789,RADIOLOGY,Digital X-Ray of Both shoulder joint (B/V),2200
+1790,,,1200
+1791,RADIOLOGY,Digital X-Ray of Both T.M. Joint open & close Mouth,2200
+1792,,,600
+1793,RADIOLOGY,Digital X-Ray of Both Wrist Lateral View,600
+1794,,,2200
+1795,RADIOLOGY,Digital X-Ray of Cervical One Oblique View,600
+1796,,,1800
+1797,RADIOLOGY,Digital X-Ray of Cervical spine AP & Both oblique View,1800
+1798,,,1200
+1799,RADIOLOGY,Digital X-Ray of Cervical spine AP & One oblique View,1200
+1800,,,600
+1801,RADIOLOGY,"Digital X-Ray of Cervical spine AP, Lateral & Both oblique View",2400
+1802,,,1800
+1803,RADIOLOGY,"Digital X-Ray of Cervical spine AP, Lateral & Right oblique View",1800
+1804,,,2800
+1805,RADIOLOGY,Digital X-Ray of Cervical Spine B/V with Atlanto Axial Joint,1800
+1806,,,1200
+1807,RADIOLOGY,Digital X-Ray of Cervical Spine Both Oblique View,1200
+1808,,,1800
+1809,RADIOLOGY,Digital X-Ray of Cervical spine Lateral & Both oblique View,1800
+1810,,,1200
+1811,RADIOLOGY,Digital X-Ray of Cervical spine Lateral View,600
+1812,,,600
+1813,RADIOLOGY,Digital X-Ray of Cervico-dorsal spine (Cervico-Thoracic) spine AP & Lateral view,1200
+1814,,,1200
+1815,RADIOLOGY,Digital X-Ray of Chest AP View (100% Equal Size),600
+1816,,,1800
+1817,RADIOLOGY,Digital X-Ray of Chest apical lordotic & Lt. Lat view,1200
+1818,,,600
+1819,RADIOLOGY,Digital X-Ray of Chest for Rib Left Side (Oblique View),600
+1820,,,600
+1821,RADIOLOGY,Digital X-Ray of Chest Inspiratory & Expiratory PA view,1200
+1822,,,600
+1823,RADIOLOGY,Digital X-Ray of Chest left lateral view,600
+1824,,,600
+1825,RADIOLOGY,Digital X-Ray of Chest P/A View (100% Equal Size),600
+1826,,,1200
+1827,RADIOLOGY,Digital X-Ray of Chest PA & left lateral view,1000
+1828,,,1200
+1829,RADIOLOGY,Digital X-Ray of Chest PA with Sternum,1200
+1830,,,600
+1831,RADIOLOGY,Digital X-Ray of Chest Penetrating View,600
+1832,,,600
+1833,RADIOLOGY,Digital X-Ray of Chest right lateral view,600
+1834,,,1200
+1835,RADIOLOGY,Digital X-Ray of Coccyx Bone Both View,1200
+1836,,,1200
+1837,RADIOLOGY,Digital X-Ray of Cone down AP & Lat view,1200
+1838,,,600
+1839,RADIOLOGY,Digital X-Ray of Dacrocystogram,3000
+1840,,,2500
+1841,RADIOLOGY,Digital X-Ray of Dorsal (Thoracic) spine AP & Lateral View,1200
+1842,,,600
+1843,RADIOLOGY,"Digital X-Ray of Dorsal (Thoracic) spine AP, Lateral & Both oblique View",2400
+1844,,,1800
+1845,RADIOLOGY,Digital X-Ray of Dorsal (Thoracic) spine Lateral View,600
+1846,,,2400
+1847,RADIOLOGY,Digital X-Ray of Dorsal Spine both Lateral view,1200
+1848,,,1200
+1849,RADIOLOGY,Digital X-Ray of Dorso lumber  ( Thoraco-Lumber )   Spine  AP  View,600
+1850,,,1200
+1851,RADIOLOGY,Digital X-Ray of Dorso Lumber (Thoraco-Lumber) Spine AP View,600
+1852,,,600
+1853,RADIOLOGY,"Digital X-Ray of Dorso Lumber Spine AP,Lat,Flexion,Extension,Neutral",2200
+1854,,,1000
+1855,RADIOLOGY,Digital X-Ray of Dorso-Lumbar spine both oblique view,1200
+1856,,,1800
+1857,RADIOLOGY,Digital X-Ray of Face,600
+1858,,,1200
+1859,RADIOLOGY,Digital X-Ray of Ferguson View,1200
+1860,,,2200
+1861,RADIOLOGY,Digital X-Ray of Fluroscopic Guided Marking of Disc Level,600
+1862,,,2500
+1863,RADIOLOGY,Digital X-Ray of I. A. M. Perorbital view,600
+1864,,,2500
+1865,RADIOLOGY,Digital X-Ray of I. V. U. with late film,3000
+1866,,,3000
+1867,RADIOLOGY,Digital X-Ray of Invertogram,600
+1868,,,600
+1869,RADIOLOGY,Digital X-Ray of Knee joint oblique view RT (ONE FILM),600
+1870,,,1800
+1871,RADIOLOGY,"Digital X-Ray of L/S spine AP,Lat,Flexion,Extension, & Rt. oblique view",2500
+1872,,,1200
+1873,RADIOLOGY,Digital X-Ray of L/S Spine Left Oblique View,600
+1874,,,600
+1875,RADIOLOGY,"Digital X-Ray of L/S, Spine both lateral view",1200
+1876,,,600
+1877,RADIOLOGY,Digital X-Ray of Left Clavicle AP & Lateral View,1200
+1878,,,600
+1879,RADIOLOGY,Digital X-Ray of Left Ear,600
+1880,,,600
+1881,RADIOLOGY,"Digital X-Ray of Left Elbow joint AP, Lat. & oblique view",1200
+1882,,,600
+1883,RADIOLOGY,Digital X-Ray of Left Forearm (Radius&Ulna) AP & Lat.View including Wrist joint,800
+1884,,,800
+1885,RADIOLOGY,Digital X-Ray of Left Hand AP & Lateral View,600
+1886,,,600
+1887,RADIOLOGY,Digital X-Ray of Left Heel (Calcaneum) Axial & Lateral View,600
+1888,,,1000
+1889,RADIOLOGY,Digital X-Ray of Left hip joint AP View,600
+1890,,,600
+1891,RADIOLOGY,Digital X-Ray of Left Hip joint oblique view,600
+1892,,,1200
+1893,RADIOLOGY,Digital X-Ray of Left Humerus (Arm)AP &Lat.View including Shoulder &Elbow joint(One Film),1200
+1894,,,800
+1895,RADIOLOGY,"Digital X-Ray of Left knee joint AP, Lateral & Skyline view",1200
+1896,,,2000
+1897,RADIOLOGY,Digital X-Ray of Left Leg (Tibia & Fibula) including Knee & Ankle joint,1200
+1898,,,1200
+1899,RADIOLOGY,Digital X-Ray of Left Leg including knee joint AP & Lat view,1200
+1900,,,1200
+1901,RADIOLOGY,"Digital X-Ray of Left lower jaw AP, Lat & Oblique view",1800
+1902,,,1200
+1903,RADIOLOGY,Digital X-Ray of Left Scapula AP & Lateral view with shoulder joint,1200
+1904,,,600
+1905,RADIOLOGY,Digital X-Ray of Left shoulder joint AP View,600
+1906,,,600
+1907,RADIOLOGY,Digital X-Ray of Left T.M. Joint open & close Mouth,1200
+1908,,,1200
+1909,RADIOLOGY,Digital X-Ray of Left Thigh (femur) AP& Lateral view inclu.hip joint in one film,1200
+1910,,,1200
+1911,RADIOLOGY,Digital X-Ray of Left Thigh (femur)AP& Lateral view including hip joint,1200
+1912,,,600
+1913,RADIOLOGY,Digital X-Ray of Left Thumb B/V,600
+1914,,,1200
+1915,RADIOLOGY,Digital X-Ray of Left Wrist Joint PA & Lateral View,600
+1916,,,1200
+1917,RADIOLOGY,Digital X-Ray of Lower Limb Lateral,1200
+1918,,,2000
+1919,RADIOLOGY,Digital X-Ray of Lt. Ankle Lateral View,500
+1920,,,1200
+1921,RADIOLOGY,Digital X-Ray of Lt. Foot AP & Lat. View,600
+1922,,,1200
+1923,RADIOLOGY,Digital X-Ray of Lt. Foot including heel lat view,600
+1924,,,1200
+1925,RADIOLOGY,Digital X-Ray of Lt. Index Finger AP & Lat View,600
+1926,,,800
+1927,RADIOLOGY,"Digital X-Ray of Lt. Knee Joint AP, Lat in weight bearing position",1200
+1928,,,1200
+1929,RADIOLOGY,Digital x-ray of Lt. Knee Skyline View,500
+1930,,,600
+1931,RADIOLOGY,Digital X-Ray of Lt. Little Finger AP & Lat View,600
+1932,,,600
+1933,RADIOLOGY,Digital X-Ray of Lt. Patella Axial View,600
+1934,,,600
+1935,RADIOLOGY,Digital X-Ray of Lt. Shoulder Joint AP & Lateral View,1200
+1936,,,1800
+1937,RADIOLOGY,"Digital X-Ray of Lt. Shoulder Jt. AP,Lat,Abduction,Adduction",2000
+1938,,,2000
+1939,RADIOLOGY,Digital X-Ray of Lt. Thigh AP & Lateral view (Child),600
+1940,,,1200
+1941,RADIOLOGY,Digital X-Ray of Lumber Spine AP View,600
+1942,,,2000
+1943,RADIOLOGY,Digital X-Ray of Lumber Spine lateral view,600
+1944,,,600
+1945,RADIOLOGY,Digital X-Ray of Lumbo secral lat & oblique view,1800
+1946,,,600
+1947,RADIOLOGY,Digital X-Ray of Lumbo-sacral spine (B/V) AP & Lateral View,1200
+1948,,,1200
+1949,RADIOLOGY,Digital X-Ray of Lumbo-sacral spine AP & Both oblique View,1800
+1950,,,600
+1951,RADIOLOGY,"Digital X-Ray of Lumbo-sacral spine PA, Lateral & Both oblique View",2000
+1952,,,1800
+1953,RADIOLOGY,Digital X-Ray of Lumbo-Secral Spine Both Oblique View,1200
+1954,,,1200
+1955,RADIOLOGY,Digital X-Ray of Mandible left lateral oblique view,600
+1956,,,1500
+1957,RADIOLOGY,Digital X-Ray of Mandible PA & left lateral oblique view,1200
+1958,,,1200
+1959,RADIOLOGY,Digital X-Ray of Mandible PA view,600
+1960,,,600
+1961,RADIOLOGY,Digital X-Ray of Mastoid AP oblique & Lateral Oblique view left side,1200
+1962,,,1200
+1963,RADIOLOGY,Digital X-Ray of Mastoid Towne`s View(S837),600
+1964,,,600
+1965,RADIOLOGY,Digital X-Ray of Mastoid Townes (B/V),1200
+1966,,,1200
+1967,RADIOLOGY,"Digital X-Ray of Maxilla, Left Lateral oblique view",600
+1968,,,600
+1969,RADIOLOGY,Digital X-Ray of Micturating Cystogram,3000
+1970,,,600
+1971,RADIOLOGY,Digital X-Ray of Myelogram,3000
+1972,,,600
+1973,RADIOLOGY,Digital X-Ray of Nasopharynx lateral view for soft tissues/adenoid,600
+1974,,,1200
+1975,RADIOLOGY,Digital X-Ray of Neck lateral view for soft tissue/Nasopharynx,600
+1976,,,600
+1977,RADIOLOGY,Digital X-Ray of Nephro Urethrogram (Normal),2500
+1978,,,2500
+1979,RADIOLOGY,Digital X-Ray of O.C.G. (Oral Cholecystography),1800
+1980,,,600
+1981,RADIOLOGY,Digital X-Ray of Occlusal view for upper jaw,600
+1982,,,600
+1983,RADIOLOGY,Digital X-Ray of Optic foramen,600
+1984,,,1800
+1985,RADIOLOGY,Digital X-Ray of P.N.S. O/M & Lateral view,1200
+1986,,,600
+1987,RADIOLOGY,Digital X-Ray of Pelvis AP & Both Hip joint Letaral View,1800
+1988,,,1200
+1989,RADIOLOGY,Digital X-Ray of Pelvis AP & Lateral View with Both hip joint,1800
+1990,,,600
+1991,RADIOLOGY,Digital X-Ray of Pelvis AP View ( Frog-Leg Position-Child),600
+1992,,,600
+1993,RADIOLOGY,Digital X-Ray of Pelvis Both Oblique view,800
+1994,,,800
+1995,RADIOLOGY,Digital X-Ray of Pelvis erect posture,500
+1996,,,500
+1997,RADIOLOGY,Digital X-Ray of Pelvis Lateral View,600
+1998,,,1200
+1999,RADIOLOGY,Digital X-Ray of Pelvis with both hip joint AP view (Child),600
+2000,,,2500
+2001,RADIOLOGY,Digital X-Ray of Phonogram,2000
+2002,,,1200
+2003,RADIOLOGY,Digital X-Ray of Plain Abdomen AP View,600
+2004,,,600
+2005,RADIOLOGY,Digital X-Ray of Plain Abdomen Erect & Supine View,1200
+2006,,,600
+2007,RADIOLOGY,Digital X-Ray of Plain Abdomen in Supine View,600
+2008,,,600
+2009,RADIOLOGY,Digital X-Ray of Plain KUB (Children below 10 yrs) one film,600
+2010,,,1200
+2011,RADIOLOGY,Digital X-Ray of Plain KUB AP View,600
+2012,,,1200
+2013,RADIOLOGY,Digital X-Ray of Plain KUB Erect View (Standing),600
+2014,,,2500
+2015,RADIOLOGY,Digital X-Ray of Retrograde Urethro Cystogram,2500
+2016,,,2500
+2017,RADIOLOGY,Digital X-Ray of Retrograde Urethrogram with Antegrade cystogram,2500
+2018,,,2800
+2019,RADIOLOGY,Digital X-Ray of Right Ankle joint AP & Lateral view,600
+2020,,,1200
+2021,RADIOLOGY,Digital X-Ray of Right Clavicle AP View,600
+2022,,,600
+2023,RADIOLOGY,"Digital X-Ray of Right Elbow joint AP, Lat. & oblique view",1200
+2024,,,600
+2025,RADIOLOGY,Digital X-Ray of Right Forearm (Radius&Ulna) AP & Lat.View including Elbow joint,800
+2026,,,800
+2027,RADIOLOGY,Digital X-Ray of Right Forearm(Radius&Ulna)AP &Lat.View inclu.Elbow &Wrist joint,800
+2028,,,600
+2029,RADIOLOGY,Digital X-Ray of Right Hand PA & Oblique View,600
+2030,,,600
+2031,RADIOLOGY,Digital X-Ray of Right hip joint AP & Lateral View (one Film),1000
+2032,,,600
+2033,RADIOLOGY,Digital X-Ray of Right hip joint Lateral View,600
+2034,,,1200
+2035,RADIOLOGY,Digital X-Ray of Right Humerus(Arm)AP &Lat.View including Shoulder&Elbow joint(One Film),1200
+2036,,,800
+2037,RADIOLOGY,"Digital X-Ray of Right knee joint AP, Lateral & Skyline view",1200
+2038,,,1500
+2039,RADIOLOGY,Digital X-Ray of Right Leg (Tibia & Fibula) including Knee & Ankle joint,1200
+2040,,,1200
+2041,RADIOLOGY,Digital X-Ray of Right Leg including knee joint AP & Lat view,1200
+2042,,,1200
+2043,RADIOLOGY,Digital X-Ray of Right S/C joint AP & Oblique view,1200
+2044,,,1200
+2045,RADIOLOGY,Digital X-Ray of Right Scapula AP view,600
+2046,,,600
+2047,RADIOLOGY,Digital X-Ray of Right sub-mandibular gland lateral oblique view,600
+2048,,,1200
+2049,RADIOLOGY,Digital X-Ray of Right Thigh (femur) AP & Lateral view including hip joint,1200
+2050,,,1200
+2051,RADIOLOGY,Digital X-Ray of Right Thigh (femur) AP&Lateral view inclu. Knee joint in 1 film,1200
+2052,,,600
+2053,RADIOLOGY,Digital X-Ray of Right Thumb B/V,600
+2054,,,1200
+2055,RADIOLOGY,Digital X-Ray of Right Wrist Joint PA & Lateral View,600
+2056,,,500
+2057,RADIOLOGY,Digital X-Ray of Rt. Arm AP & Lateral View,1200
+2058,,,600
+2059,RADIOLOGY,Digital X-Ray of Rt. Foot including ankle joint (B/V),1200
+2060,,,600
+2061,RADIOLOGY,Digital X-Ray of Rt. Heel with Ankle AP and Lat View,1200
+2062,,,600
+2063,RADIOLOGY,Digital X-Ray of Rt. Knee Joint AP & Lat View (Standing Position),800
+2064,,,2000
+2065,RADIOLOGY,"Digital X-Ray of Rt. Knee Joint AP, Lat in weight bearing position",1200
+2066,,,1200
+2067,RADIOLOGY,Digital x-ray of Rt. Knee Skyline View,500
+2068,,,600
+2069,RADIOLOGY,Digital X-Ray of Rt. Little Finger AP & Lat View,600
+2070,,,600
+2071,RADIOLOGY,"Digital X-Ray of Rt. Middle finger AP, Lat view",600
+2072,,,1200
+2073,RADIOLOGY,Digital X-Ray of Rt. Patella Axial View,600
+2074,,,600
+2075,RADIOLOGY,"Digital X-Ray of Rt. Shoulder AP, Lat & Oblique view",1800
+2076,,,1200
+2077,RADIOLOGY,"Digital X-Ray of Rt. Shoulder Jt. AP,Lat,Aboduction,Adaction",2000
+2078,,,2000
+2079,RADIOLOGY,Digital X-Ray of Rt. Thigh AP & Lateral view (Child),600
+2080,,,1200
+2081,RADIOLOGY,Digital X-Ray of S. I. Joint Both oblique view,800
+2082,,,600
+2083,RADIOLOGY,Digital X-Ray of Sacro-Coccygeal spine AP & Lateral View,1200
+2084,,,600
+2085,RADIOLOGY,Digital X-Ray of Scaphoid view for wrist joint,600
+2086,,,600
+2087,RADIOLOGY,Digital X-Ray of Scapula Oblique View,600
+2088,,,600
+2089,RADIOLOGY,Digital X-Ray of Scoliogram AP & LATERAL VIEW(S1176),1200
+2090,,,2000
+2091,RADIOLOGY,Digital X-Ray of Sinus (PNS),600
+2092,,,1200
+2093,RADIOLOGY,Digital X-Ray of Skull AP & Lateral view,1200
+2094,,,1800
+2095,RADIOLOGY,Digital X-Ray of Skull AP View,600
+2096,,,600
+2097,RADIOLOGY,Digital X-Ray of Skull for Sella Turcica/Pituitary Fossa Cone down view,600
+2098,,,600
+2099,RADIOLOGY,Digital X-Ray of Skull for sinuses (P.N.S. O/M),600
+2100,,,600
+2101,RADIOLOGY,Digital X-Ray of Skull Lateral view,600
+2102,,,600
+2103,RADIOLOGY,Digital X-Ray of Skull PA & Lateral view,1200
+2104,,,600
+2105,RADIOLOGY,Digital X-Ray of Skull silla tursica both view,1200
+2106,,,600
+2107,RADIOLOGY,Digital X-Ray of Skull Transorbital PA view for internal auditory canal,600
+2108,,,600
+2109,RADIOLOGY,Digital X-Ray of Spinal colum B/V,2000
+2110,,,1200
+2111,RADIOLOGY,"Digital X-Ray of Sternum AP, Lat & Oblique View",1800
+2112,,,600
+2113,RADIOLOGY,Digital X-Ray of Sternum Oblique & lateral View,1200
+2114,,,500
+2115,RADIOLOGY,Digital X-Ray of Styloid Process B/V,1200
+2116,,,500
+2117,RADIOLOGY,Digital X-Ray of Submento vertical view,600
+2118,,,2800
+2119,RADIOLOGY,Digital X-Ray of Tendo Achilies/Tendo Calcaneum (Only Lateral View),600
+2120,,,600
+2121,RADIOLOGY,Digital X-Ray of Upper Limb AP,1800
+2122,,,1800
+2123,RADIOLOGY,Digital X-Ray of Whole Spine,3000
+2124,,,600
+2125,RADIOLOGY,"Digital X-Ray of Zygomatic, arches",600
+2126,,,200
+2127,RADIOLOGY,Douche Charge (For X-ray),200
+2128,,,1500
+2129,RADIOLOGY,Extra Film Charge-2(Per Film@500.TK),1000
+2130,,,1500
+2131,RADIOLOGY,Extra Film Charge-4(Per Film@500.TK),2000
+2132,,,2500
+2133,RADIOLOGY,Extra Film Charge-6(Per Film@500.TK),3000
+2134,,,500
+2135,RADIOLOGY,Flexible Fiberoptic Laryngoscopy (FOL),1500
+2136,,,2000
+2137,RADIOLOGY,FOL Test,3000
+2138,,,1500
+2139,RADIOLOGY,FUNCTIONAL MRI OF BRAIN,15000
+2140,,,8000
+2141,RADIOLOGY,Impedance Audiometry,650
+2142,,,1000
+2143,RADIOLOGY,Lateral Spine (LVA) of bone densitometer (Dexa Scan)(2205),2000
+2144,,,2500
+2145,RADIOLOGY,Low dose CT. Scan of Chest Screening,5000
+2146,,,1000
+2147,RADIOLOGY,Lt. Shoulder Swimmers View,500
+2148,,,5000
+2149,RADIOLOGY,Mammography of Both Breast,3000
+2150,,,1500
+2151,RADIOLOGY,Mammography of Right Breast,1500
+2152,,,3000
+2153,RADIOLOGY,mp MRI OF PROSTATE,12000
+2154,,,12000
+2155,RADIOLOGY,mpMRI of Kidneys,15000
+2156,,,10000
+2157,RADIOLOGY,MR Defecogram,10000
+2158,,,12000
+2159,RADIOLOGY,MR Neurogram Fore Arm,12000
+2160,,,12000
+2161,RADIOLOGY,MR Neurogram Lt lower limb,20000
+2162,,,20000
+2163,RADIOLOGY,MR Neurogram Rt lower limb,20000
+2164,,,20000
+2165,RADIOLOGY,MR Neurogram Thigh,12000
+2166,,,14000
+2167,RADIOLOGY,MR of Peripharal Angio Upper Limbs,14000
+2168,,,14000
+2169,RADIOLOGY,MR UROGRAPHY,15000
+2170,,,12000
+2171,RADIOLOGY,MRA Left/Right Left Lower  Limb,14000
+2172,,,14000
+2173,RADIOLOGY,MRA Neck & MRA of Brain,12000
+2174,,,18000
+2175,RADIOLOGY,MRA OF AORTA,15000
+2176,,,8000
+2177,RADIOLOGY,MRA OF IVC,12000
+2178,,,8000
+2179,RADIOLOGY,MRCP,9000
+2180,,,10000
+2181,RADIOLOGY,MRI &  MRA of Brain,12000
+2182,,,24000
+2183,RADIOLOGY,MRI & MRA + MR Perfusion of Brain,20000
+2184,,,14000
+2185,RADIOLOGY,MRI & MRA + Traetroghaphy of Brain,20000
+2186,,,16000
+2187,RADIOLOGY,MRI & MRA of Brain perfusion With Acetazolamide Challenge,20000
+2188,,,25000
+2189,RADIOLOGY,MRI & MRA of Neck,14000
+2190,,,14000
+2191,RADIOLOGY,MRI & MRV of Brain,12000
+2192,,,22000
+2193,RADIOLOGY,MRI Enterography,20000
+2194,,,8000
+2195,RADIOLOGY,MRI of  Right Upper Limbs,16000
+2196,,,12000
+2197,RADIOLOGY,MRI of Adrenal Gland,8500
+2198,,,12000
+2199,RADIOLOGY,MRI of Both Breast,16000
+2200,,,12000
+2201,RADIOLOGY,MRI of Both Hip Joint,12000
+2202,,,15000
+2203,RADIOLOGY,MRI of Both T.M. Joint,12000
+2204,,,12000
+2205,RADIOLOGY,MRI of Brachial Plexus,14000
+2206,,,8000
+2207,RADIOLOGY,MRI of Brain (Neuro Navigation Protocol),12000
+2208,,,14000
+2209,RADIOLOGY,MRI of Brain & Orbits,12000
+2210,,,14000
+2211,RADIOLOGY,MRI of Brain and Ciss/Space/Fiesta/MRA,15000
+2212,,,12000
+2213,RADIOLOGY,MRI OF BRAIN EPILEPSY PROTOCOL,10000
+2214,,,22000
+2215,RADIOLOGY,MRI OF BRAIN WITH PITUITARY PROTOCOL,12000
+2216,,,10000
+2217,RADIOLOGY,MRI of Brain With Screening Of Whole Spine,10000
+2218,,,14000
+2219,RADIOLOGY,MRI OF BUTTACK,12000
+2220,,,22000
+2221,RADIOLOGY,MRI OF C/S DYNAMIC WITH CSF FLOW,22000
+2222,,,8000
+2223,RADIOLOGY,MRI of Cervical Spine and Flexion (Sag+axial),12000
+2224,,,10000
+2225,RADIOLOGY,MRI of Cervical Spine With Screening Whole Spine,8000
+2226,,,12000
+2227,RADIOLOGY,MRI of Craniovertebral junction and CT cut,18000
+2228,,,22000
+2229,RADIOLOGY,MRI of CSF Rhinorrhea,10000
+2230,,,10000
+2231,RADIOLOGY,MRI OF D/S DYNAMIC WITH CSF FLOW,20000
+2232,,,12000
+2233,RADIOLOGY,MRI of Dorsal Spine,8000
+2234,,,16000
+2235,RADIOLOGY,MRI of DWIBS,12000
+2236,,,15000
+2237,RADIOLOGY,MRI of Ears,10000
+2238,,,12000
+2239,RADIOLOGY,MRI of fetal Brain,10000
+2240,,,12000
+2241,RADIOLOGY,MRI of Fistula gram,12000
+2242,,,10000
+2243,RADIOLOGY,MRI of Kidneys,12000
+2244,,,20000
+2245,RADIOLOGY,MRI OF L/S DYNAMIC WITH CSF FLOW,22000
+2246,,,10000
+2247,RADIOLOGY,MRI of Left Ankle Joint,12000
+2248,,,12000
+2249,RADIOLOGY,MRI of Left Ear & Rt Ear,10000
+2250,,,12000
+2251,RADIOLOGY,MRI of Left Foot,12000
+2252,,,12000
+2253,RADIOLOGY,MRI of Left Hand,12000
+2254,,,12000
+2255,RADIOLOGY,MRI of Left Hip Joint,12000
+2256,,,12000
+2257,RADIOLOGY,MRI of Left Knee Joint,9000
+2258,,,12000
+2259,RADIOLOGY,MRI of Left Mastoid,8000
+2260,,,12000
+2261,RADIOLOGY,MRI of Left Thigh,12000
+2262,,,20000
+2263,RADIOLOGY,MRI of Left Wrist Joint,12000
+2264,,,12000
+2265,RADIOLOGY,MRI of Lower Abdomen,12000
+2266,,,12000
+2267,RADIOLOGY,MRI of Lumbar Spine With Screening Of Hip Joint,12000
+2268,,,12000
+2269,RADIOLOGY,MRI of Lumbar Spine With Screening Whole Spine,8000
+2270,,,12000
+2271,RADIOLOGY,MRI of Lumbo-Sacral Spine,8000
+2272,,,12000
+2273,RADIOLOGY,MRI of Maxillofacial,12000
+2274,,,12000
+2275,RADIOLOGY,MRI of Neck,12000
+2276,,,8000
+2277,RADIOLOGY,MRI of Oral Cavities,12000
+2278,,,10000
+2279,RADIOLOGY,MRI of P. N. S.,10000
+2280,,,10000
+2281,RADIOLOGY,MRI of Pelvis,12000
+2282,,,14000
+2283,RADIOLOGY,MRI OF PELVIS WITH CERVIX PROTOCOL,12000
+2284,,,15000
+2285,RADIOLOGY,MRI of Penis,12000
+2286,,,16000
+2287,RADIOLOGY,MRI of PNS,12000
+2288,,,12000
+2289,RADIOLOGY,MRI OF PROSTATE SCREENING UPPER ABDOMEN,12000
+2290,,,12000
+2291,RADIOLOGY,MRI of Right Ankle Joint,12000
+2292,,,12000
+2293,RADIOLOGY,MRI of Right Elbow Joint,12000
+2294,,,12000
+2295,RADIOLOGY,MRI of Right Forearm,12000
+2296,,,12000
+2297,RADIOLOGY,MRI of Right Heel,12000
+2298,,,12000
+2299,RADIOLOGY,MRI of Right IAC+ MRA,12000
+2300,,,9000
+2301,RADIOLOGY,MRI of Right Leg,12000
+2302,,,10000
+2303,RADIOLOGY,MRI of Right Shoulder Joint,12000
+2304,,,12000
+2305,RADIOLOGY,MRI of Right Wrist Joint,12000
+2306,,,14000
+2307,RADIOLOGY,MRI of Sacro-Coccygeal Region,8000
+2308,,,8000
+2309,RADIOLOGY,MRI of Scapula/Clavicle (Rt/Lf),12000
+2310,,,8000
+2311,RADIOLOGY,MRI of skull base,12000
+2312,,,10000
+2313,RADIOLOGY,MRI of T.M Joint Right (Open & Close),12000
+2314,,,12000
+2315,RADIOLOGY,MRI of T2 axial ...................................,3000
+2316,,,12000
+2317,RADIOLOGY,MRI of Thyroid Gland,12000
+2318,,,12000
+2319,RADIOLOGY,MRI of Tongue,12000
+2320,,,14000
+2321,RADIOLOGY,MRI of Undescending Testis,20000
+2322,,,10000
+2323,RADIOLOGY,MRI of Upper Abdomen/HBS with MRCP,14000
+2324,,,15000
+2325,RADIOLOGY,MRI of Whole Abdomen,20000
+2326,,,22000
+2327,RADIOLOGY,MRI of Whole Body,40000
+2328,,,24000
+2329,RADIOLOGY,MRI Perfusion of Brain,10000
+2330,,,12000
+2331,RADIOLOGY,MRI Tractography,8000
+2332,,,12000
+2333,RADIOLOGY,MRS of Brain,8000
+2334,,,8000
+2335,RADIOLOGY,MRV of Brain,8000
+2336,,,14000
+2337,RADIOLOGY,MRV of IVC & Renal Vein,14000
+2338,,,20000
+2339,RADIOLOGY,MRV of Lt Lower Limb,15000
+2340,,,15000
+2341,RADIOLOGY,MRV of Rt Lower Limb,15000
+2342,,,15000
+2343,RADIOLOGY,MRV OF UPPER LIMB,15000
+2344,,,500
+2345,RADIOLOGY,OPG (Open & Close ),800
+2346,,,55000
+2347,RADIOLOGY,Oticon Geno 2 P CIC,50000
+2348,,,50000
+2349,RADIOLOGY,Oticon Intent 1 RITE (Rechargeable),550000
+2350,,,500000
+2351,RADIOLOGY,Oticon Jet 1 Mini RITE Power (MFI),75000
+2352,,,70000
+2353,RADIOLOGY,Oticon Own 5 P CIC,150000
+2354,,,155000
+2355,RADIOLOGY,Oticon Xceed 1 UP BTE,260000
+2356,,,140000
+2357,RADIOLOGY,Oticon Xceed 2 UP BTE,200000
+2358,,,100000
+2359,RADIOLOGY,Oticon Xceed 3 UP BTE,125000
+2360,,,200000
+2361,RADIOLOGY,Oticon Zircon 2 Mini RITE Power (Rechargeable),130000
+2362,,,1000
+2363,RADIOLOGY,Portable X-ray Lt Ankle Joint B/V,800
+2364,,,800
+2365,RADIOLOGY,Portable X-ray Lt Foot B/V,800
+2366,,,800
+2367,RADIOLOGY,Portable X-ray Lt Hand B/V,800
+2368,,,800
+2369,RADIOLOGY,Portable X-ray Lt Leg B/V,800
+2370,,,800
+2371,RADIOLOGY,Portable X-ray Lt Thigh B/V,800
+2372,,,800
+2373,RADIOLOGY,Portable X-ray Neck Both View,1000
+2374,,,800
+2375,RADIOLOGY,Portable X-ray of Right Knee Joint B/V,800
+2376,,,800
+2377,RADIOLOGY,Portable X-ray Rt Elbow Joint B/V,800
+2378,,,800
+2379,RADIOLOGY,Portable X-ray Rt Forearm (Radius & Ulna),800
+2380,,,800
+2381,RADIOLOGY,Portable X-ray Rt Humerus B/V,800
+2382,,,800
+2383,RADIOLOGY,Portable X-ray Rt Shoulder B/V,800
+2384,,,800
+2385,RADIOLOGY,Portable X-ray Rt Wrist Joint B/V,800
+2386,,,800
+2387,RADIOLOGY,PORTABLE XRAY C/S SPINE BV,1200
+2388,,,800
+2389,RADIOLOGY,PORTABLE XRAY CXR AP & OBLIQUE,1800
+2390,,,1200
+2391,RADIOLOGY,PORTABLE XRAY FEMUR AP & LATERAL,1200
+2392,,,1200
+2393,RADIOLOGY,PORTABLE XRAY LEG AP & LATERAL,1200
+2394,,,800
+2395,RADIOLOGY,PORTABLE XRAY SKULL AP & LATERAL,1200
+2396,,,4000
+2397,RADIOLOGY,Pre-implant Assessment (Lower Jaw),5500
+2398,,,4000
+2399,RADIOLOGY,Pre-implant Assessment (Lower Right Quadrant),4000
+2400,,,8500
+2401,RADIOLOGY,Pre-implant Assessment (Upper Anterior region),4000
+2402,,,5500
+2403,RADIOLOGY,Pre-implant Assessment (Upper Left Quadrant),4000
+2404,,,4000
+2405,RADIOLOGY,Pre-implant Assessment of Anterior Tooth (Single),1500
+2406,,,2000
+2407,RADIOLOGY,Pure Tone Audiometry (PTA),850
+2408,,,1000
+2409,RADIOLOGY,Rt. Shoulder Swimmers View,500
+2410,,,2000
+2411,RADIOLOGY,Scanogram Upper Limb AP & Lateral View,2000
+2412,,,3000
+2413,RADIOLOGY,Scanogram Whole Body AP View,2000
+2414,,,4000
+2415,RADIOLOGY,Scanogram Whole Body LT. Lateral View,2000
+2416,,,2000
+2417,RADIOLOGY,Scanogram whole spine A/P view,4000
+2418,,,1500
+2419,RADIOLOGY,Scanogram whole spine Lat view,4000
+2420,,,1000
+2421,RADIOLOGY,Sialogram Lefl sub mandibular gland & duct (Digital),2500
+2422,,,2500
+2423,RADIOLOGY,Sialogram right parotid gland,2500
+2424,,,2500
+2425,RADIOLOGY,Single Femur Measurement of bone densitometer (Dexa Scan),1500
+2426,,,7000
+2427,RADIOLOGY,Spiral CT Scan of Adrenal Glands,7000
+2428,,,5000
+2429,RADIOLOGY,Spiral CT Scan of Brain & ..............,9000
+2430,,,9000
+2431,RADIOLOGY,Spiral CT Scan of Cervical Spine,7000
+2432,,,6000
+2433,RADIOLOGY,Spiral CT Scan of Chest/Lungs,6000
+2434,,,7000
+2435,RADIOLOGY,Spiral CT Scan of Face,7000
+2436,,,7000
+2437,RADIOLOGY,Spiral CT Scan of Kidnys,7000
+2438,,,12000
+2439,RADIOLOGY,Spiral CT Scan of Lower Abdomen,7000
+2440,,,7000
+2441,RADIOLOGY,Spiral CT Scan of Neck,7000
+2442,,,7000
+2443,RADIOLOGY,Spiral CT Scan of Pelvis With 3D,8000
+2444,,,7000
+2445,RADIOLOGY,Spiral CT Scan of Upper Abdomen,7000
+2446,,,14000
+2447,RADIOLOGY,Spiral CT Scan of Whole Abdomen,12000
+2448,,,1000
+2449,RADIOLOGY,Stapedial Reflex Threshold (SRT),300
+2450,,,8000
+2451,RADIOLOGY,Triphasic CT Scan of Whole Abdomen,12000
+2452,,,5000
+2453,RADIOLOGY,Venography of Two  LIMB,10000
+2454,,,2000
+2455,RADIOLOGY,Vibe GO Digital Programmable Hearing Aid(ITC),110000
+2456,,,30000
+2457,RADIOLOGY,Vibe Nano 8 Digital Programmable Hearing Aid (IIC),32000
+2458,,,20000
+2459,RADIOLOGY,Vibe P8 Digital Programmable Hearing Aid(BTE),30000
+2460,,,32000
+2461,RADIOLOGY,Vibe SP6 Digital Programmable Hearing Aid(CIC),23000
+2462,,,3000
+2463,RADIOLOGY,Whole Spine Pull & Push,1000
+2464,,,48000
+2465,RADIOLOGY,Widex EVOKE F2 50 RIC,48000
+2466,,,35000
+2467,RADIOLOGY,Widex MAGNIFY MRR2D RIC (Rechargeable),60000
+2468,,,100000
+2469,RADIOLOGY,Widex Moment 220 CIC,165000
+2470,,,335000
+2471,RADIOLOGY,Widex Moment 440 CIC,430000
+2472,,,250000
+2473,RADIOLOGY,Widex Moment Smart RIC 220 KIT/ Pair(Rechargeable),370000
+2474,,,720000
+2475,RADIOLOGY,Widex Moment Smart RIC 440 KIT/ Pair (Rechargeable),990000
+2476,,,600
+2477,RADIOLOGY,X-Ray Both Calcanium Lat View,800
+2478,,,1200
+2479,RADIOLOGY,X-Ray Both S.I Jt A/P View,800
+2480,,,1200
+2481,RADIOLOGY,X-Ray Both Thigh with Hip Jt A/P,1000
+2482,,,1200
+2483,RADIOLOGY,X-Ray C/Spine Lat & Flex + Ext,1800
+2484,,,1200
+2485,RADIOLOGY,X-Ray Ear A/P+ oblique,1200
+2486,,,1200
+2487,RADIOLOGY,X-Ray L/S Flexion & Extension,1200
+2488,,,1800
+2489,RADIOLOGY,X-Ray Lt Ankle Jt Lat,800
+2490,,,800
+2491,RADIOLOGY,X-Ray Lt Foot A/P+ Lat Standing,800
+2492,,,800
+2493,RADIOLOGY,X-Ray Lt Heel Lat,800
+2494,,,1200
+2495,RADIOLOGY,X-Ray Lt Iliac Oblique view,800
+2496,,,800
+2497,RADIOLOGY,X-Ray Lt Knee A/P,800
+2498,,,800
+2499,RADIOLOGY,X-Ray Lt Obturatior View,800
+2500,,,1800
+2501,RADIOLOGY,X-Ray Mandible A/P,800
+2502,,,800
+2503,RADIOLOGY,X-Ray Maxilla view A/P,800
+2504,,,1200
+2505,RADIOLOGY,X-Ray of Ankle Joint  Both oblique View,600
+2506,,,1200
+2507,RADIOLOGY,X-ray of Both Leg AP,1200
+2508,,,1200
+2509,RADIOLOGY,X-ray of Cloacogram,3000
+2510,,,2500
+2511,RADIOLOGY,X-ray of Defecography,3000
+2512,,,3000
+2513,RADIOLOGY,X-ray of Left Ankle Joint (Mortise View),600
+2514,,,1000
+2515,RADIOLOGY,X-Ray of Lt. Shoulder Jt. Axillary View,600
+2516,,,600
+2517,RADIOLOGY,X-Ray of Lumber Spine Flexion & Extension View,1000
+2518,,,2000
+2519,RADIOLOGY,X-ray of Pelvis AP & Frog Leg View,1200
+2520,,,1800
+2521,RADIOLOGY,X-Ray of Pelvis Modified Ferguson (M.F.) View,800
+2522,,,600
+2523,RADIOLOGY,X-Ray of Rt. Shoulder Jt. Axillary View,600
+2524,,,600
+2525,RADIOLOGY,X-Ray of S.I. Joint Modified Ferguson (M.F.) View,1200
+2526,,,1500
+2527,RADIOLOGY,X-ray of Whole Spine AP/Lateral &  Rt. Lt. Bending,2000
+2528,,,600
+2529,RADIOLOGY,"X-Ray RT & LT Bending C/S, D/S",3000
+2530,,,800
+2531,RADIOLOGY,X-Ray Rt Foot A/P view,800
+2532,,,800
+2533,RADIOLOGY,X-Ray Rt Hand A/P,800
+2534,,,1200
+2535,RADIOLOGY,X-Ray Rt Iliac B/V,1200
+2536,,,800
+2537,RADIOLOGY,X-Ray Rt Iliac Oblique view,800
+2538,,,800
+2539,RADIOLOGY,X-Ray Rt Knee Lat,800
+2540,,,800
+2541,RADIOLOGY,X-Ray Scanogram Both Lower Limbs A/P,4000
+2542,,,1000
+2543,RADIOLOGY,X-Ray Venography of Both LIMB,12000
+2544,,,6000
+2545,RADIOLOGY,X-Ray Venography of Right LIMB,6000
+2546,,,4000
+2547,RADIOLOGY,"X-Ray wrist, Elbow Jt For Bone Age A/P (Child)",1200
+2548,,,50
+2549,ULTRASOUND,ABVS Both Breast with Ultrasound,4000
+2550,,,2500
+2551,ULTRASOUND,Adrenal(F722),1800
+2552,,,4500
+2553,ULTRASOUND,Anomaly Scan With Dopler,2300
+2554,,,2000
+2555,ULTRASOUND,Biophysical Profile with Color Doppler,4000
+2556,,,1000
+2557,ULTRASOUND,Cervix + Internal Os(F747),2500
+2558,,,8000
+2559,ULTRASOUND,Doppler Study of Upper Limb Vessels Right,4500
+2560,,,5000
+2561,ULTRASOUND,Doppler Ultrasonogram of TVS,4000
+2562,,,3500
+2563,ULTRASOUND,Doppler USG of .................,4000
+2564,,,4000
+2565,ULTRASOUND,Doppler USG of Portal & Hepatic Vein,4000
+2566,,,8000
+2567,ULTRASOUND,Doppler USG of Testis,4000
+2568,,,4000
+2569,ULTRASOUND,Doppler(F746),4000
+2570,,,4000
+2571,ULTRASOUND,Duplex Study of Upper Limb Vessels,4000
+2572,,,4000
+2573,ULTRASOUND,Fetal Biophysical Profile (BPP - Priplet) 2D(F793),5500
+2574,,,6000
+2575,ULTRASOUND,Fetal Biophysical Profile(BPP)  - 4D(F702),4000
+2576,,,5000
+2577,ULTRASOUND,Fetal BPP (Biophysical Profile - Twin) 4D(F792),5500
+2578,,,4000
+2579,ULTRASOUND,Fetal Growth - 4D(F704),5000
+2580,,,5000
+2581,ULTRASOUND,Fetal Growth + Anomaly (Triplet) 4D(F799),8000
+2582,,,7000
+2583,ULTRASOUND,Fetal Growth + Anomaly(F706),3000
+2584,,,5000
+2585,ULTRASOUND,Fetal Growth + BPP(Well-being) 2D(F707),4500
+2586,,,2000
+2587,ULTRASOUND,Fetal Well-being - 4D(F701),4000
+2588,,,3500
+2589,ULTRASOUND,FNAC GUIDED(G638),1600
+2590,,,2000
+2591,ULTRASOUND,Folliculometry SONO AVC(F735),2500
+2592,,,2500
+2593,ULTRASOUND,Growth Scan ( Triplet )  2D(F788),5500
+2594,,,4000
+2595,ULTRASOUND,Growth Scan (Twin) - 4D(F742),6000
+2596,,,4500
+2597,ULTRASOUND,Growth Scan + Anomaly (4D)(F758),3000
+2598,,,3000
+2599,ULTRASOUND,HBS (4D)(F727),2000
+2600,,,2500
+2601,ULTRASOUND,HBS & KUB - 4D(F756),3000
+2602,,,2000
+2603,ULTRASOUND,"KUB , Prostat & PVR ( Female )(F783)",3000
+2604,,,2500
+2605,ULTRASOUND,"KUB (Kidneys, Ureter, Bladder)(F721)",2500
+2606,,,2500
+2607,ULTRASOUND,KUB & PVR(F737),2200
+2608,,,2000
+2609,ULTRASOUND,"KUB, Pelvis & PVR (Female)(F778)",2500
+2610,,,2500
+2611,ULTRASOUND,KUB/Kidneys (4D)(F738),2500
+2612,,,1000
+2613,ULTRASOUND,Machine Charge for injection (Type-II)(M722),2000
+2614,,,3000
+2615,ULTRASOUND,Machine Charge for injection (Type-IV)(M724),4000
+2616,,,5000
+2617,ULTRASOUND,Neurel Tabe Soft Marker(F803),4000
+2618,,,3500
+2619,ULTRASOUND,Pelvis (T/A) - 4D(F760),3000
+2620,,,3000
+2621,ULTRASOUND,Portable Ultrasonogram Guided Prostate Biopsy(P773),3000
+2622,,,3500
+2623,ULTRASOUND,Portable Ultrasonogram of Ascites(P758),3000
+2624,,,3200
+2625,ULTRASOUND,Portable Ultrasonogram of Brain(P721),3000
+2626,,,3000
+2627,ULTRASOUND,Portable Ultrasonogram of FNAC(P745),3000
+2628,,,3000
+2629,ULTRASOUND,Portable Ultrasonogram of Foetal Biophysical profile(P772),3000
+2630,,,3500
+2631,ULTRASOUND,Portable Ultrasonogram of HBS & KUB(P702),3000
+2632,,,3000
+2633,ULTRASOUND,Portable Ultrasonogram of HBS & Pelvic Organs(P703),3000
+2634,,,3000
+2635,ULTRASOUND,Portable Ultrasonogram of HBS & Testis(P707),3500
+2636,,,3500
+2637,ULTRASOUND,"Portable Ultrasonogram of HBS, KUB & Pelvic Organs(P743)",3000
+2638,,,3000
+2639,ULTRASOUND,"Portable Ultrasonogram of HBS, KUB & PVR(P762)",3000
+2640,,,3500
+2641,ULTRASOUND,"Portable Ultrasonogram of HBS, KUB, Prostate & PVR(P706)",3000
+2642,,,3500
+2643,ULTRASOUND,"Portable Ultrasonogram of HBS, KUB, Prostate, PVR & Testis(P710)",3500
+2644,,,3000
+2645,ULTRASOUND,"Portable Ultrasonogram of HBS, Pancreas & Kidney(P770)",3000
+2646,,,3000
+2647,ULTRASOUND,"Portable Ultrasonogram of HBS, Pancrease & Pelvic Organs(P712)",3000
+2648,,,3000
+2649,ULTRASOUND,"Portable Ultrasonogram of HBS, Pelvic Organs & Breast(P753)",3500
+2650,,,3000
+2651,ULTRASOUND,Portable Ultrasonogram of KUB & Breast(P756),3500
+2652,,,3000
+2653,ULTRASOUND,Portable Ultrasonogram of KUB & Prostate(P715),3000
+2654,,,3000
+2655,ULTRASOUND,Portable Ultrasonogram of KUB & Suprarenal gland(P771),3000
+2656,,,3500
+2657,ULTRASOUND,Portable Ultrasonogram of KUB & Thyroid(P765),3000
+2658,,,3000
+2659,ULTRASOUND,"Portable Ultrasonogram of KUB, Pelvic Organs & Breast(P751)",3500
+2660,,,3000
+2661,ULTRASOUND,"Portable Ultrasonogram of KUB, Prostate & Testis(P746)",3500
+2662,,,6000
+2663,ULTRASOUND,Portable Ultrasonogram of KUB(P714),2500
+2664,,,2500
+2665,ULTRASOUND,Portable Ultrasonogram of Lower Abdomen(P724),2500
+2666,,,2500
+2667,ULTRASOUND,Portable Ultrasonogram of Neck(P759),2500
+2668,,,3500
+2669,ULTRASOUND,Portable Ultrasonogram of Pelvic Organs(P733),3000
+2670,,,3000
+2671,ULTRASOUND,Portable Ultrasonogram of Pregnancy Profile With  Foetal Doppler(P778),3000
+2672,,,3000
+2673,ULTRASOUND,Portable Ultrasonogram of Prostate & Testis(P747),3500
+2674,,,3000
+2675,ULTRASOUND,Portable Ultrasonogram of PVR & Prostate(P719),3000
+2676,,,2500
+2677,ULTRASOUND,Portable Ultrasonogram of Right Breast(P739),3000
+2678,,,3000
+2679,ULTRASOUND,Portable Ultrasonogram of Thyroid Gland(P736),3000
+2680,,,3000
+2681,ULTRASOUND,Portable Ultrasonogram of Transvaginal(P742),3000
+2682,,,3000
+2683,ULTRASOUND,Portable Ultrasonogram of Urinary Bladder & PVR(P735),3000
+2684,,,2500
+2685,ULTRASOUND,Portable Ultrasonogram of Uterus & Ovary(P776),3000
+2686,,,5000
+2687,ULTRASOUND,Portable Ultrasonogram of Whole Abdomen & Left Breast(P730),4000
+2688,,,4000
+2689,ULTRASOUND,Portable Ultrasonogram of Whole Abdomen & Prostate(P725),3000
+2690,,,3000
+2691,ULTRASOUND,Portable Ultrasonogram of Whole Abdomen & Right Breast(P731),4000
+2692,,,4000
+2693,ULTRASOUND,"Portable Ultrasonogram of Whole Abdomen, Both Breast & Thyroid Gland(P732)",8000
+2694,,,3000
+2695,ULTRASOUND,Portable Ultrasonogram of Whole Abdomen(P722),3000
+2696,,,3000
+2697,ULTRASOUND,Pregnancy Profile (3D/4D)(F765),3000
+2698,,,5000
+2699,ULTRASOUND,Pregnancy Profile (Triplet) - 3D/4D(F774),5500
+2700,,,4000
+2701,ULTRASOUND,Pregnancy Profile (Twin) - 4D(F762),4000
+2702,,,1500
+2703,ULTRASOUND,Rt./ Lt. Breast (2D)(F771),2000
+2704,,,3000
+2705,ULTRASOUND,Saline Infusion Sonogram (SIS),6000
+2706,,,4000
+2707,ULTRASOUND,Single - Anomaly  (4D)(F724),2500
+2708,,,2500
+2709,ULTRASOUND,Thyroid(F725),2000
+2710,,,3000
+2711,ULTRASOUND,Triplet - 1st Obstetrics Scan + Anomaly 4D(F786),5500
+2712,,,8000
+2713,ULTRASOUND,TVS / Folliculometry (Dr Rinky),2800
+2714,,,7000
+2715,ULTRASOUND,Twin - 1st Obstetrics scan + Anomaly (F731),6000
+2716,,,2500
+2717,ULTRASOUND,Twin Anomaly 4D(F744),6000
+2718,,,3000
+2719,ULTRASOUND,Twin BPP ( 2D )(F718),3000
+2720,,,3000
+2721,ULTRASOUND,Twin BPP + Growth(F795),6000
+2722,,,3500
+2723,ULTRASOUND,Twin Growth(F716),1800
+2724,,,2000
+2725,ULTRASOUND,Ultrasonogram Guided Prostate Biopsy 4D(D773),2200
+2726,,,2000
+2727,ULTRASOUND,Ultrasonogram of  Viability + Cervix + Internal Os(F712),3500
+2728,,,3500
+2729,ULTRASOUND,Ultrasonogram of ?????????????(D704),2000
+2730,,,2000
+2731,ULTRASOUND,Ultrasonogram of Ankle Joint(M710),3000
+2732,,,3000
+2733,ULTRASOUND,Ultrasonogram of Ascites,2000
+2734,,,2500
+2735,ULTRASOUND,Ultrasonogram of Back,2500
+2736,,,4000
+2737,ULTRASOUND,Ultrasonogram of Both Breast,3200
+2738,,,5000
+2739,ULTRASOUND,Ultrasonogram of Both Breasts (3D/4D)(F770),5000
+2740,,,4000
+2741,ULTRASOUND,Ultrasonogram of Brain,2000
+2742,,,2500
+2743,ULTRASOUND,Ultrasonogram of Breast & Thyroid,3000
+2744,,,4000
+2745,ULTRASOUND,Ultrasonogram of Buttock(M713),2200
+2746,,,2000
+2747,ULTRASOUND,Ultrasonogram of Cranium / Cranial,2000
+2748,,,2500
+2749,ULTRASOUND,Ultrasonogram of Doppler of ????. 4D(D770),4000
+2750,,,3000
+2751,ULTRASOUND,Ultrasonogram of Enthesitis assay in Multiple Area(M718),4000
+2752,,,4000
+2753,ULTRASOUND,Ultrasonogram of Facet Joint(M704),2200
+2754,,,2000
+2755,ULTRASOUND,Ultrasonogram of FNAC/Aspiration,2000
+2756,,,3000
+2757,ULTRASOUND,Ultrasonogram of Foetal Biophysical profile,2800
+2758,,,3500
+2759,ULTRASOUND,Ultrasonogram of Folliculometry,2500
+2760,,,3000
+2761,ULTRASOUND,Ultrasonogram of Folliculometry Series,3000
+2762,,,3500
+2763,ULTRASOUND,Ultrasonogram of Foot(M711),3000
+2764,,,3000
+2765,ULTRASOUND,Ultrasonogram of Growth Scan,3000
+2766,,,3000
+2767,ULTRASOUND,Ultrasonogram of HBS & Breast,4000
+2768,,,4500
+2769,ULTRASOUND,Ultrasonogram of HBS & KUB,2000
+2770,,,2500
+2771,ULTRASOUND,Ultrasonogram of HBS & Pancreas,2000
+2772,,,2500
+2773,ULTRASOUND,Ultrasonogram of HBS & Pelvic Organs,2000
+2774,,,2500
+2775,ULTRASOUND,Ultrasonogram of HBS & Prostate,2000
+2776,,,2500
+2777,ULTRASOUND,Ultrasonogram of HBS & Testis,3000
+2778,,,4000
+2779,ULTRASOUND,"Ultrasonogram of HBS, KUB & Breast",4000
+2780,,,5000
+2781,ULTRASOUND,"Ultrasonogram of HBS, KUB & Pelvic Organs",2500
+2782,,,3000
+2783,ULTRASOUND,"Ultrasonogram of HBS, KUB & Prostate",2500
+2784,,,3000
+2785,ULTRASOUND,"Ultrasonogram of HBS, KUB & PVR",2500
+2786,,,3000
+2787,ULTRASOUND,"Ultrasonogram of HBS, KUB & Testis",4000
+2788,,,5000
+2789,ULTRASOUND,"Ultrasonogram of HBS, KUB, Prostate & PVR",2500
+2790,,,3000
+2791,ULTRASOUND,"Ultrasonogram of HBS, KUB, Prostate, PVR & Testis",4000
+2792,,,5000
+2793,ULTRASOUND,"Ultrasonogram of HBS, KUB, PVR & Pelvic Organs",2500
+2794,,,3000
+2795,ULTRASOUND,"Ultrasonogram of HBS, Pancreas & KUB",2500
+2796,,,3000
+2797,ULTRASOUND,"Ultrasonogram of HBS, Pancrease & Pelvic Organs",2500
+2798,,,3000
+2799,ULTRASOUND,"Ultrasonogram of HBS, Pelvic Organ & PVR",2500
+2800,,,2500
+2801,ULTRASOUND,"Ultrasonogram of HBS, Pelvic Organs & Breast",4000
+2802,,,5000
+2803,ULTRASOUND,Ultrasonogram of Heel(M715),3000
+2804,,,3000
+2805,ULTRASOUND,Ultrasonogram of Inguinal Region,1600
+2806,,,1600
+2807,ULTRASOUND,Ultrasonogram of Inguino-Scrotal Region,1500
+2808,,,2200
+2809,ULTRASOUND,Ultrasonogram of Knee(M702),3000
+2810,,,2000
+2811,ULTRASOUND,Ultrasonogram of KUB & Breast,3000
+2812,,,4000
+2813,ULTRASOUND,Ultrasonogram of KUB & Pelvic Organs,2500
+2814,,,3000
+2815,ULTRASOUND,Ultrasonogram of KUB & Pelvic Organs MCC PVR,2500
+2816,,,2000
+2817,ULTRASOUND,Ultrasonogram of KUB & Prostate 4D(D715),2500
+2818,,,2000
+2819,ULTRASOUND,Ultrasonogram of KUB & PVR 4D(D716),2500
+2820,,,2000
+2821,ULTRASOUND,Ultrasonogram of KUB & Suprarenal gland 4D(D771),2500
+2822,,,3000
+2823,ULTRASOUND,Ultrasonogram of KUB & Testis 4D(D750),3500
+2824,,,3000
+2825,ULTRASOUND,Ultrasonogram of KUB & Thyroid 4D(D765),3500
+2826,,,2000
+2827,ULTRASOUND,Ultrasonogram of KUB 4D(D714),2500
+2828,,,1800
+2829,ULTRASOUND,"Ultrasonogram of KUB, Pelvic Organ & PVR",2500
+2830,,,2500
+2831,ULTRASOUND,"Ultrasonogram of KUB, Pelvic Organs & Breast",4000
+2832,,,5000
+2833,ULTRASOUND,"Ultrasonogram of KUB, Prostate & PVR",2000
+2834,,,2500
+2835,ULTRASOUND,"Ultrasonogram of KUB, Prostate & Testis",3200
+2836,,,3500
+2837,ULTRASOUND,"Ultrasonogram of KUB,Prostate,PVR & Transrectal",5000
+2838,,,6000
+2839,ULTRASOUND,Ultrasonogram of Left / Right Hand(MMZ),3000
+2840,,,2500
+2841,ULTRASOUND,Ultrasonogram of Left Breast,2000
+2842,,,2500
+2843,ULTRASOUND,Ultrasonogram of Left Breast 4D(D738),2500
+2844,,,3000
+2845,ULTRASOUND,Ultrasonogram of Lift Hip Joint,2500
+2846,,,2500
+2847,ULTRASOUND,Ultrasonogram of Lower Abdomen,2000
+2848,,,1800
+2849,ULTRASOUND,Ultrasonogram of Lower Abdomen & PVR,1800
+2850,,,3500
+2851,ULTRASOUND,Ultrasonogram of Lower Abdomen 4D(D724),2500
+2852,,,3000
+2853,ULTRASOUND,Ultrasonogram of Lower Abdomen with Doppler Study,3000
+2854,,,3000
+2855,ULTRASOUND,Ultrasonogram of Lower Chest,2000
+2856,,,2500
+2857,ULTRASOUND,Ultrasonogram of MCA+UA+Uterine artery,5000
+2858,,,1200
+2859,ULTRASOUND,Ultrasonogram of N.T. Scan,3000
+2860,,,2000
+2861,ULTRASOUND,Ultrasonogram of Neck 4D(D759),2500
+2862,,,4000
+2863,ULTRASOUND,Ultrasonogram of Pelvic Organs,2000
+2864,,,4000
+2865,ULTRASOUND,Ultrasonogram of Pelvic Organs 4D(D733),2500
+2866,,,2000
+2867,ULTRASOUND,Ultrasonogram of Penis & Testis,2000
+2868,,,2500
+2869,ULTRASOUND,Ultrasonogram of Penis/Penil shaft,2000
+2870,,,2000
+2871,ULTRASOUND,Ultrasonogram of Portal Vein 4D(D748),3000
+2872,,,3500
+2873,ULTRASOUND,Ultrasonogram of Pregnancy Profile,2000
+2874,,,4000
+2875,ULTRASOUND,Ultrasonogram of Pregnancy Profile 4D(D777),2500
+2876,,,4000
+2877,ULTRASOUND,Ultrasonogram of Pregnancy Profile with Cervical Length,3000
+2878,,,4000
+2879,ULTRASOUND,Ultrasonogram of Pregnancy Profile with Scar Thickness,2500
+2880,,,4000
+2881,ULTRASOUND,Ultrasonogram of Prostate,2000
+2882,,,3000
+2883,ULTRASOUND,Ultrasonogram of Prostate & Testis 4D(D747),3500
+2884,,,2500
+2885,ULTRASOUND,Ultrasonogram of PVR,2000
+2886,,,2000
+2887,ULTRASOUND,Ultrasonogram of PVR & Prostate 4D(D719),2500
+2888,,,2500
+2889,ULTRASOUND,Ultrasonogram of Right Ankle joint,2500
+2890,,,2000
+2891,ULTRASOUND,Ultrasonogram of Right Breast 2D,2000
+2892,,,2500
+2893,ULTRASOUND,Ultrasonogram of Right Breast 4D(D739),2500
+2894,,,2500
+2895,ULTRASOUND,Ultrasonogram of Scrotum,2000
+2896,,,2000
+2897,ULTRASOUND,Ultrasonogram of Shoulder(M701),3000
+2898,,,3000
+2899,ULTRASOUND,Ultrasonogram of Small Joint(M706),3000
+2900,,,3000
+2901,ULTRASOUND,Ultrasonogram of Stellate Ganglion(M714),3000
+2902,,,2000
+2903,ULTRASOUND,Ultrasonogram of Swelling with Doppler,3000
+2904,,,2200
+2905,ULTRASOUND,Ultrasonogram of Testis,2000
+2906,,,2500
+2907,ULTRASOUND,Ultrasonogram of Thyroid Gland,2000
+2908,,,2500
+2909,ULTRASOUND,Ultrasonogram of Transrectal,3000
+2910,,,3500
+2911,ULTRASOUND,Ultrasonogram of Transvaginal / TVS,2500
+2912,,,3000
+2913,ULTRASOUND,Ultrasonogram of TVS (R),3500
+2914,,,4500
+2915,ULTRASOUND,Ultrasonogram of TVS with vascularity/color doppler,4000
+2916,,,2000
+2917,ULTRASOUND,Ultrasonogram of Upper Abdomen 4D(D723),3000
+2918,,,3000
+2919,ULTRASOUND,Ultrasonogram of Urinary Bladder & PVR 4D(D735),2500
+2920,,,2000
+2921,ULTRASOUND,Ultrasonogram of Urinary System 4D(D734),2500
+2922,,,2000
+2923,ULTRASOUND,Ultrasonogram of Uterus & Ovary 4D(D776),2500
+2924,,,2500
+2925,ULTRASOUND,Ultrasonogram of Whole Abdomen (4D)(Female)(F739),4000
+2926,,,4000
+2927,ULTRASOUND,Ultrasonogram of Whole Abdomen (MK),3500
+2928,,,4000
+2929,ULTRASOUND,Ultrasonogram of Whole Abdomen & Both Breast 4D(D729),5000
+2930,,,4000
+2931,ULTRASOUND,Ultrasonogram of Whole Abdomen & Left Breast 4D(D730),5000
+2932,,,2500
+2933,ULTRASOUND,Ultrasonogram of Whole Abdomen & Lymphnodes 4D(D768),3000
+2934,,,2500
+2935,ULTRASOUND,Ultrasonogram of Whole Abdomen & Prostate 4D(D725),3000
+2936,,,2500
+2937,ULTRASOUND,Ultrasonogram of Whole Abdomen & PVR 4D(D766),3000
+2938,,,2500
+2939,ULTRASOUND,Ultrasonogram of Whole Abdomen & Right Breast,4000
+2940,,,5000
+2941,ULTRASOUND,Ultrasonogram of Whole Abdomen & Testis(P727),4000
+2942,,,3000
+2943,ULTRASOUND,"Ultrasonogram of Whole Abdomen Prostate, MCC & PVR",2500
+2944,,,2500
+2945,ULTRASOUND,Ultrasonogram of Whole Abdomen with Pelvis 2D,3000
+2946,,,3500
+2947,ULTRASOUND,Ultrasonogram of Whole Abdomen with PVR - 2D(Male),3000
+2948,,,6000
+2949,ULTRASOUND,"Ultrasonogram of Whole Abdomen, Prostate & PVR",2500
+2950,,,3000
+2951,ULTRASOUND,Ultrasonogram of Wrist Joint(M707),3000
+2952,,,2200
+2953,ULTRASOUND,Ultrasonogram Pregnancy profile with NT Scan,2000
+2954,,,3000
+2955,ULTRASOUND,Ultrasound of Genito Urinary System (GUS),1600
+2956,,,2500
+2957,ULTRASOUND,Umbilical Artery / Uterine Artery Doppler(F777),5000
+2958,,,2200
+2959,ULTRASOUND,Upper Abdomen (4D)(F740),2500
+2960,,,2000
+2961,ULTRASOUND,USCD 4D(D740),2500
+2962,,,6000
+2963,ULTRASOUND,USG Anomaly + Wellbeing(Twin),9000
+2964,,,4000
+2965,ULTRASOUND,USG Core Biopsy,2000
+2966,,,3000
+2967,ULTRASOUND,USG Doppler of Rt/Lt knee Joint,2200
+2968,,,6000
+2969,ULTRASOUND,USG Doppler Twin,5000
+2970,,,2500
+2971,ULTRASOUND,USG for Liquor Volume(F789),2500
+2972,,,2000
+2973,ULTRASOUND,USG Guided Aspiration (R),2000
+2974,,,2000
+2975,ULTRASOUND,USG Guided FNAC-1,1600
+2976,,,1600
+2977,ULTRASOUND,USG L/R Axilla,2000
+2978,,,2000
+2979,ULTRASOUND,USG of -----------(R),2000
+2980,,,2500
+2981,ULTRASOUND,USG of ABVS (Both Brest) (R),5000
+2982,,,3000
+2983,ULTRASOUND,USG of Anomaly Scan (R-4D),3500
+2984,,,2000
+2985,ULTRASOUND,USG of arm (MMZ),3000
+2986,,,4000
+2987,ULTRASOUND,USG of Both Knee Joint,4000
+2988,,,2500
+2989,ULTRASOUND,USG of Breast(R737),2500
+2990,,,2000
+2991,ULTRASOUND,USG of cheek,2000
+2992,,,2000
+2993,ULTRASOUND,USG of Doppler Study (R),5000
+2994,,,3000
+2995,ULTRASOUND,USG of Heel and Planter Area,2500
+2996,,,2500
+2997,ULTRASOUND,"USG OF KUB, PROSTATE, MCC, PVR",2000
+2998,,,3000
+2999,ULTRASOUND,USG of Lower Abdomen (R),2000
+3000,,,2500
+3001,ULTRASOUND,USG of Musculosketal(R721),2500
+3002,,,2200
+3003,ULTRASOUND,USG of Parietal Wall,2500
+3004,,,2000
+3005,ULTRASOUND,USG of pelvis,2000
+3006,,,2500
+3007,ULTRASOUND,USG of Pelvis (TVS) with  anterior abdominal wall(F764),3500
+3008,,,2500
+3009,ULTRASOUND,USG of Pregnancy Profile (R),2500
+3010,,,2500
+3011,ULTRASOUND,USG of Rt/Lt. Shoulder,2200
+3012,,,2500
+3013,ULTRASOUND,USG of Shoulder (Both),4000
+3014,,,2500
+3015,ULTRASOUND,USG of Sinus/ Fistula,2500
+3016,,,2500
+3017,ULTRASOUND,USG of Submental Area,2500
+3018,,,2500
+3019,ULTRASOUND,USG of Testis(R720),3000
+3020,,,3000
+3021,ULTRASOUND,USG of Thyroid Doppler,2000
+3022,,,3000
+3023,ULTRASOUND,USG of Umbilicus,2500
+3024,,,3000
+3025,ULTRASOUND,USG of Whole Abdomen - 2D(Male),2500
+3026,,,3000
+3027,ULTRASOUND,"USG of Whole Abdomen, MCC, PVR (M)",2000
+3028,,,2500
+3029,ULTRASOUND,USG Power dopplar for MSK (MMZ),1600
+3030,,,2000
+3031,ULTRASOUND,USG Protable,6000
+3032,,,4000
+3033,ULTRASOUND,USG T/A & Adrenals,3500
+3034,,,3500
+3035,ULTRASOUND,USG Transvaginal of pelvis organ(TVS) - 4D(F736),3500
+3036,,,3500
+3037,ULTRASOUND,USG Transvaginal of pelvis organs (TVS) - 4D & Doppler(F748),5000
+3038,,,4000
+3039,ULTRASOUND,Uterus & Adexa (T/A) 2D(F779),2500
+3040,,,3000
+3041,ULTRASOUND,Viability (Triplet) (TVS)(F785),4500
+3042,,,3000
+3043,ULTRASOUND,Viability & Dating(F766),2200
+3044,,,3000
+3045,ULTRASOUND,Viability Twin (TVS)(F753),4000
+3046,,,12000
+3047,UROFLOWETERY,Uroflowmetry,1500
+3048,,,2500
+3049,VACCINATION,Engerix-B (Adult),650
+3050,,,500
+3051,VACCINATION,HAVRIX - A (Adult),1350
+3052,,,1350
+3053,VACCINATION,Havrix (Hepatitis -A) Single,850
+3054,,,650
+3055,VACCINATION,Hiberix (Hbmeningis & Pheumonia),700
+3056,,,700
+3057,VACCINATION,Mencevax ACWY (Vaccine),1300
+3058,,,600
+3059,VACCINATION,Tritanrix (DPT - 3 doss Hepatitis),500
+3060,,,500
+3061,VACCINATION,Varilrix (Chicken Pox),1500
+3062,,,25
+3063,VACCUM TUBE,Blue Tube,20
+3064,,,20
+3065,VACCUM TUBE,Green Tube,20
+3066,,,20
+3067,VACCUM TUBE,Red Tube,20
+3068,,,30
+3069,VACCUM TUBE,Vaccum Needle(N),20
+3070,,,20
+3071,VASCULAR IMAGING,Broncho Provocation test,1000
+3072,,,4500
+3073,VASCULAR IMAGING,Doppler Study of Left Lower Limb Vessels,4500
+3074,,,4500
+3075,VASCULAR IMAGING,Duplex Study of Abdominal aorta and its branches,5000
+3076,,,2500
+3077,VASCULAR IMAGING,Duplex Study of Both Lower Limb Artery,8000
+3078,,,8000
+3079,VASCULAR IMAGING,Duplex Study of Both Upper limb Artery,7000
+3080,,,7000
+3081,VASCULAR IMAGING,Duplex Study of Carotid / Neck Vessel,4000
+3082,,,5000
+3083,VASCULAR IMAGING,Duplex Study of Left Lower Limb Arteries,4500
+3084,,,4500
+3085,VASCULAR IMAGING,Duplex Study of Left Upper limb Vessels,4500
+3086,,,5000
+3087,VASCULAR IMAGING,Duplex Study of Pampiniform Plexus,4500
+3088,,,6000
+3089,VASCULAR IMAGING,Duplex Study of Right Lower Limb Arteries,4500
+3090,,,4500
+3091,VASCULAR IMAGING,Duplex Study of Right Upper Limb Veins,4500
+3092,,,2500

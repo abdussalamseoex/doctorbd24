@@ -204,6 +204,13 @@ Route::prefix('admin')
         // Hospitals
         Route::post('hospitals/bulk-action', [\App\Http\Controllers\Admin\AdminHospitalController::class, 'bulkAction'])->name('hospitals.bulk-action')->middleware('permission:manage hospitals');
         Route::resource('hospitals', \App\Http\Controllers\Admin\AdminHospitalController::class)->middleware('permission:manage hospitals');
+        // Hospital Services
+        Route::get('hospitals/{hospital}/services', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'index'])->name('hospitals.services.index')->middleware('permission:manage hospitals');
+        Route::post('hospitals/{hospital}/services/import', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'import'])->name('hospitals.services.import')->middleware('permission:manage hospitals');
+        Route::post('hospitals/{hospital}/services', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'store'])->name('hospitals.services.store')->middleware('permission:manage hospitals');
+        Route::put('hospitals/{hospital}/services/{service}', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'update'])->name('hospitals.services.update')->middleware('permission:manage hospitals');
+        Route::delete('hospitals/{hospital}/services/clear', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'clearAll'])->name('hospitals.services.clear')->middleware('permission:manage hospitals');
+        Route::delete('hospitals/{hospital}/services/{service}', [\App\Http\Controllers\Admin\AdminHospitalServiceController::class, 'destroy'])->name('hospitals.services.destroy')->middleware('permission:manage hospitals');
         // Ambulances
         Route::post('ambulances/bulk-action', [\App\Http\Controllers\Admin\AdminAmbulanceController::class, 'bulkAction'])->name('ambulances.bulk-action')->middleware('permission:manage ambulances');
         Route::resource('ambulances', \App\Http\Controllers\Admin\AdminAmbulanceController::class)->middleware('permission:manage ambulances');
