@@ -194,7 +194,16 @@ class AdminDoctorController extends Controller
             $validated['published_at'] = null;
         }
 
-        $doctor = Doctor::create($validated);
+        $videosInput = $this->parseJsonField($request->input('videos'));
+        $validated['videos'] = $videosInput; // temp
+        
+        $validated['blogs'] = $this->processExternalLinksData($this->parseJsonField($request->input('blogs')));
+
+        $doctor = Doctor::create(array_diff_key($validated, ['videos' => '']));
+
+        if (!empty($videosInput)) {
+            $this->syncDoctorVideos($doctor, $videosInput);
+        }
 
         if (!empty($validated['specialties'])) {
             $doctor->specialties()->sync($validated['specialties']);
@@ -320,7 +329,13 @@ class AdminDoctorController extends Controller
             $validated['published_at'] = null;
         }
 
-        $doctor->update($validated);
+        $videosInput = $this->parseJsonField($request->input('videos'));
+        $validated['videos'] = $videosInput; // temporary, will be unset later
+
+        $validated['blogs'] = $this->processExternalLinksData($this->parseJsonField($request->input('blogs')));
+
+        $doctor->update(array_diff_key($validated, ['videos' => '']));
+        $this->syncDoctorVideos($doctor, $videosInput ?? []);
         $doctor->specialties()->sync($validated['specialties'] ?? []);
 
         // Save chambers
@@ -397,5 +412,135 @@ class AdminDoctorController extends Controller
     public function show(Doctor $doctor)
     {
         return redirect()->route('admin.doctors.edit', $doctor->id);
+    }
+
+    private function syncDoctorVideos(Doctor $doctor, $videosInput)
+    {
+        $existingVideos = $doctor->doctorVideos->keyBy('video_url');
+        $keptUrls = [];
+
+        foreach ($videosInput as $index => $videoData) {
+            if (!isset($videoData['url'])) continue;
+            
+            $url = $videoData['url'];
+            $title = $videoData['title'] ?? 'Video Link';
+            $keptUrls[] = $url;
+            
+            $youtubeId = null;
+            $thumbnailUrl = null;
+            $isFacebook = str_contains(strtolower($url), 'facebook.com') || str_contains(strtolower($url), 'fb.watch');
+
+            if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $url, $match)) {
+                $youtubeId = $match[1];
+                $thumbnailUrl = 'https://img.youtube.com/vi/' . $youtubeId . '/hqdefault.jpg';
+            } elseif ($isFacebook) {
+                $thumbnailUrl = 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg';
+                if (in_array($title, ['Fetching title...', 'Video Link']) || empty(trim($title))) {
+                    $title = str_contains($url, '/reel/') ? 'Facebook Reel' : 'Facebook Video';
+                }
+            }
+
+            if (in_array($title, ['Fetching title...', 'Video Link']) || empty(trim($title))) {
+                try {
+                    $oembedRes = \Illuminate\Support\Facades\Http::timeout(3)->get("https://noembed.com/embed?url=" . urlencode($url));
+                    if ($oembedRes->successful() && $oembedRes->json('title')) {
+                        $title = $oembedRes->json('title');
+                    }
+                } catch (\Exception $e) {}
+            }
+            if(empty(trim($title)) || $title === 'Fetching title...') { $title = 'Video Link'; }
+
+            if ($existingVideos->has($url)) {
+                $existing = $existingVideos->get($url);
+                $existing->update([
+                    'title' => $title,
+                    'description' => $videoData['description'] ?? $existing->description,
+                    'sort_order' => $index,
+                ]);
+            } else {
+                $doctor->doctorVideos()->create([
+                    'provider' => $youtubeId ? 'youtube' : 'custom',
+                    'video_url' => $url,
+                    'youtube_id' => $youtubeId,
+                    'title' => $title,
+                    'description' => $videoData['description'] ?? null,
+                    'slug' => \Illuminate\Support\Str::slug($title) . '-' . \Illuminate\Support\Str::random(4),
+                    'thumbnail_url' => $thumbnailUrl,
+                    'sort_order' => $index,
+                ]);
+            }
+        }
+
+        $doctor->doctorVideos()->whereNotIn('video_url', $keptUrls)->delete();
+    }
+
+    private function processExternalLinksData(?array $items): ?array
+    {
+        if (empty($items)) return null;
+
+        $processed = [];
+        foreach ($items as $item) {
+            $url = $item['url'] ?? '';
+            if (empty($url)) continue;
+
+            $title = $item['title'] ?? 'Linked Content';
+            $image = $item['image'] ?? null;
+
+            if (in_array($title, ['Fetching title...', 'Linked Content']) || empty(trim($title))) {
+                try {
+                    $linkHostLower = strtolower(parse_url($url, PHP_URL_HOST) ?? '');
+                    if (str_contains($linkHostLower, 'facebook.com') || str_contains($linkHostLower, 'fb.watch')) {
+                        $fbTitle = 'Facebook Post';
+                        if (str_contains($url, '/reel/')) $fbTitle = 'Facebook Reel';
+                        elseif (str_contains($url, '/videos/') || str_contains($linkHostLower, 'fb.watch')) $fbTitle = 'Facebook Video';
+                        
+                        $processed[] = [
+                            'title' => $fbTitle,
+                            'url' => $url,
+                            'image' => 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg'
+                        ];
+                        continue;
+                    }
+
+                    $oembedRes = \Illuminate\Support\Facades\Http::timeout(3)->get("https://noembed.com/embed?url=" . urlencode($url));
+                    if ($oembedRes->successful() && $oembedRes->json('title')) {
+                        $processed[] = ['title' => $oembedRes->json('title'), 'url' => $url, 'image' => $oembedRes->json('thumbnail_url')];
+                        continue;
+                    }
+
+                    $response = \Illuminate\Support\Facades\Http::timeout(3)
+                        ->withHeaders(['User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36'])
+                        ->get($url);
+                    
+                    if ($response->successful()) {
+                        $html = $response->body();
+                        if (preg_match('/<meta[^>]*property=[\'"]og:title[\'"][^>]*content=[\'"]([^\'"]+)[\'"][^>]*>/i', $html, $matches) ||
+                            preg_match('/<title[^>]*>(.*?)<\/title>/is', $html, $matches)) {
+                            $titleChunk = explode(' |', $matches[1])[0];
+                            $title = trim(html_entity_decode(strip_tags(explode(' -', $titleChunk)[0]), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                        }
+                        
+                        if (!$image && preg_match('/<meta[^>]*property=[\'"]og:image[\'"][^>]*content=[\'"]([^\'"]+)[\'"][^>]*>/i', $html, $matches)) {
+                            $image = $matches[1];
+                        }
+                        
+                        if (in_array(trim($title), ['Facebook', 'Log In or Sign Up to View'])) {
+                            $title = 'Linked Media';
+                        }
+                    }
+                } catch (\Exception $e) {}
+            }
+            if(empty(trim($title))) { $title = 'Linked Article/Media'; }
+
+            $processed[] = ['title' => $title, 'url' => $url, 'image' => $image];
+        }
+        return $processed;
+    }
+
+    private function parseJsonField(?string $value): ?array
+    {
+        if (!$value) return null;
+        $decoded = json_decode($value, true);
+        return is_array($decoded) ? $decoded : null;
     }
 }

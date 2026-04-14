@@ -33,7 +33,7 @@ class Doctor extends Model
         'rating_avg', 'rating_count',
         'phone', 'email', 'bmdc_number', 'language', 'user_id',
         'facebook_url', 'twitter_url', 'instagram_url', 'linkedin_url', 'youtube_url',
-        'status', 'import_source'
+        'blogs', 'status', 'import_source'
     ];
 
     protected $casts = [
@@ -43,6 +43,7 @@ class Doctor extends Model
         'experience_years' => 'integer',
         'view_count' => 'integer',
         'gallery' => 'array',
+        'blogs' => 'array',
     ];
 
     public function specialties(): BelongsToMany
@@ -55,6 +56,10 @@ class Doctor extends Model
         return $this->hasMany(Chamber::class)->orderBy('sort_order');
     }
 
+    public function doctorVideos(): HasMany
+    {
+        return $this->hasMany(DoctorVideo::class)->orderBy('sort_order');
+    }
 
     public function reviews(): MorphMany
     {

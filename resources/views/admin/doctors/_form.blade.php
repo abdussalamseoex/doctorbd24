@@ -520,6 +520,294 @@
             </div>
         </div>
 
+        {{-- ════ CARD: MEDIA & CONTENT TABS (VIDEOS AND BLOGS) ════ --}}
+        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-6" 
+             x-data="{ 
+                videos: {{ isset($doctor) && $doctor->doctorVideos->count() > 0 ? $doctor->doctorVideos->map(function($v){ return ['id' => $v->id, 'title' => $v->title, 'url' => $v->video_url, 'description' => $v->description]; })->toJson() : '[]' }},
+                blogs: {{ empty(isset($doctor) && $doctor->blogs) ? '[]' : (is_string($doctor->blogs[0] ?? null) ? json_encode(array_map(function($url){ return ['title'=>'Linked Content', 'url'=>$url]; }, $doctor->blogs)) : json_encode($doctor->blogs)) }},
+                newVideoUrl: '',
+                newChannelUrl: '',
+                newBlogUrl: '',
+                isFetchingVideo: false,
+                isFetchingChannel: false,
+                isFetchingBlog: false,
+                youtubePageToken: null,
+                youtubeChannelId: null,
+                youtubeAllFetched: false,
+                
+                init() {
+                    this.$watch('videos', value => {
+                        document.querySelector('input[name=videos]').value = JSON.stringify(value);
+                    });
+                    this.$watch('blogs', value => {
+                        document.querySelector('input[name=blogs]').value = JSON.stringify(value);
+                    });
+                    this.$watch('newChannelUrl', () => {
+                        this.youtubePageToken = null;
+                        this.youtubeChannelId = null;
+                        this.youtubeAllFetched = false;
+                    });
+                },
+                
+                fetchMeta(url, idx, arrayName) {
+                    fetch('{{ route('admin.hospitals.fetch-url-meta') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ url: url })
+                    }).then(res => res.json()).then(data => {
+                        if(data.title) { this[arrayName][idx].title = data.title; }
+                        if(data.image) { this[arrayName][idx].image = data.image; }
+                    }).catch(() => {
+                        this[arrayName][idx].title = 'Linked Article/Media';
+                    });
+                },
+
+                addVideo(fetchedUrl = null) {
+                    let vUrl = fetchedUrl || this.newVideoUrl.trim();
+                    if(vUrl && !this.videos.find(v => v.url === vUrl)) {
+                        let obj = { title: 'Fetching title...', url: vUrl };
+                        this.videos.push(obj);
+                        let idx = this.videos.length - 1;
+                        this.fetchMeta(vUrl, idx, 'videos');
+                    }
+                    if(!fetchedUrl) this.newVideoUrl = '';
+                },
+                
+                fetchChannelVideo() {
+                    let cUrl = this.newChannelUrl.trim();
+                    if ((!cUrl && !this.youtubeChannelId) || this.youtubeAllFetched) return;
+                    this.isFetchingChannel = true;
+                    
+                    fetch('{{ route('admin.hospitals.fetch-channel-videos') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ 
+                            url: cUrl, 
+                            pageToken: this.youtubePageToken,
+                            channelId: this.youtubeChannelId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.videos && data.videos.length > 0) {
+                            const newUniqueVideos = data.videos.filter(newVid => !this.videos.some(existing => existing.url === newVid.url));
+                            this.videos = [...newUniqueVideos, ...this.videos];
+                            this.youtubePageToken = data.nextPageToken || null;
+                            if (data.channelId) this.youtubeChannelId = data.channelId;
+                            
+                            if (this.youtubePageToken) {
+                                alert(`Successfully added ${newUniqueVideos.length} new unique videos! (Total now: ${this.videos.length}). You can click 'Fetch Next 50' to get more.`);
+                            } else {
+                                this.youtubeAllFetched = true;
+                                alert(`Successfully added ${newUniqueVideos.length} new unique videos! (Total now: ${this.videos.length}). All videos from this channel have been fetched!`);
+                            }
+                        } else {
+                            alert(data.error || 'No more videos found in this channel.');
+                            this.youtubeAllFetched = true;
+                        }
+                    })
+                    .catch(() => alert('Error fetching channel. Make sure the API is working.'))
+                    .finally(() => this.isFetchingChannel = false);
+                },
+
+                addBlog(fetchedUrl = null) {
+                    let bUrl = fetchedUrl || this.newBlogUrl.trim();
+                    if(bUrl && !this.blogs.find(b => b.url === bUrl)) {
+                        let obj = { title: 'Fetching title...', url: bUrl };
+                        this.blogs.push(obj);
+                        let idx = this.blogs.length - 1;
+                        this.fetchMeta(bUrl, idx, 'blogs');
+                    }
+                    if(!fetchedUrl) this.newBlogUrl = '';
+                },
+
+                fetchVideo() {
+                    let name = document.querySelector('input[name=name]').value;
+                    if (!name) { alert('Please enter the Doctor Name first.'); return; }
+                    this.isFetchingVideo = true;
+                    fetch('{{ route('admin.hospitals.fetch-video') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ query: name })
+                    }).then(res => res.json()).then(data => {
+                        if (data.url) { 
+                            this.addVideo(data.url); 
+                        }
+                        else { alert('No video found'); }
+                    }).catch(() => alert('Error fetching video')).finally(() => this.isFetchingVideo = false);
+                },
+
+                fetchBlog() {
+                    let name = document.querySelector('input[name=name]').value;
+                    if (!name) { alert('Please enter the Doctor Name first.'); return; }
+                    this.isFetchingBlog = true;
+                    fetch('{{ route('admin.hospitals.fetch-blog') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ query: name })
+                    }).then(res => res.json()).then(data => {
+                        if (data.url) { this.addBlog(data.url); }
+                    }).catch(() => alert('Error fetching blog')).finally(() => this.isFetchingBlog = false);
+                },
+
+                isGeneratingAll: false,
+                generateMissingDescriptions() {
+                    this.isGeneratingAll = true;
+                    this.generateNextMissing(0);
+                },
+                generateNextMissing(index) {
+                    if (index >= this.videos.length) {
+                        this.isGeneratingAll = false;
+                        alert('All missing descriptions have been successfully generated!');
+                        return;
+                    }
+
+                    if (!this.videos[index].description) {
+                        let name = document.querySelector('input[name=name]').value;
+                        fetch('{{ route('admin.hospitals.generate-video-description') }}', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                            body: JSON.stringify({ title: this.videos[index].title, hospital_name: name })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success && data.description) {
+                                this.videos[index].description = data.description;
+                            }
+                            this.generateNextMissing(index + 1);
+                        })
+                        .catch(() => this.generateNextMissing(index + 1));
+                    } else {
+                        this.generateNextMissing(index + 1);
+                    }
+                }
+            }">
+            <div class="mb-5">
+                <h3 class="text-sm font-bold text-indigo-900 dark:text-indigo-300 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    Media & Content Tabs
+                </h3>
+                <p class="text-xs text-indigo-600/70 dark:text-indigo-400/70 mt-1">Add videos and blog links. These will dynamically create Tabs on the Doctor's public profile.</p>
+            </div>
+
+            <input type="hidden" name="videos" :value="JSON.stringify(videos)">
+            <input type="hidden" name="blogs" :value="JSON.stringify(blogs)">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {{-- Videos Section --}}
+                <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col h-full">
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-1.5 focus:outline-none">
+                        <span class="w-6 h-6 rounded bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-500">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </span>
+                        Videos (Multi-Platform)
+                        
+                        <button type="button" @click="generateMissingDescriptions()" :disabled="isGeneratingAll || videos.length === 0" 
+                                class="ml-auto flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors">
+                            <span x-show="isGeneratingAll" class="w-3 h-3 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
+                            <span x-show="!isGeneratingAll">✨ Auto-Generate AI Desc</span>
+                        </button>
+                    </label>
+                    
+                    <div class="flex flex-col gap-2 mb-3 border-b border-gray-100 dark:border-gray-700 pb-3">
+                        <div class="flex gap-2">
+                            <input type="url" x-model="newVideoUrl" @keydown.enter.prevent="addVideo()" placeholder="Paste a video URL..."
+                                class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                            <button type="button" @click="addVideo()" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
+                                Add
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="url" x-model="newChannelUrl" @keydown.enter.prevent="fetchChannelVideo()" placeholder="Paste Channel URL..."
+                                class="flex-1 w-full px-3 py-2 text-sm border-dashed border-red-200 dark:border-red-900/50 rounded-lg border bg-red-50/50 focus:bg-white dark:bg-red-900/10 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all">
+                            <button type="button" @click="fetchChannelVideo()" :disabled="isFetchingChannel" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-semibold rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors shrink-0 flex items-center min-w-[120px] justify-center text-xs">
+                                <span x-show="isFetchingChannel" class="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin mr-1" x-cloak></span>
+                                <span x-show="!isFetchingChannel" class="whitespace-nowrap" x-text="youtubeAllFetched ? 'All Fetched' : (youtubePageToken ? 'Fetch Next ~50' : 'Fetch (~50)')"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5 mb-3 flex-1 overflow-y-auto max-h-[250px] pr-1">
+                        <template x-for="(vid, index) in videos" :key="index">
+                            <div class="group flex items-start justify-between gap-2 p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
+                                <div class="overflow-hidden w-full pr-6">
+                                    <p class="text-xs font-bold text-gray-800 dark:text-gray-200 truncate" x-text="vid.title"></p>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <p class="text-[10px] text-gray-500 truncate max-w-[120px] sm:max-w-[200px]" x-text="vid.url"></p>
+                                        <template x-if="vid.description">
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">📝 Desc Added</span>
+                                        </template>
+                                        <template x-if="!vid.description">
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">No Desc</span>
+                                        </template>
+                                    </div>
+                                </div>
+                                <button type="button" @click="videos.splice(index, 1)" class="absolute top-2.5 right-2.5 text-gray-400 hover:text-red-600 bg-white dark:bg-gray-800 rounded transition-colors p-0.5" title="Remove Video">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </template>
+                        <div x-show="videos.length === 0" class="text-center py-4 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+                            <p class="text-xs text-gray-400">No videos added yet.</p>
+                        </div>
+                    </div>
+                    
+                    <button type="button" @click="fetchVideo()" class="w-full bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 transition-colors px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer text-xs font-bold shadow-sm mt-auto">
+                        <span x-show="isFetchingVideo" class="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
+                        <span x-show="!isFetchingVideo">Search YouTube & Add Auto</span>
+                    </button>
+                </div>
+                
+                {{-- Blogs Section --}}
+                <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col h-full">
+                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-1.5 focus:outline-none">
+                        <span class="w-6 h-6 rounded bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        </span>
+                        Related Blog Articles
+                    </label>
+
+                    <div class="flex gap-2 mb-3">
+                        <input type="url" x-model="newBlogUrl" @keydown.enter.prevent="addBlog()" placeholder="https://example.com/blog..."
+                               class="flex-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                        <button type="button" @click="addBlog()" class="px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shrink-0">
+                            Add
+                        </button>
+                    </div>
+
+                    <div class="space-y-1.5 mb-3 flex-1 overflow-y-auto max-h-[150px] pr-1">
+                        <template x-for="(bg, index) in blogs" :key="index">
+                            <div class="group flex items-start justify-between gap-2 p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
+                                <div class="w-10 h-10 shrink-0 rounded bg-gray-100 dark:bg-gray-700 overflow-hidden flex items-center justify-center text-gray-400">
+                                    <template x-if="bg.image">
+                                        <img :src="bg.image" class="w-full h-full object-cover">
+                                    </template>
+                                    <template x-if="!bg.image">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
+                                    </template>
+                                </div>
+                                <div class="overflow-hidden flex-1">
+                                    <p class="text-xs font-bold text-gray-800 dark:text-gray-200 truncate pr-6" x-text="bg.title"></p>
+                                    <p class="text-[10px] text-gray-500 truncate" x-text="bg.url"></p>
+                                </div>
+                                <button type="button" @click="blogs.splice(index, 1)" class="absolute top-2.5 right-2.5 text-gray-400 hover:text-red-600 bg-white dark:bg-gray-800 rounded transition-colors p-0.5" title="Remove Blog">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </template>
+                        <div x-show="blogs.length === 0" class="text-center py-4 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+                            <p class="text-xs text-gray-400">No blogs added yet.</p>
+                        </div>
+                    </div>
+
+                    <button type="button" @click="fetchBlog()" class="w-full bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 transition-colors px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer text-xs font-bold shadow-sm">
+                        <span x-show="isFetchingBlog" class="w-3.5 h-3.5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" x-cloak></span>
+                        <span x-show="!isFetchingBlog">Auto Map URL</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         {{-- ════ CARD: SOCIAL MEDIA LINKS ════ --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-5 flex items-center gap-2">
