@@ -324,6 +324,7 @@ class AdminHospitalController extends Controller
                 $existing = $existingVideos->get($url);
                 $existing->update([
                     'title' => $title,
+                    'description' => $videoData['description'] ?? $existing->description,
                     'sort_order' => $index,
                 ]);
             } else {
@@ -332,6 +333,7 @@ class AdminHospitalController extends Controller
                     'video_url' => $url,
                     'youtube_id' => $youtubeId,
                     'title' => $title,
+                    'description' => $videoData['description'] ?? null,
                     'slug' => \Illuminate\Support\Str::slug($title) . '-' . \Illuminate\Support\Str::random(4),
                     'thumbnail_url' => $thumbnailUrl,
                     'sort_order' => $index,
