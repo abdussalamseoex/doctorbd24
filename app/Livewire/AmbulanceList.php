@@ -173,7 +173,7 @@ class AmbulanceList extends Component
 
     public function render()
     {
-        $query = Ambulance::with('area.district')->where('active', true);
+        $query = Ambulance::with('area.district')->published();
 
         // SEO Handling
         if (!$this->seoTitle) {
