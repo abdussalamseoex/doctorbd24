@@ -267,9 +267,9 @@
                     'division_id'    => (string) ($c->area?->district?->division_id ?? ''),
                     'district_id'    => (string) ($c->area?->district_id ?? ''),
                     'area_id'        => (string) $c->area_id,
-                    'address'        => $c->address,
-                    'visiting_hours' => $c->visiting_hours,
-                    'closed_days'    => $c->closed_days ?? '',
+                    'address'        => $c->getTranslations('address') ?: ['en' => '', 'bn' => ''],
+                    'visiting_hours' => $c->getTranslations('visiting_hours') ?: ['en' => '', 'bn' => ''],
+                    'closed_days'    => $c->getTranslations('closed_days') ?: ['en' => '', 'bn' => ''],
                     'phone'          => $c->phone,
                     'google_maps_url'=> $c->google_maps_url ?? '',
                     'lat'            => $c->lat,
@@ -387,12 +387,19 @@
                     // Normalize existing chamber data on load
                     if (Array.isArray(config.chambers)) {
                         config.chambers = config.chambers.map(ch => {
-                            if (typeof ch.address !== 'object' || ch.address === null) ch.address = {en: ch.address || '', bn: ''};
-                            if (typeof ch.visiting_hours !== 'object' || ch.visiting_hours === null) ch.visiting_hours = {en: ch.visiting_hours || '', bn: ''};
-                            if (typeof ch.closed_days !== 'object' || ch.closed_days === null) ch.closed_days = {en: ch.closed_days || '', bn: ''};
+                            const makeObj = (val) => {
+                                if (!val || typeof val !== 'object' || Array.isArray(val)) {
+                                    return {en: typeof val === 'string' ? val : '', bn: ''};
+                                }
+                                return {en: val.en || '', bn: val.bn || ''};
+                            };
+                            ch.address = makeObj(ch.address);
+                            ch.visiting_hours = makeObj(ch.visiting_hours);
+                            ch.closed_days = makeObj(ch.closed_days);
                             return ch;
                         });
                     }
+
 
                     return config;
                 });
