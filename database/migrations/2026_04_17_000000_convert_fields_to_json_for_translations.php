@@ -25,6 +25,15 @@ return new class extends Migration
         foreach ($tables as $table => $columns) {
             if (!Schema::hasTable($table)) continue;
 
+            // Expand string columns to TEXT to prevent truncation errors before JSON conversion
+            foreach ($columns as $column) {
+                try {
+                    DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` MEDIUMTEXT");
+                } catch (\Exception $e) {
+                    // Ignore in case the exact type conversion throws warning on unsupported env
+                }
+            }
+
             // Update to JSON string format {"en": "value"}
             foreach (DB::table($table)->cursor() as $row) {
                 $updates = [];
