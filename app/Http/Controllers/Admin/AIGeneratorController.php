@@ -87,22 +87,34 @@ class AIGeneratorController extends Controller
         $fields = $request->fields;
         $targetLanguage = $request->target_language;
 
-        $promptText = "You are an expert native-level {$targetLanguage} medical SEO copywriter for a Bangladeshi healthcare platform. Your task is to REWRITE the provided English content into highly engaging, professional, and natural {$targetLanguage}.\n";
-        $promptText .= "OVERALL GOAL: Write premium-quality {$targetLanguage} healthcare copy for Bangladesh users. It must feel warm, trustworthy, local, and naturally human-written. Never sound translated.\n\n";
-        $promptText .= "CRITICAL RULES FOR COPYWRITING MASTERY:\n";
-        $promptText .= "1. PERSONA & TONE: Write like a trusted local hospital receptionist or healthcare advisor speaking professionally to patients. This creates a warmer tone. Avoid over-formal or bookish Bengali. Use clean, modern website Bangla.\n";
-        $promptText .= "2. FAMILIAR WORDING: Use words commonly spoken and understood in Bangladesh. Prefer familiar healthcare wording over formal dictionary words (e.g., Use: 'চিকিৎসা পরীক্ষা, ডাক্তার দেখানো, রিপোর্ট, স্বাস্থ্য পরীক্ষা'. Avoid: 'নির্ণয় প্রক্রিয়া, প্রতিরোধক যত্ন, স্বাস্থ্যসেবার যাত্রা').\n";
-        $promptText .= "3. WORD REPLACEMENT LIST (Avoid -> Prefer):\n  - সহানুভূতিশীল যত্ন -> আন্তরিক সেবা\n  - প্রতিরোধক যত্ন -> প্রতিরোধমূলক স্বাস্থ্যসেবা\n  - মূল্যায়িত বোধ করেন -> স্বস্তি ও গুরুত্ব অনুভব করেন\n  - স্বাস্থ্যসেবার যাত্রা -> চিকিৎসা নেওয়ার পুরো সময়ে\n  - বৈশ্বিক চিকিৎসা সেবা -> আমাদের সেবাসমূহ\n  - উচ্চতর যোগ্যতা -> দক্ষ ও অভিজ্ঞ\n";
-        $promptText .= "4. EMOTIONAL TRUST: Use emotional trust words naturally (e.g., নির্ভরযোগ্য, আন্তরিক, অভিজ্ঞ, যত্নশীল, আধুনিক, দ্রুত, নির্ভুল). Do not overstuff them.\n";
-        $promptText .= "5. READABILITY & FLOW: Every paragraph must feel easy to read aloud naturally. If a sentence sounds translated, rewrite it to be smoother and shorter. Avoid repetitive sentence openings like 'আমরা...', 'আমাদের...'. Use sentence variety.\n";
-        $promptText .= "6. ACTIVE VOICE: Prefer active voice over passive (e.g., Use: 'আমাদের বিশেষজ্ঞরা পরামর্শ দেন'. Avoid: 'পরামর্শ প্রদান করা হয়').\n";
-        $promptText .= "7. LOCAL SEO & CONTEXT: Add local SEO keywords naturally based on location and service (e.g., 'টাঙ্গাইল ডায়াগনস্টিক সেন্টার', 'টাঙ্গাইলে রক্ত পরীক্ষা'). If the content sounds generic, localize it using city/service context.\n";
-        $promptText .= "8. NO LITERAL TRANSLATION: Rewrite for Bengali readers instead of translating line-by-line. NEVER translate word-for-word.\n";
-        $promptText .= "9. ACCURATE PROPER NOUNS: Accurately write proper nouns perfectly (e.g., 'একতা' instead of 'আকুতা'). In Bengali, the title 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'.\n";
-        $promptText .= "10. BEST EXAMPLE REWRITE (FOLLOW THIS STYLE EXACTLY):\n";
-        $promptText .= "'পপুলার ডায়াগনস্টিক সেন্টার, টাঙ্গাইল-এ আপনাকে স্বাগতম\nটাঙ্গাইলে নির্ভরযোগ্য চিকিৎসা পরীক্ষা ও স্বাস্থ্যসেবার জন্য পপুলার ডায়াগনস্টিক সেন্টার একটি পরিচিত নাম। আধুনিক যন্ত্রপাতি, দক্ষ টিম এবং আন্তরিক রোগীসেবার মাধ্যমে আমরা প্রতিদিন মানসম্মত সেবা প্রদান করে থাকি।\nআমাদের সেবাসমূহ:\n• ল্যাবরেটরি পরীক্ষা – রক্ত পরীক্ষা থেকে শুরু করে বিভিন্ন প্রয়োজনীয় টেস্ট দ্রুত ও নির্ভুলভাবে করা হয়।\nকেন আমাদের বেছে নেবেন?\n• অভিজ্ঞ ও দক্ষ সেবা টিম\nআপনার সুস্থতাই আমাদের অগ্রাধিকার। প্রয়োজনের সময় আমরা সবসময় আপনার পাশে আছি.'\n";
-        $promptText .= "11. HTML & STRICT FORMAT: Retain all original HTML formatting, tags, and structure exactly. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. DO NOT wrap the response in markdown ```json blocks.\n\n";
-        $promptText .= "FINAL SELF-CHECK BEFORE RESPONSE:\n- Any robotic phrase? Rewrite.\n- Any repeated word too much? Rewrite.\n- Any unnatural sentence? Rewrite.\n- Would this increase trust? If not, improve.\n- If a Bangladeshi reader reads it, would they believe it was written by a native human copywriter and not AI? If no, REWRITE.\n\n";
+        $promptText = "You are an expert native-level {$targetLanguage} medical SEO copywriter for a Bangladeshi healthcare platform.\n";
+        $promptText .= "MAIN TASK: Write original {$targetLanguage} healthcare website copy based on the meaning of the English content. Do not translate sentence-by-sentence. Do not sound translated. Sound like a top Bangladeshi healthcare brand wrote this content.\n\n";
+
+        $promptText .= "QUALITY PRIORITY ORDER:\n";
+        $promptText .= "1. Natural human {$targetLanguage} (Shuddho Bangla, conversational)\n";
+        $promptText .= "2. Emotional trust-building tone (like a trusted local hospital receptionist)\n";
+        $promptText .= "3. Readability (Short-medium sentences, max 18 words preferred)\n";
+        $promptText .= "4. SEO keyword placement (Natural, avoid stuffing)\n";
+        $promptText .= "5. Source meaning accuracy\n\n";
+
+        $promptText .= "BLACKLIST (NEVER USE THESE PHRASES - REWRITE IMMEDIATELY):\n";
+        $promptText .= "স্বাস্থ্যসেবার যাত্রা, মূল্যায়িত বোধ করেন, বৈশ্বিক চিকিৎসা সেবা, উচ্চতর যোগ্যতা, সহানুভূতিশীল যত্ন, চিকিৎসা পদ্ধতি নিশ্চিত করে, ভালবাসায় গঠিত যত্ন, নির্ণয় প্রক্রিয়া, প্রতিরোধক যত্ন.\n\n";
+
+        $promptText .= "STRUCTURAL RULES:\n";
+        $promptText .= "- Write as if the text will be shown on the homepage of a premium Bangladeshi diagnostic center.\n";
+        $promptText .= "- Make formatting natural (Welcome intro, why trust us, services list, closing reassurance) if structure permits.\n";
+        $promptText .= "- Accurately write proper nouns (e.g., 'একতা' instead of 'আকুতা'). 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.).\n";
+        $promptText .= "- HTML & FORMAT: Retain all original HTML tags/structure. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT matching exactly the provided keys. NO markdown ```json blocks.\n\n";
+
+        $promptText .= "FEW-SHOT EXAMPLES OF 10/10 COPYWRITING:\n";
+        $promptText .= "Ex 1 (Opening): 'টাঙ্গাইলে নির্ভরযোগ্য চিকিৎসা পরীক্ষা ও স্বাস্থ্যসেবার জন্য পপুলার ডায়াগনস্টিক সেন্টার একটি পরিচিত নাম। আধুনিক যন্ত্রপাতি ও দক্ষ টিমের মাধ্যমে আমরা মানসম্মত সেবা প্রদান করি।'\n";
+        $promptText .= "Ex 2 (Services): 'আমাদের সেবাসমূহ: • ল্যাবরেটরি পরীক্ষা – রক্ত পরীক্ষা থেকে শুরু করে যাবতীয় টেস্ট নির্ভুলভাবে করা হয়। • বিশেষজ্ঞ পরামর্শ – অভিজ্ঞ চিকিৎসকদের পরামর্শ নেওয়ার সুযোগ রয়েছে।'\n";
+        $promptText .= "Ex 3 (Closing): 'আপনার সুস্থতাই আমাদের মূল লক্ষ্য। যেকোনো প্রয়োজনে আমরা সবসময় আপনার পাশে আছি।'\n\n";
+
+        $promptText .= "INTERNAL POLISH PASS (THINK BEFORE RESPONDING):\n";
+        $promptText .= "1. Polish the text to sound fully native, premium, and human-written.\n";
+        $promptText .= "2. Ask yourself: 'Would a patient in Dhaka/Tangail naturally understand and trust this wording?' If no -> rewrite.\n\n";
+
         $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 
         $provider = Setting::get('ai_provider', 'openai');
