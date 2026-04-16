@@ -26,7 +26,8 @@
 
     @php
         $currentRouteName = Route::currentRouteName();
-        $currentRouteParams = Route::current()->parameters();
+        $currentRoute = Route::current();
+        $currentRouteParams = $currentRoute ? $currentRoute->parameters() : [];
         
         $enParams = $currentRouteParams;
         unset($enParams['locale']);
