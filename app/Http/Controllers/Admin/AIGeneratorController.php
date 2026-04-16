@@ -87,14 +87,16 @@ class AIGeneratorController extends Controller
         $fields = $request->fields;
         $targetLanguage = $request->target_language;
 
-        $promptText = "You are an expert native-level {$targetLanguage} medical SEO copywriter for a Bangladeshi healthcare platform. Your task is to rewrite the provided English content into highly engaging, professional, and natural {$targetLanguage}.\n";
-        $promptText .= "CRITICAL RULES for Copywriting Quality:\n";
-        $promptText .= "1. BE A COPYWRITER, NOT A ROBOT: Do NOT translate word-for-word. Write like a professional human copywriter. Make the text engaging, trustworthy, and easy to read. Use modern, conversational 'Shuddho Bangla' (Standard Bengali) avoiding overly complex or ancient (Sadhu) vocabulary.\n";
-        $promptText .= "2. E-E-A-T & SEO OPTIMIZATION: Naturally weave in relevant healthcare keywords to rank well on Google. Present the information in a way that builds trust and authority with patients.\n";
-        $promptText .= "3. NO TRANSLITERATION ERRORS: Accurately write proper nouns (like 'একতা' instead of 'আকুতা'). If a clinic name or medical term is better understood in English, transliterate perfectly or leave it in English.\n";
-        $promptText .= "4. HTML & STRUCTURE: Retain all original HTML formatting, tags, line breaks, and structure exactly. Modify ONLY the inner text.\n";
-        $promptText .= "5. HONORIFICS: In Bengali, the title 'Dr.' or 'Dr' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'. Maintain professional respect for doctors.\n";
-        $promptText .= "6. JSON OUTPUT ONLY: Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. DO NOT wrap the response in markdown ```json blocks.\n\n";
+        $promptText = "You are an expert native-level {$targetLanguage} medical SEO copywriter for a Bangladeshi healthcare platform. Your task is to REWRITE the provided English content into highly engaging, professional, and natural {$targetLanguage}.\n";
+        $promptText .= "CRITICAL RULES for Translation & Copywriting:\n";
+        $promptText .= "1. NATURAL BANGLADESHI TONE: Use modern, conversational 'Shuddho Bangla' that sounds authentically Bangladeshi. Make it sound human-written, trustworthy, and smooth.\n";
+        $promptText .= "2. NO LITERAL TRANSLATION: Rewrite for Bengali readers instead of translating line-by-line. NEVER translate word-for-word if it sounds unnatural.\n";
+        $promptText .= "3. FIX AWKWARD PHRASING: Replace robotic phrases like 'সহানুভূতিশীল যত্ন' with more natural wording like 'আন্তরিক সেবা' or 'যথাযথ যত্ন'. Avoid overly complex/ancient (Sadhu) vocabulary.\n";
+        $promptText .= "4. AVOID REPETITION: Reduce repeated brand/location mentions. Use pronouns or context instead of repeating the hospital/clinic name in every sentence.\n";
+        $promptText .= "5. READABILITY: Use shorter, readable paragraphs with clear sentence structures. Keep it easily digestible.\n";
+        $promptText .= "6. SEO KEYWORDS: Add local SEO keywords naturally (example: if translating for Tangail, weave in phrases like 'টাঙ্গাইল ডায়াগনস্টিক সেন্টার' or 'টাঙ্গাইলের সেরা হাসপাতাল' where appropriate, without keyword stuffing).\n";
+        $promptText .= "7. ACCURATE PROPER NOUNS: Accurately write proper nouns perfectly (e.g., 'একতা' instead of 'আকুতা'). If a term is better understood in English, transliterate perfectly. In Bengali, the title 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'.\n";
+        $promptText .= "8. HTML & STRICT FORMAT: Retain all original HTML formatting, tags, and structure exactly. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. DO NOT wrap the response in markdown ```json blocks.\n\n";
         $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 
         $provider = Setting::get('ai_provider', 'openai');
