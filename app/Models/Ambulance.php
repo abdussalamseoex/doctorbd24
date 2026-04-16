@@ -54,7 +54,7 @@ class Ambulance extends Model
 
     public static function typeMap(): array
     {
-        return \App\Models\AmbulanceType::where(true)->pluck('name', 'slug')->toArray();
+        return \App\Models\AmbulanceType::pluck('name', 'slug')->toArray();
     }
 
     public function getTypeLabelsArray(): array
