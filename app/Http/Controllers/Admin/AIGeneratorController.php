@@ -89,14 +89,15 @@ class AIGeneratorController extends Controller
 
         $promptText = "You are an expert native-level {$targetLanguage} medical SEO copywriter for a Bangladeshi healthcare platform. Your task is to REWRITE the provided English content into highly engaging, professional, and natural {$targetLanguage}.\n";
         $promptText .= "CRITICAL RULES for Translation & Copywriting:\n";
-        $promptText .= "1. NATURAL BANGLADESHI TONE: Use modern, conversational 'Shuddho Bangla' that sounds authentically Bangladeshi. Make it sound human-written, trustworthy, and smooth.\n";
-        $promptText .= "2. NO LITERAL TRANSLATION: Rewrite for Bengali readers instead of translating line-by-line. NEVER translate word-for-word if it sounds unnatural.\n";
-        $promptText .= "3. FIX AWKWARD PHRASING: Replace robotic phrases like 'সহানুভূতিশীল যত্ন' with more natural wording like 'আন্তরিক সেবা' or 'যথাযথ যত্ন'. Avoid overly complex/ancient (Sadhu) vocabulary.\n";
-        $promptText .= "4. AVOID REPETITION: Reduce repeated brand/location mentions. Use pronouns or context instead of repeating the hospital/clinic name in every sentence.\n";
-        $promptText .= "5. READABILITY: Use shorter, readable paragraphs with clear sentence structures. Keep it easily digestible.\n";
-        $promptText .= "6. SEO KEYWORDS: Add local SEO keywords naturally (example: if translating for Tangail, weave in phrases like 'টাঙ্গাইল ডায়াগনস্টিক সেন্টার' or 'টাঙ্গাইলের সেরা হাসপাতাল' where appropriate, without keyword stuffing).\n";
-        $promptText .= "7. ACCURATE PROPER NOUNS: Accurately write proper nouns perfectly (e.g., 'একতা' instead of 'আকুতা'). If a term is better understood in English, transliterate perfectly. In Bengali, the title 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'.\n";
-        $promptText .= "8. HTML & STRICT FORMAT: Retain all original HTML formatting, tags, and structure exactly. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. DO NOT wrap the response in markdown ```json blocks.\n\n";
+        $promptText .= "1. NATURAL BANGLADESHI TONE: Use modern, conversational 'Shuddho Bangla' that sounds authentically Bangladeshi.\n";
+        $promptText .= "2. EMOTIONAL & TRUSTWORTHY: Write with an emotional, trust-building healthcare tone. It must sound comforting and professional.\n";
+        $promptText .= "3. NO LITERAL TRANSLATION: Rewrite for Bengali readers instead of translating line-by-line. NEVER translate word-for-word if it sounds unnatural.\n";
+        $promptText .= "4. FIX AWKWARD PHRASING: Replace robotic phrases like 'সহানুভূতিশীল যত্ন' with more natural wording like 'আন্তরিক সেবা', 'যথাযথ চিকিৎসা', or 'মানসম্মত সেবা'.\n";
+        $promptText .= "5. AVOID REPETITION: Reduce repeated brand/location mentions. Use pronouns or context instead of repeating the hospital/clinic name in every sentence. Make paragraphs shorter and smoother.\n";
+        $promptText .= "6. COPYWRITING STRUCTURE: Make the ending Call-to-Action (CTA) very natural and human. Prefer rewriting over translating to maximize readability.\n";
+        $promptText .= "7. ACCURATE PROPER NOUNS: Accurately write proper nouns perfectly (e.g., 'একতা' instead of 'আকুতা'). In Bengali, the title 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'.\n";
+        $promptText .= "8. BEST EXAMPLE OPENING (FOLLOW THIS STYLE): 'টাঙ্গাইলে নির্ভরযোগ্য চিকিৎসা পরীক্ষা ও স্বাস্থ্যসেবার জন্য পপুলার ডায়াগনস্টিক সেন্টার একটি পরিচিত নাম। আধুনিক যন্ত্রপাতি ও অভিজ্ঞ টিমের মাধ্যমে আমরা মানসম্মত সেবা প্রদান করে থাকি।'\n";
+        $promptText .= "9. HTML & STRICT FORMAT: Retain all original HTML formatting, tags, and structure exactly. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. DO NOT wrap the response in markdown ```json blocks.\n\n";
         $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 
         $provider = Setting::get('ai_provider', 'openai');
