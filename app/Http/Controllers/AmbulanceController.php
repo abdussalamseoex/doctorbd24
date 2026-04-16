@@ -48,7 +48,10 @@ class AmbulanceController extends Controller
         
         $ambulance->incrementViewCount();
         
-        if (app()->getLocale() === 'bn' && empty($ambulance->getTranslation('provider_name', 'bn', false))) {
+        $hasBn = !empty($ambulance->getTranslation('provider_name', 'bn', false));
+        \Illuminate\Support\Facades\View::share('has_bn_translation', $hasBn);
+        
+        if (app()->getLocale() === 'bn' && !$hasBn) {
             \Illuminate\Support\Facades\View::share('noindex_page', true);
         }
 

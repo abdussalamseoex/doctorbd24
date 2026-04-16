@@ -36,7 +36,10 @@ class DoctorController extends Controller
 
         $doctor->incrementViewCount();
 
-        if (app()->getLocale() === 'bn' && empty($doctor->getTranslation('name', 'bn', false))) {
+        $hasBn = !empty($doctor->getTranslation('name', 'bn', false));
+        \Illuminate\Support\Facades\View::share('has_bn_translation', $hasBn);
+
+        if (app()->getLocale() === 'bn' && !$hasBn) {
             \Illuminate\Support\Facades\View::share('noindex_page', true);
         }
 

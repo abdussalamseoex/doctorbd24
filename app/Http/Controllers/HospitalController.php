@@ -40,7 +40,10 @@ class HospitalController extends Controller
 
         $hospital->incrementViewCount();
         
-        if (app()->getLocale() === 'bn' && empty($hospital->getTranslation('name', 'bn', false))) {
+        $hasBn = !empty($hospital->getTranslation('name', 'bn', false));
+        \Illuminate\Support\Facades\View::share('has_bn_translation', $hasBn);
+        
+        if (app()->getLocale() === 'bn' && !$hasBn) {
             \Illuminate\Support\Facades\View::share('noindex_page', true);
         }
 
@@ -111,7 +114,10 @@ class HospitalController extends Controller
 
         $hospital->incrementViewCount();
         
-        if (app()->getLocale() === 'bn' && empty($hospital->getTranslation('name', 'bn', false))) {
+        $hasBn = !empty($hospital->getTranslation('name', 'bn', false));
+        \Illuminate\Support\Facades\View::share('has_bn_translation', $hasBn);
+        
+        if (app()->getLocale() === 'bn' && !$hasBn) {
             \Illuminate\Support\Facades\View::share('noindex_page', true);
         }
 

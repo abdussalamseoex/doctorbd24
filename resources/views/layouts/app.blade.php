@@ -42,8 +42,10 @@
     @endphp
     @if($currentRouteName)
     <link rel="alternate" hreflang="en" href="{{ $enUrl }}" />
-    <link rel="alternate" hreflang="bn" href="{{ $bnUrl }}" />
     <link rel="alternate" hreflang="x-default" href="{{ $enUrl }}" />
+    @if(!isset($has_bn_translation) || $has_bn_translation !== false)
+    <link rel="alternate" hreflang="bn" href="{{ $bnUrl }}" />
+    @endif
     @endif
     <meta name="theme-color" content="#0A2540">
     <meta property="og:site_name" content="{{ setting('site_name', 'DoctorBD24') }}">
@@ -134,7 +136,11 @@
 
                     {{-- Language switcher --}}
                     @if(app()->getLocale() === 'en')
-                        <a href="{{ $bnUrl ?? url('/bn') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">বাংলা</a>
+                        @if(isset($has_bn_translation) && $has_bn_translation === false)
+                            <button onclick="window.dispatchEvent(new CustomEvent('toast', { detail: { message: 'এই পেইজের বাংলা তথ্য এখনো যুক্ত করা হয়নি', type: 'warning' } }))" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">বাংলা</button>
+                        @else
+                            <a href="{{ $bnUrl ?? url('/bn') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">বাংলা</a>
+                        @endif
                     @else
                         <a href="{{ $enUrl ?? url('/') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">EN</a>
                     @endif
@@ -409,6 +415,61 @@
     </script>
 
     @stack('scripts')
+
+    <!-- Global Toast Component -->
+    <div x-data="{
+        show: false,
+        message: '',
+        type: 'info',
+        timeout: null,
+        init() {
+            window.addEventListener('toast', e => {
+                this.message = e.detail.message;
+                this.type = e.detail.type || 'info';
+                this.show = true;
+                clearTimeout(this.timeout);
+                this.timeout = setTimeout(() => { this.show = false; }, 3000);
+            });
+        }
+    }" 
+    x-show="show" 
+    x-transition:enter="transition ease-out duration-300" 
+    x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2" 
+    x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0" 
+    x-transition:leave="transition ease-in duration-100" 
+    x-transition:leave-start="opacity-100" 
+    x-transition:leave-end="opacity-0" 
+    class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-end sm:p-6 z-50 justify-end" style="display: none;">
+        <div class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5">
+            <div class="p-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <template x-if="type === 'warning'">
+                            <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </template>
+                        <template x-if="type === 'info'">
+                            <svg class="h-6 w-6 text-sky-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                            </svg>
+                        </template>
+                    </div>
+                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                        <p class="text-sm font-medium text-white" x-text="message"></p>
+                    </div>
+                    <div class="ml-4 flex flex-shrink-0">
+                        <button type="button" @click="show = false" class="inline-flex rounded-md bg-gray-800 text-gray-400 hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
+                            <span class="sr-only">Close</span>
+                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

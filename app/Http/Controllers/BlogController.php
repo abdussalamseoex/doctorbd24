@@ -37,6 +37,13 @@ class BlogController extends Controller
         $post = BlogPost::published()->where('slug', $slug)->with('category', 'author')->firstOrFail();
         $post->incrementViewCount();
 
+        $hasBn = !empty($post->getTranslation('title', 'bn', false));
+        \Illuminate\Support\Facades\View::share('has_bn_translation', $hasBn);
+        
+        if (app()->getLocale() === 'bn' && !$hasBn) {
+            \Illuminate\Support\Facades\View::share('noindex_page', true);
+        }
+
         // ── SEO ──────────────────────────────────────
         $desc = $post->excerpt ?: mb_substr(strip_tags($post->body), 0, 160) . '…';
 
