@@ -92,8 +92,9 @@ class AIGeneratorController extends Controller
         $promptText .= "1. Retain all original HTML formatting, tags, and structure exactly as it is.\n";
         $promptText .= "2. Translate ONLY the text content. Do not translate HTML tags, attributes, or URLs.\n";
         $promptText .= "3. Keep professional medical terminology where appropriate.\n";
-        $promptText .= "4. ABSOLUTE REQUIREMENT: Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. \n";
-        $promptText .= "5. DO NOT wrap the response in markdown ```json blocks. Return ONLY valid parsed JSON.\n\n";
+        $promptText .= "4. IMPORTANT: In Bengali, the title 'Dr.' or 'Dr' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'.\n";
+        $promptText .= "5. ABSOLUTE REQUIREMENT: Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. \n";
+        $promptText .= "6. DO NOT wrap the response in markdown ```json blocks. Return ONLY valid parsed JSON.\n\n";
         $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 
         $provider = Setting::get('ai_provider', 'openai');
