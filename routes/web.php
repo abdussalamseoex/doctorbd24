@@ -61,12 +61,61 @@ $publicRoutes = function () {
                     'purpose' => 'any maskable'
                 ]
             ]
-Route::get('/join/doctor', [JoinController::class, 'doctorForm'])->name('join.doctor');
-Route::post('/join/doctor', [JoinController::class, 'submitDoctor'])->name('join.doctor.submit')->middleware('throttle:5,10');
-Route::get('/join/hospital', [JoinController::class, 'hospitalForm'])->name('join.hospital');
-Route::post('/join/hospital', [JoinController::class, 'submitHospital'])->name('join.hospital.submit')->middleware('throttle:5,10');
+        ]);
+    });
 
-}); // End Localized Group
+    // AI and LLM indexing files
+    Route::get('/llms.txt', [\App\Http\Controllers\LlmsController::class, 'index'])->name('llms.txt');
+    Route::get('/llms-full.txt', [\App\Http\Controllers\LlmsController::class, 'full'])->name('llms.full.txt');
+
+    // Contact Page
+    Route::get('/contact', [\App\Http\Controllers\PageController::class, 'contact'])->name('contact');
+    Route::post('/contact', [\App\Http\Controllers\PageController::class, 'submitContact'])->name('contact.submit')->middleware('throttle:5,10');
+
+    // ── Doctor Portal ──────────────────────
+    Route::prefix('doctor')->middleware(['auth', 'role:doctor'])->name('doctor.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, '__invoke'])->name('dashboard');
+        Route::get('/profile', [\App\Http\Controllers\DoctorProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [\App\Http\Controllers\DoctorProfileController::class, 'update'])->name('profile.update');
+        Route::get('/reviews', [\App\Http\Controllers\ProviderReviewController::class, 'index'])->name('reviews.index');
+    });
+
+    // ── Hospital Portal ────────────────────
+    Route::prefix('hospital')->middleware(['auth', 'role:hospital'])->name('hospital.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, '__invoke'])->name('dashboard');
+        Route::get('/profile', [\App\Http\Controllers\HospitalProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [\App\Http\Controllers\HospitalProfileController::class, 'update'])->name('profile.update');
+        Route::get('/reviews', [\App\Http\Controllers\ProviderReviewController::class, 'index'])->name('reviews.index');
+    });
+
+    Route::middleware(['cache.response'])->group(function () {
+        Route::get('/doctors', [\App\Http\Controllers\DoctorController::class, 'index'])->name('doctors.index');
+        Route::get('/doctor/{slug}/{tab?}', [\App\Http\Controllers\DoctorController::class, 'show'])->where('tab', 'overview|videos|blog')->name('doctors.show');
+        Route::get('/hospitals', [\App\Http\Controllers\HospitalController::class, 'index'])->name('hospitals.index');
+        Route::get('/hospital/{slug}/{tab?}', [\App\Http\Controllers\HospitalController::class, 'show'])->where('tab', 'overview|doctors|diagnostics|video|blog')->name('hospitals.show');
+        Route::get('/hospital/{slug}/diagnostics/{service_slug}', [\App\Http\Controllers\HospitalController::class, 'showDiagnosticTest'])->name('hospitals.diagnostic.show');
+        Route::get('/hospital/{hospital_slug}/video/{video_slug}', [\App\Http\Controllers\VideoController::class, 'show'])->name('video.show');
+        Route::get('/doctor/{doctor_slug}/video/{video_slug}', [\App\Http\Controllers\VideoController::class, 'showDoctorVideo'])->name('doctor.video.show');
+        Route::get('/specialties', [\App\Http\Controllers\SpecialtyController::class, 'index'])->name('specialties.index');
+        Route::get('/ambulances', [\App\Http\Controllers\AmbulanceController::class, 'index'])->name('ambulances.index');
+        Route::get('/ambulance/{slug}', [\App\Http\Controllers\AmbulanceController::class, 'resolve'])->name('ambulances.type');
+        Route::get('/ambulance/{slug}', [\App\Http\Controllers\AmbulanceController::class, 'resolve'])->name('ambulances.show');
+        Route::get('/blog', [\App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
+        Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+    });
+
+    Route::post('/doctors/{doctor}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'store'])->name('doctors.claim')->middleware('auth');
+    Route::post('/hospitals/{hospital}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'storeHospital'])->name('hospitals.claim')->middleware('auth');
+    Route::post('/ambulances/{ambulance}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'storeAmbulance'])->name('ambulances.claim')->middleware('auth');
+
+    // Join Forms
+    Route::get('/join/doctor', [\App\Http\Controllers\JoinController::class, 'doctorForm'])->name('join.doctor');
+    Route::post('/join/doctor', [\App\Http\Controllers\JoinController::class, 'submitDoctor'])->name('join.doctor.submit')->middleware('throttle:5,10');
+    Route::get('/join/hospital', [\App\Http\Controllers\JoinController::class, 'hospitalForm'])->name('join.hospital');
+    Route::post('/join/hospital', [\App\Http\Controllers\JoinController::class, 'submitHospital'])->name('join.hospital.submit')->middleware('throttle:5,10');
+
+    Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
+};
 
 // Sitemap
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
