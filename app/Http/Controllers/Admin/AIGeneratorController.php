@@ -89,15 +89,14 @@ class AIGeneratorController extends Controller
 
         $promptText = "You are an expert native-level {$targetLanguage} medical SEO copywriter for a Bangladeshi healthcare platform. Your task is to REWRITE the provided English content into highly engaging, professional, and natural {$targetLanguage}.\n";
         $promptText .= "CRITICAL RULES for Translation & Copywriting:\n";
-        $promptText .= "1. NATURAL BANGLADESHI TONE: Use modern, conversational 'Shuddho Bangla' that sounds authentically Bangladeshi.\n";
-        $promptText .= "2. EMOTIONAL & TRUSTWORTHY: Write with an emotional, trust-building healthcare tone. It must sound comforting and professional.\n";
-        $promptText .= "3. NO LITERAL TRANSLATION: Rewrite for Bengali readers instead of translating line-by-line. NEVER translate word-for-word if it sounds unnatural.\n";
-        $promptText .= "4. FIX AWKWARD PHRASING: Replace robotic phrases like 'সহানুভূতিশীল যত্ন' with more natural wording like 'আন্তরিক সেবা', 'যথাযথ চিকিৎসা', or 'মানসম্মত সেবা'.\n";
-        $promptText .= "5. AVOID REPETITION: Reduce repeated brand/location mentions. Use pronouns or context instead of repeating the hospital/clinic name in every sentence. Make paragraphs shorter and smoother.\n";
-        $promptText .= "6. COPYWRITING STRUCTURE: Make the ending Call-to-Action (CTA) very natural and human. Prefer rewriting over translating to maximize readability.\n";
-        $promptText .= "7. ACCURATE PROPER NOUNS: Accurately write proper nouns perfectly (e.g., 'একতা' instead of 'আকুতা'). In Bengali, the title 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'.\n";
-        $promptText .= "8. BEST EXAMPLE OPENING (FOLLOW THIS STYLE): 'টাঙ্গাইলে নির্ভরযোগ্য চিকিৎসা পরীক্ষা ও স্বাস্থ্যসেবার জন্য পপুলার ডায়াগনস্টিক সেন্টার একটি পরিচিত নাম। আধুনিক যন্ত্রপাতি ও অভিজ্ঞ টিমের মাধ্যমে আমরা মানসম্মত সেবা প্রদান করে থাকি।'\n";
-        $promptText .= "9. HTML & STRICT FORMAT: Retain all original HTML formatting, tags, and structure exactly. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. DO NOT wrap the response in markdown ```json blocks.\n\n";
+        $promptText .= "1. NATURAL BANGLADESHI TONE: Write with an emotional, trust-building healthcare tone. It must sound human-written, comforting, and professional. Completely avoid robotic translated phrases like 'স্বাস্থ্যসেবার যাত্রায়'.\n";
+        $promptText .= "2. AVOID REPETITION: Avoid repeating words like 'আমরা', 'সেবা', and the full business name too often. Use pronouns or context to make the flow natural.\n";
+        $promptText .= "3. NO LITERAL TRANSLATION: Rewrite for Bengali readers instead of translating line-by-line. NEVER translate word-for-word. Keep headings simple and user-friendly.\n";
+        $promptText .= "4. READABILITY: Use smoother sentence flow and shorter readable paragraphs.\n";
+        $promptText .= "5. ACCURATE PROPER NOUNS: Accurately write proper nouns perfectly (e.g., 'একতা' instead of 'আকুতা'). In Bengali, the title 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'.\n";
+        $promptText .= "6. BEST EXAMPLE REWRITE (FOLLOW THIS BENCHMARK STYLE EXACTLY):\n";
+        $promptText .= "'পপুলার ডায়াগনস্টিক সেন্টার, টাঙ্গাইল-এ আপনাকে স্বাগতম\nটাঙ্গাইলে নির্ভরযোগ্য চিকিৎসা পরীক্ষা ও স্বাস্থ্যসেবার জন্য পপুলার ডায়াগনস্টিক সেন্টার একটি পরিচিত নাম। আধুনিক যন্ত্রপাতি, দক্ষ টিম এবং আন্তরিক রোগীসেবার মাধ্যমে আমরা প্রতিদিন মানসম্মত সেবা প্রদান করে থাকি।\nআমাদের সেবাসমূহ:\n• ল্যাবরেটরি পরীক্ষা – রক্ত পরীক্ষা থেকে শুরু করে বিভিন্ন প্রয়োজনীয় টেস্ট দ্রুত ও নির্ভুলভাবে করা হয়।\n• ইমেজিং সেবা – এক্স-রে, আলট্রাসাউন্ড, ইসিজি ও অন্যান্য আধুনিক পরীক্ষা সুবিধা রয়েছে।\nকেন আমাদের বেছে নেবেন?\n• অভিজ্ঞ ও দক্ষ সেবা টিম\n• আধুনিক প্রযুক্তি ও নির্ভরযোগ্য রিপোর্ট\nআপনার সুস্থতাই আমাদের অগ্রাধিকার। প্রয়োজনের সময় আমরা সবসময় আপনার পাশে আছি.'\n";
+        $promptText .= "7. HTML & STRICT FORMAT: Retain all original HTML formatting, tags, and structure exactly. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. DO NOT wrap the response in markdown ```json blocks.\n\n";
         $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 
         $provider = Setting::get('ai_provider', 'openai');
