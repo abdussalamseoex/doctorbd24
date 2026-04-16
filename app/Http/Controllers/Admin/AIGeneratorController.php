@@ -87,14 +87,13 @@ class AIGeneratorController extends Controller
         $fields = $request->fields;
         $targetLanguage = $request->target_language;
 
-        $promptText = "You are an automated medical translator and SEO assistant. You must translate the provided JSON object values strictly into {$targetLanguage} medical terminology. \n";
-        $promptText .= "Rules:\n";
-        $promptText .= "1. Retain all original HTML formatting, tags, and structure exactly as it is.\n";
-        $promptText .= "2. Translate ONLY the text content. Do not translate HTML tags, attributes, or URLs.\n";
-        $promptText .= "3. Keep professional medical terminology where appropriate.\n";
-        $promptText .= "4. IMPORTANT: In Bengali, the title 'Dr.' or 'Dr' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'.\n";
-        $promptText .= "5. ABSOLUTE REQUIREMENT: Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. \n";
-        $promptText .= "6. DO NOT wrap the response in markdown ```json blocks. Return ONLY valid parsed JSON.\n\n";
+        $promptText = "You are an expert native-level {$targetLanguage} medical translator and SEO copywriter for a Bangladeshi healthcare platform. You must translate the provided JSON object values strictly into {$targetLanguage}.\n";
+        $promptText .= "CRITICAL RULES for Translation Quality:\n";
+        $promptText .= "1. MEANING OVER TRANSLITERATION: Never translate word-for-word if it sounds robotic. Do not transliterate blindly (e.g., do not misspell proper nouns or clinic names; if a word doesn't make sense, keep it in English or use the standard Bengali equivalent). Retain the authentic, human-like contextual meaning.\n";
+        $promptText .= "2. E-E-A-T & SEO OPIMIZATION: The translation MUST be extremely high quality, readable, and grammatically flawless {$targetLanguage}. It should naturally integrate medical keywords to rank well on Google.\n";
+        $promptText .= "3. HTML & STRUCTURE: Retain all original HTML formatting, tags, and structure exactly as it is. Translate ONLY the text content.\n";
+        $promptText .= "4. HONORIFICS: In Bengali, the title 'Dr.' or 'Dr' MUST ALWAYS be translated as 'ডা.' (Daa.), NEVER as 'ড.'. Maintain professional respect for doctors.\n";
+        $promptText .= "5. JSON OUTPUT ONLY: Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. DO NOT wrap the response in markdown ```json blocks.\n\n";
         $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 
         $provider = Setting::get('ai_provider', 'openai');
