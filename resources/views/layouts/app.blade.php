@@ -336,10 +336,10 @@
                 <div>
                     <h4 class="font-semibold text-white mb-3">{{ __('Information') }}</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="{{ route('page.show', 'about-us') }}" class="hover:text-sky-400 transition-colors">{{ __('About Us') }}</a></li>
+                        <li><a href="{{ route('page.show', ['slug' => 'about-us']) }}" class="hover:text-sky-400 transition-colors">{{ __('About Us') }}</a></li>
                         <li><a href="{{ route('contact') }}" class="hover:text-sky-400 transition-colors">{{ __('Contact Us') }}</a></li>
-                        <li><a href="{{ route('page.show', 'privacy-policy') }}" class="hover:text-sky-400 transition-colors">{{ __('Privacy Policy') }}</a></li>
-                        <li><a href="{{ route('page.show', 'terms-and-conditions') }}" class="hover:text-sky-400 transition-colors">{{ __('Terms & Conditions') }}</a></li>
+                        <li><a href="{{ route('page.show', ['slug' => 'privacy-policy']) }}" class="hover:text-sky-400 transition-colors">{{ __('Privacy Policy') }}</a></li>
+                        <li><a href="{{ route('page.show', ['slug' => 'terms-and-conditions']) }}" class="hover:text-sky-400 transition-colors">{{ __('Terms & Conditions') }}</a></li>
                     </ul>
                 </div>
 
