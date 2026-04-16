@@ -39,6 +39,10 @@ class HospitalController extends Controller
         }
 
         $hospital->incrementViewCount();
+        
+        if (app()->getLocale() === 'bn' && empty($hospital->getTranslation('name', 'bn', false))) {
+            \Illuminate\Support\Facades\View::share('noindex_page', true);
+        }
 
         // ── SEO ──────────────────────────────────────
         $area  = $hospital->area?->getTranslation('name', 'en') ?? '';
@@ -106,6 +110,10 @@ class HospitalController extends Controller
             ->firstOrFail();
 
         $hospital->incrementViewCount();
+        
+        if (app()->getLocale() === 'bn' && empty($hospital->getTranslation('name', 'bn', false))) {
+            \Illuminate\Support\Facades\View::share('noindex_page', true);
+        }
 
         // ── Dynamic SEO generation for the specific test ──────────────────────
         $areaName = $hospital->area?->getTranslation('name', 'en') ?? '';

@@ -13,10 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Translatable\HasTranslations;
 
 class Hospital extends Model
 {
-    use SoftDeletes, HasSeo, LogsActivity, Publishable;
+    use SoftDeletes, HasSeo, LogsActivity, Publishable, HasTranslations;
+
+    public $translatable = ['name', 'about', 'address'];
 
     public function getActivitylogOptions(): LogOptions
     {

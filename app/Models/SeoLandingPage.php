@@ -6,10 +6,13 @@ use App\Traits\Publishable;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class SeoLandingPage extends Model
 {
-    use HasFactory, Publishable;
+    use HasFactory, Publishable, HasTranslations;
+
+    public $translatable = ['title', 'content_top', 'content_bottom'];
 
     protected $fillable = [
         'status', 'published_at',

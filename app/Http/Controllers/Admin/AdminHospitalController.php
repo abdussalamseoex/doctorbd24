@@ -17,7 +17,10 @@ class AdminHospitalController extends Controller
     {
         $query = Hospital::with('area');
         if ($request->search) {
-            $query->where('name', 'like', '%'.$request->search.'%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name->en', 'like', '%'.$request->search.'%')
+                  ->orWhere('name->bn', 'like', '%'.$request->search.'%');
+            });
         }
         if ($request->has('verified')) {
             $query->where('verified', (bool)$request->verified);
@@ -63,17 +66,23 @@ class AdminHospitalController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'            => ['required','string','max:255'],
+            'name'            => ['required','array'],
+            'name.en'         => ['required','string','max:255'],
+            'name.bn'         => ['nullable','string','max:255'],
             'type'            => ['required','in:hospital,diagnostic,clinic,other'],
             'phone'           => ['nullable','string','max:20'],
             'email'           => ['nullable','email'],
-            'address'         => ['nullable','string'],
+            'address'         => ['nullable','array'],
+            'address.en'      => ['nullable','string'],
+            'address.bn'      => ['nullable','string'],
             'website'         => ['nullable','url'],
             'area_id'         => ['nullable','exists:areas,id'],
             'slug'            => ['nullable','string','max:255','unique:hospitals,slug'],
             'verified'        => ['boolean'],
             'featured'        => ['boolean'],
-            'about'           => ['nullable','string'],
+            'about'           => ['nullable','array'],
+            'about.en'        => ['nullable','string'],
+            'about.bn'        => ['nullable','string'],
             'lat'             => ['nullable','numeric'],
             'lng'             => ['nullable','numeric'],
             'google_maps_url' => ['nullable','url'],
@@ -89,7 +98,7 @@ class AdminHospitalController extends Controller
         ]);
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(4);
+            $validated['slug'] = Str::slug($validated['name']['en'] ?? '') . '-' . Str::random(4);
         }
         $validated['verified'] = $request->boolean('verified');
         $validated['featured'] = $request->boolean('featured');
@@ -146,7 +155,7 @@ class AdminHospitalController extends Controller
             }
             $hospital->updateSeo($seoData);
         }
-        $hasDuplicate = Hospital::where('name', $hospital->name)->where('id', '!=', $hospital->id)->exists();
+        $hasDuplicate = Hospital::where('name->en', $hospital->getTranslation('name', 'en'))->where('id', '!=', $hospital->id)->exists();
         $message = 'Hospital added successfully.';
         if ($hasDuplicate) {
             $message .= ' ⚠ Warning: Another Hospital with the same name exists in the system.';
@@ -164,17 +173,23 @@ class AdminHospitalController extends Controller
     public function update(Request $request, Hospital $hospital)
     {
         $validated = $request->validate([
-            'name'            => ['required','string','max:255'],
+            'name'            => ['required','array'],
+            'name.en'         => ['required','string','max:255'],
+            'name.bn'         => ['nullable','string','max:255'],
             'type'            => ['required','in:hospital,diagnostic,clinic,other'],
             'phone'           => ['nullable','string','max:20'],
             'email'           => ['nullable','email'],
-            'address'         => ['nullable','string'],
+            'address'         => ['nullable','array'],
+            'address.en'      => ['nullable','string'],
+            'address.bn'      => ['nullable','string'],
             'website'         => ['nullable','url'],
             'area_id'         => ['nullable','exists:areas,id'],
             'slug'            => ['nullable','string','max:255','unique:hospitals,slug,'.$hospital->id],
             'verified'        => ['boolean'],
             'featured'        => ['boolean'],
-            'about'           => ['nullable','string'],
+            'about'           => ['nullable','array'],
+            'about.en'        => ['nullable','string'],
+            'about.bn'        => ['nullable','string'],
             'lat'             => ['nullable','numeric'],
             'lng'             => ['nullable','numeric'],
             'google_maps_url' => ['nullable','url'],
@@ -199,7 +214,7 @@ class AdminHospitalController extends Controller
         $validated['blogs'] = $this->processExternalLinksData($this->parseJsonField($request->input('blogs')));
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(4);
+            $validated['slug'] = Str::slug($validated['name']['en'] ?? '') . '-' . Str::random(4);
         }
 
         if ($request->hasFile('logo')) {
@@ -273,7 +288,7 @@ class AdminHospitalController extends Controller
             }
             $hospital->updateSeo($seoData);
         }
-        $hasDuplicate = Hospital::where('name', $hospital->name)->where('id', '!=', $hospital->id)->exists();
+        $hasDuplicate = Hospital::where('name->en', $hospital->getTranslation('name', 'en'))->where('id', '!=', $hospital->id)->exists();
         $message = 'Hospital updated successfully.';
         if ($hasDuplicate) {
             $message .= ' ⚠ Warning: Another Hospital with the same name exists in the system.';

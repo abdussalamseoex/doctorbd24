@@ -98,64 +98,112 @@
             </div>
 
             {{-- Basic Fields --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Full Name <span class="text-red-400">*</span></label>
-                    <input type="text" name="name" required value="{{ old('name', $doctor->name ?? '') }}" placeholder="e.g. Dr. John Doe"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
-                    @error('name')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            <div x-data="{ activeTab: 'en' }">
+                <div class="flex gap-2 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3">
+                    <button type="button" @click="activeTab = 'en'" 
+                            :class="activeTab === 'en' ? 'bg-sky-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                            class="px-5 py-2 rounded-xl text-sm font-bold transition-all focus:outline-none">
+                        English (Default)
+                    </button>
+                    <button type="button" @click="activeTab = 'bn'" 
+                            :class="activeTab === 'bn' ? 'bg-emerald-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                            class="px-5 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 focus:outline-none">
+                        Bengali (বাংলা)
+                        <span class="text-[9px] uppercase tracking-wide bg-white/20 text-white px-1.5 py-0.5 rounded-full" x-show="activeTab === 'bn'">Translating</span>
+                    </button>
                 </div>
-                {{-- Custom Slug --}}
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Custom Slug (URL) <span class="text-gray-400 font-normal whitespace-nowrap">(Leave empty to auto-generate)</span></label>
-                    <div class="flex">
-                        <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-500 text-xs text-nowrap">doctorbd24.com/doctor/</span>
-                        <input type="text" name="slug" value="{{ old('slug', $doctor->slug ?? '') }}" placeholder="dr-john-doe"
-                               class="flex-1 w-full px-3 py-2 text-sm rounded-r-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 focus:bg-white dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
+
+                <!-- ENGLISH TAB -->
+                <div x-show="activeTab === 'en'" x-transition class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Full Name (English) <span class="text-red-400">*</span></label>
+                        <input type="text" name="name[en]" required value="{{ old('name.en', isset($doctor) ? $doctor->getTranslation('name', 'en', false) : '') }}" placeholder="e.g. Dr. John Doe"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
+                        @error('name.en')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                     </div>
-                    @error('slug')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Gender <span class="text-red-400">*</span></label>
-                    <select name="gender" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
-                        <option value="male"   @selected(old('gender', $doctor->gender ?? 'male') === 'male')>Male</option>
-                        <option value="female" @selected(old('gender', $doctor->gender ?? '') === 'female')>Female</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Designation</label>
-                    <input type="text" name="designation" value="{{ old('designation', $doctor->designation ?? '') }}" placeholder="e.g. Senior Consultant"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Qualifications</label>
-                    <input type="text" name="qualifications" value="{{ old('qualifications', $doctor->qualifications ?? '') }}" placeholder="MBBS, FCPS"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Phone (Personal)</label>
-                    <input type="text" name="phone" value="{{ old('phone', $doctor->phone ?? '') }}" placeholder="01XXXXXXXXX"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Email</label>
-                    <input type="email" name="email" value="{{ old('email', $doctor->email ?? '') }}" placeholder="doctor@example.com"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Experience (Years)</label>
-                    <input type="number" name="experience_years" value="{{ old('experience_years', $doctor->experience_years ?? 0) }}" min="0"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
-                </div>
-                <div class="md:col-span-2">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Professional Bio</label>
-                        <button type="button" onclick="generateAiContent('doctor_bio', 'tinymce:bio', this)" class="text-[10px] bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-sky-200 transition-colors z-50 relative">
-                            ✨ Auto Generate Bio
-                        </button>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Designation (English)</label>
+                        <input type="text" name="designation[en]" value="{{ old('designation.en', isset($doctor) ? $doctor->getTranslation('designation', 'en', false) : '') }}" placeholder="e.g. Senior Consultant"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
                     </div>
-                    <textarea name="bio" id="bio" rows="8" placeholder="Short professional background..."
-                              class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none transition-colors">{{ old('bio', $doctor->bio ?? '') }}</textarea>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Qualifications (English)</label>
+                        <input type="text" name="qualifications[en]" value="{{ old('qualifications.en', isset($doctor) ? $doctor->getTranslation('qualifications', 'en', false) : '') }}" placeholder="MBBS, FCPS"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
+                    </div>
+                    <div class="md:col-span-2">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Professional Bio (English)</label>
+                            <button type="button" onclick="generateAiContent('doctor_bio', 'tinymce:bio_en', this)" class="text-[10px] bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-sky-200 transition-colors z-50 relative">
+                                ✨ Auto Generate Bio
+                            </button>
+                        </div>
+                        <textarea name="bio[en]" id="bio_en" rows="8" placeholder="Short professional background..."
+                                  class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none transition-colors">{{ old('bio.en', isset($doctor) ? $doctor->getTranslation('bio', 'en', false) : '') }}</textarea>
+                    </div>
+                </div>
+
+                <!-- BENGALI TAB -->
+                <div x-show="activeTab === 'bn'" style="display:none;" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-emerald-50/30 dark:bg-emerald-900/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                    <div>
+                        <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">Full Name (Bengali)</label>
+                        <input type="text" name="name[bn]" value="{{ old('name.bn', isset($doctor) ? $doctor->getTranslation('name', 'bn', false) : '') }}" placeholder="উদাঃ ডাঃ জন ডো"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors text-gray-800 dark:text-gray-200">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">Designation (Bengali)</label>
+                        <input type="text" name="designation[bn]" value="{{ old('designation.bn', isset($doctor) ? $doctor->getTranslation('designation', 'bn', false) : '') }}" placeholder="উদাঃ সিনিয়র কনসালটেন্ট"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors text-gray-800 dark:text-gray-200">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">Qualifications (Bengali)</label>
+                        <input type="text" name="qualifications[bn]" value="{{ old('qualifications.bn', isset($doctor) ? $doctor->getTranslation('qualifications', 'bn', false) : '') }}" placeholder="এমবিবিএস, এফসিপিএস"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors text-gray-800 dark:text-gray-200">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">Professional Bio (Bengali)</label>
+                        <textarea name="bio[bn]" id="bio_bn" rows="8" placeholder="তার পেশাগত জীবন সম্পর্কে সংক্ষেপে লিখুন..."
+                                  class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-none transition-colors">{{ old('bio.bn', isset($doctor) ? $doctor->getTranslation('bio', 'bn', false) : '') }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Global / Technical Fields --}}
+            <div class="mt-8 border-t border-gray-100 dark:border-gray-700 pt-6">
+                <h4 class="text-xs tracking-wider uppercase font-bold text-gray-400 mb-4">Core Settings (Applies to all languages)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- Custom Slug --}}
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Custom Slug (URL) <span class="text-gray-400 font-normal whitespace-nowrap">(Leave empty to auto-generate)</span></label>
+                        <div class="flex">
+                            <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-500 text-xs text-nowrap">doctorbd24.com/doctor/</span>
+                            <input type="text" name="slug" value="{{ old('slug', $doctor->slug ?? '') }}" placeholder="dr-john-doe"
+                                   class="flex-1 w-full px-3 py-2 text-sm rounded-r-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 focus:bg-white dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
+                        </div>
+                        @error('slug')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Gender <span class="text-red-400">*</span></label>
+                        <select name="gender" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
+                            <option value="male"   @selected(old('gender', $doctor->gender ?? 'male') === 'male')>Male</option>
+                            <option value="female" @selected(old('gender', $doctor->gender ?? '') === 'female')>Female</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Phone (Personal)</label>
+                        <input type="text" name="phone" value="{{ old('phone', $doctor->phone ?? '') }}" placeholder="01XXXXXXXXX"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Email</label>
+                        <input type="email" name="email" value="{{ old('email', $doctor->email ?? '') }}" placeholder="doctor@example.com"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Experience (Years)</label>
+                        <input type="number" name="experience_years" value="{{ old('experience_years', $doctor->experience_years ?? 0) }}" min="0"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-300 transition-colors">
+                    </div>
                 </div>
             </div>
         </div>

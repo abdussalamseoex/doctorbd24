@@ -13,10 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Translatable\HasTranslations;
 
 class Doctor extends Model
 {
-    use SoftDeletes, HasSeo, LogsActivity, Publishable;
+    use SoftDeletes, HasSeo, LogsActivity, Publishable, HasTranslations;
+
+    public $translatable = ['name', 'designation', 'qualifications', 'bio'];
 
     public function getActivitylogOptions(): LogOptions
     {

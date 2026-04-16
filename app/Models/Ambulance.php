@@ -11,10 +11,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Translatable\HasTranslations;
 
 class Ambulance extends Model
 {
-    use HasSeo, LogsActivity, Publishable;
+    use HasSeo, LogsActivity, Publishable, HasTranslations;
+
+    public $translatable = ['provider_name', 'summary', 'notes', 'address'];
 
     public function getActivitylogOptions(): LogOptions
     {

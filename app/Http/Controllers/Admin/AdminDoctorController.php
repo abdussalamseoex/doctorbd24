@@ -21,7 +21,10 @@ class AdminDoctorController extends Controller
         $query = Doctor::with('specialties');
 
         if ($request->search) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name->en', 'like', '%' . $request->search . '%')
+                  ->orWhere('name->bn', 'like', '%' . $request->search . '%');
+            });
         }
         if ($request->has('verified')) {
             $query->where('verified', (bool)$request->verified);
@@ -133,14 +136,22 @@ class AdminDoctorController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'             => ['required','string','max:255'],
+            'name'             => ['required','array'],
+            'name.en'          => ['required','string','max:255'],
+            'name.bn'          => ['nullable','string','max:255'],
             'slug'             => ['nullable','string','max:255','unique:doctors,slug'],
-            'designation'      => ['nullable','string','max:255'],
-            'qualifications'   => ['nullable','string'],
+            'designation'      => ['nullable','array'],
+            'designation.en'   => ['nullable','string','max:255'],
+            'designation.bn'   => ['nullable','string','max:255'],
+            'qualifications'   => ['nullable','array'],
+            'qualifications.en'=> ['nullable','string'],
+            'qualifications.bn'=> ['nullable','string'],
             'gender'           => ['required','in:male,female'],
             'phone'            => ['nullable','string','max:20'],
             'email'            => ['nullable','email','max:255'],
-            'bio'              => ['nullable','string'],
+            'bio'              => ['nullable','array'],
+            'bio.en'           => ['nullable','string'],
+            'bio.bn'           => ['nullable','string'],
             'experience_years' => ['nullable','integer','min:0'],
             'verified'         => ['boolean'],
             'featured'         => ['boolean'],
@@ -158,7 +169,7 @@ class AdminDoctorController extends Controller
         ]);
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = Str::slug($validated['name']['en'] ?? '');
         }
         $validated['verified'] = $request->boolean('verified');
         $validated['featured'] = $request->boolean('featured');
@@ -222,7 +233,7 @@ class AdminDoctorController extends Controller
         }
 
         // Check for possible duplicates
-        $hasDuplicate = Doctor::where('name', $doctor->name)->where('id', '!=', $doctor->id)->exists();
+        $hasDuplicate = Doctor::where('name->en', $doctor->getTranslation('name', 'en'))->where('id', '!=', $doctor->id)->exists();
         $message = 'Doctor created successfully.';
         if ($hasDuplicate) {
             $message .= ' ⚠ Warning: A Doctor with the same name already exists in the system.';
@@ -243,13 +254,21 @@ class AdminDoctorController extends Controller
     public function update(Request $request, Doctor $doctor)
     {
         $validated = $request->validate([
-            'name'             => ['required','string','max:255'],
-            'designation'      => ['nullable','string','max:255'],
-            'qualifications'   => ['nullable','string'],
+            'name'             => ['required','array'],
+            'name.en'          => ['required','string','max:255'],
+            'name.bn'          => ['nullable','string','max:255'],
+            'designation'      => ['nullable','array'],
+            'designation.en'   => ['nullable','string','max:255'],
+            'designation.bn'   => ['nullable','string','max:255'],
+            'qualifications'   => ['nullable','array'],
+            'qualifications.en'=> ['nullable','string'],
+            'qualifications.bn'=> ['nullable','string'],
             'gender'           => ['required','in:male,female'],
             'phone'            => ['nullable','string','max:20'],
             'email'            => ['nullable','email','max:255'],
-            'bio'              => ['nullable','string'],
+            'bio'              => ['nullable','array'],
+            'bio.en'           => ['nullable','string'],
+            'bio.bn'           => ['nullable','string'],
             'experience_years' => ['nullable','integer','min:0'],
             'verified'         => ['boolean'],
             'featured'         => ['boolean'],
@@ -270,7 +289,7 @@ class AdminDoctorController extends Controller
         $validated['featured'] = $request->boolean('featured');
         if (empty($request->slug)) {
             if (empty($doctor->slug)) {
-                $validated['slug'] = Str::slug($validated['name']);
+                $validated['slug'] = Str::slug($validated['name']['en'] ?? '');
             }
         } else {
             $validated['slug'] = $request->slug;
@@ -351,7 +370,7 @@ class AdminDoctorController extends Controller
         }
 
         // Check for possible duplicates
-        $hasDuplicate = Doctor::where('name', $doctor->name)->where('id', '!=', $doctor->id)->exists();
+        $hasDuplicate = Doctor::where('name->en', $doctor->getTranslation('name', 'en'))->where('id', '!=', $doctor->id)->exists();
         $message = 'Doctor updated successfully.';
         if ($hasDuplicate) {
             $message .= ' ⚠ Warning: Another Doctor with the same name exists in the system.';

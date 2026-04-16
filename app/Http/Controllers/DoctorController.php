@@ -36,6 +36,10 @@ class DoctorController extends Controller
 
         $doctor->incrementViewCount();
 
+        if (app()->getLocale() === 'bn' && empty($doctor->getTranslation('name', 'bn', false))) {
+            \Illuminate\Support\Facades\View::share('noindex_page', true);
+        }
+
         // ── SEO for profile ──────────────────────────
         $spNames = $doctor->specialties->map(fn($s) => $s->getTranslation('name', 'en'))->join(', ');
         $title   = "{$doctor->name} — {$doctor->designation}";

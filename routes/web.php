@@ -31,6 +31,8 @@ Route::get('/lang/{locale}', function ($locale) {
 })->name('lang.switch');
 
 // â”€â”€ Public Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+Route::group(['prefix' => '{locale?}', 'where' => ['locale' => 'bn']], function () {
+
 Route::get('/', [HomeController::class, 'index'])->middleware('cache.response')->name('home');
 
 // PWA Manifest
@@ -134,6 +136,8 @@ Route::get('/join/doctor', [JoinController::class, 'doctorForm'])->name('join.do
 Route::post('/join/doctor', [JoinController::class, 'submitDoctor'])->name('join.doctor.submit')->middleware('throttle:5,10');
 Route::get('/join/hospital', [JoinController::class, 'hospitalForm'])->name('join.hospital');
 Route::post('/join/hospital', [JoinController::class, 'submitHospital'])->name('join.hospital.submit')->middleware('throttle:5,10');
+
+}); // End Localized Group
 
 // Sitemap
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
@@ -356,7 +360,9 @@ Route::get('storage/{path}', function ($path) {
 
 // ─── Dynamic Pages (Catch-All) ────────────────────────
 // This route must remain at the very bottom
-Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
+Route::group(['prefix' => '{locale?}', 'where' => ['locale' => 'bn']], function () {
+    Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
+});
 
 Route::get('/test-ai-popup', function () {
     return \Blade::render('<!DOCTYPE html><html><head><script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-gray-100"> <h1>Test</h1> @include("admin.shared._ai_assistant") </body></html>');

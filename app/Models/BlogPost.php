@@ -11,10 +11,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Translatable\HasTranslations;
 
 class BlogPost extends Model
 {
-    use SoftDeletes, HasSeo, LogsActivity, Publishable;
+    use SoftDeletes, HasSeo, LogsActivity, Publishable, HasTranslations;
+
+    public $translatable = ['title', 'excerpt', 'body'];
 
     public function getActivitylogOptions(): LogOptions
     {

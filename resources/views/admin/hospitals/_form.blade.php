@@ -97,97 +97,141 @@
             </div>
 
             {{-- Basic Fields --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="md:col-span-2">
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Hospital Name <span class="text-red-400">*</span></label>
-                    <input type="text" name="name" required value="{{ old('name', $hospital->name ?? '') }}" placeholder="e.g. Dhaka Medical College Hospital"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
-                    @error('name')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            <div x-data="{ activeTab: 'en' }">
+                <div class="flex gap-2 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3">
+                    <button type="button" @click="activeTab = 'en'" 
+                            :class="activeTab === 'en' ? 'bg-sky-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                            class="px-5 py-2 rounded-xl text-sm font-bold transition-all focus:outline-none">
+                        English (Default)
+                    </button>
+                    <button type="button" @click="activeTab = 'bn'" 
+                            :class="activeTab === 'bn' ? 'bg-emerald-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                            class="px-5 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 focus:outline-none">
+                        Bengali (বাংলা)
+                        <span class="text-[9px] uppercase tracking-wide bg-white/20 text-white px-1.5 py-0.5 rounded-full" x-show="activeTab === 'bn'">Translating</span>
+                    </button>
                 </div>
-                {{-- Custom Slug --}}
-                <div class="md:col-span-2">
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Custom Slug (URL) <span class="text-gray-400 font-normal whitespace-nowrap">(Leave empty to auto-generate)</span></label>
-                    <div class="flex">
-                        <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 text-xs">doctorbd24.com/hospital/</span>
-                        <input type="text" name="slug" value="{{ old('slug', $hospital->slug ?? '') }}" placeholder="dhaka-medical-college"
-                               class="flex-1 w-full px-3 py-2 text-sm rounded-r-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
+
+                <!-- ENGLISH TAB -->
+                <div x-show="activeTab === 'en'" x-transition class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Hospital Name (English) <span class="text-red-400">*</span></label>
+                        <input type="text" name="name[en]" required value="{{ old('name.en', isset($hospital) ? $hospital->getTranslation('name', 'en', false) : '') }}" placeholder="e.g. Dhaka Medical College Hospital"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
+                        @error('name.en')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                     </div>
-                    @error('slug')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Type <span class="text-red-400">*</span></label>
-                    <select name="type" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
-                        <option value="hospital"   @selected(old('type', $hospital->type ?? '') === 'hospital')>🏥 Hospital</option>
-                        <option value="diagnostic" @selected(old('type', $hospital->type ?? '') === 'diagnostic')>🔬 Diagnostic</option>
-                        <option value="clinic"     @selected(old('type', $hospital->type ?? '') === 'clinic')>🩺 Clinic</option>
-                        <option value="other"      @selected(old('type', $hospital->type ?? '') === 'other')>Other</option>
-                    </select>
-                </div>
-                {{-- Cascading Location --}}
-                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50/50 dark:bg-gray-900/10 p-4 rounded-2xl border border-gray-100 dark:border-gray-700"
-                     x-data="locationPicker('{{ old('division_id', $hospital->area?->district?->division_id ?? '') }}', '{{ old('district_id', $hospital->area?->district_id ?? '') }}', '{{ old('area_id', $hospital->area_id ?? '') }}')">
-                    <div>
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Division</label>
-                        <select name="division_id" x-model="divisionId" @change="fetchDistricts()"
-                                class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                            <option value="">-- Select Division --</option>
-                            @foreach($divisions as $div)
-                                <option value="{{ $div->id }}">{{ $div->getTranslation('name', 'en') }}</option>
-                            @endforeach
-                        </select>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">📍 Full Address (English)</label>
+                        <input type="text" name="address[en]" value="{{ old('address.en', isset($hospital) ? $hospital->getTranslation('address', 'en', false) : '') }}" placeholder="House, Road, Area..."
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
                     </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">District</label>
-                        <select name="district_id" x-model="districtId" @change="fetchAreas()" :disabled="!divisionId"
-                                class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:opacity-50">
-                            <option value="">-- Select District --</option>
-                            <template x-for="dist in districts" :key="dist.id">
-                                <option :value="dist.id" x-text="dist.name" :selected="dist.id == districtId"></option>
-                            </template>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Area <span class="text-red-400">*</span></label>
-                        <select name="area_id" x-model="areaId" :disabled="!districtId" required
-                                class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:opacity-50">
-                            <option value="">-- Select Area --</option>
-                            <template x-for="ar in areas" :key="ar.id">
-                                <option :value="ar.id" x-text="ar.name" :selected="ar.id == areaId"></option>
-                            </template>
-                        </select>
+                    <div class="md:col-span-2">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">About Hospital (English)</label>
+                            <button type="button" onclick="generateAiContent('hospital_bio', 'tinymce:about_en', this)" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors z-50 relative">
+                                ✨ Auto Generate Copy
+                            </button>
+                        </div>
+                        <textarea name="about[en]" id="about_en" rows="8" placeholder="Description of the hospital, facilities, and mission..."
+                                  class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 resize-none transition-colors">{{ old('about.en', isset($hospital) ? $hospital->getTranslation('about', 'en', false) : '') }}</textarea>
                     </div>
                 </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">📞 Phone</label>
-                    <input type="text" name="phone" value="{{ old('phone', $hospital->phone ?? '') }}" placeholder="e.g. 02-55165088"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">✉ Email</label>
-                    <input type="email" name="email" value="{{ old('email', $hospital->email ?? '') }}" placeholder="contact@hospital.com"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">🌐 Website</label>
-                    <input type="url" name="website" value="{{ old('website', $hospital->website ?? '') }}" placeholder="https://example.com"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">📍 Full Address</label>
-                    <input type="text" name="address" value="{{ old('address', $hospital->address ?? '') }}" placeholder="House, Road, Area..."
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
-                </div>
-                <div class="md:col-span-2">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">About Hospital</label>
-                        <button type="button" onclick="generateAiContent('hospital_bio', 'tinymce:about', this)" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors z-50 relative">
-                            ✨ Auto Generate Copy
-                        </button>
+
+                <!-- BENGALI TAB -->
+                <div x-show="activeTab === 'bn'" style="display:none;" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-emerald-50/30 dark:bg-emerald-900/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">Hospital Name (Bengali)</label>
+                        <input type="text" name="name[bn]" value="{{ old('name.bn', isset($hospital) ? $hospital->getTranslation('name', 'bn', false) : '') }}" placeholder="উদাঃ ঢাকা মেডিকেল কলেজ হাসপাতাল"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors text-gray-800 dark:text-gray-200">
                     </div>
-                    <textarea name="about" id="about" rows="8" placeholder="Description of the hospital, facilities, and mission..."
-                              class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 resize-none transition-colors">{{ old('about', $hospital->about ?? '') }}</textarea>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">📍 Full Address (Bengali)</label>
+                        <input type="text" name="address[bn]" value="{{ old('address.bn', isset($hospital) ? $hospital->getTranslation('address', 'bn', false) : '') }}" placeholder="বাড়ি, রাস্তা, এলাকা..."
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors text-gray-800 dark:text-gray-200">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">About Hospital (Bengali)</label>
+                        <textarea name="about[bn]" id="about_bn" rows="8" placeholder="হাসপাতালের বিবরণ ও সুবিধাসমুহ..."
+                                  class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-none transition-colors">{{ old('about.bn', isset($hospital) ? $hospital->getTranslation('about', 'bn', false) : '') }}</textarea>
+                    </div>
                 </div>
             </div>
+
+            {{-- Global / Technical Fields --}}
+            <div class="mt-8 border-t border-gray-100 dark:border-gray-700 pt-6">
+                <h4 class="text-xs tracking-wider uppercase font-bold text-gray-400 mb-4">Core Settings (Applies to all languages)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- Custom Slug --}}
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Custom Slug (URL) <span class="text-gray-400 font-normal whitespace-nowrap">(Leave empty to auto-generate)</span></label>
+                        <div class="flex">
+                            <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 text-xs">doctorbd24.com/hospital/</span>
+                            <input type="text" name="slug" value="{{ old('slug', $hospital->slug ?? '') }}" placeholder="dhaka-medical-college"
+                                   class="flex-1 w-full px-3 py-2 text-sm rounded-r-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
+                        </div>
+                        @error('slug')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Type <span class="text-red-400">*</span></label>
+                        <select name="type" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
+                            <option value="hospital"   @selected(old('type', $hospital->type ?? '') === 'hospital')>🏥 Hospital</option>
+                            <option value="diagnostic" @selected(old('type', $hospital->type ?? '') === 'diagnostic')>🔬 Diagnostic</option>
+                            <option value="clinic"     @selected(old('type', $hospital->type ?? '') === 'clinic')>🩺 Clinic</option>
+                            <option value="other"      @selected(old('type', $hospital->type ?? '') === 'other')>Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">📞 Phone</label>
+                        <input type="text" name="phone" value="{{ old('phone', $hospital->phone ?? '') }}" placeholder="e.g. 02-55165088"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">✉ Email</label>
+                        <input type="email" name="email" value="{{ old('email', $hospital->email ?? '') }}" placeholder="contact@hospital.com"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">🌐 Website</label>
+                        <input type="url" name="website" value="{{ old('website', $hospital->website ?? '') }}" placeholder="https://example.com"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-colors">
+                    </div>
+                    {{-- Cascading Location --}}
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50/50 dark:bg-gray-900/10 p-4 rounded-2xl border border-gray-100 dark:border-gray-700"
+                         x-data="locationPicker('{{ old('division_id', $hospital->area?->district?->division_id ?? '') }}', '{{ old('district_id', $hospital->area?->district_id ?? '') }}', '{{ old('area_id', $hospital->area_id ?? '') }}')">
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Division</label>
+                            <select name="division_id" x-model="divisionId" @change="fetchDistricts()"
+                                    class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                                <option value="">-- Select Division --</option>
+                                @foreach($divisions as $div)
+                                    <option value="{{ $div->id }}">{{ $div->getTranslation('name', 'en') }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">District</label>
+                            <select name="district_id" x-model="districtId" @change="fetchAreas()" :disabled="!divisionId"
+                                    class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:opacity-50">
+                                <option value="">-- Select District --</option>
+                                <template x-for="dist in districts" :key="dist.id">
+                                    <option :value="dist.id" x-text="dist.name" :selected="dist.id == districtId"></option>
+                                </template>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Area <span class="text-red-400">*</span></label>
+                            <select name="area_id" x-model="areaId" :disabled="!districtId" required
+                                    class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:opacity-50">
+                                <option value="">-- Select Area --</option>
+                                <template x-for="ar in areas" :key="ar.id">
+                                    <option :value="ar.id" x-text="ar.name" :selected="ar.id == areaId"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
 
         {{-- ════ CARD: SERVICES / DEPARTMENTS ════ --}}

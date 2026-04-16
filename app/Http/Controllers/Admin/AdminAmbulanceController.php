@@ -18,7 +18,10 @@ class AdminAmbulanceController extends Controller
         $query = Ambulance::with('area');
 
         if ($request->search) {
-            $query->where('provider_name', 'like', '%' . $request->search . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('provider_name->en', 'like', '%' . $request->search . '%')
+                  ->orWhere('provider_name->bn', 'like', '%' . $request->search . '%');
+            });
         }
         if ($request->has('verified')) {
             $query->where('is_verified', (bool)$request->verified);
@@ -55,21 +58,29 @@ class AdminAmbulanceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'provider_name' => ['required','string','max:255'],
+            'provider_name' => ['required','array'],
+            'provider_name.en' => ['required','string','max:255'],
+            'provider_name.bn' => ['nullable','string','max:255'],
             'type'          => ['required','array'],
             'type.*'        => ['string','in:ac,non_ac,icu,freezing'],
             'phone'         => ['required','string','max:20'],
             'whatsapp'      => ['nullable','string','max:20'],
             'backup_phone'  => ['nullable','string','max:20'],
-            'address'       => ['nullable','string','max:500'],
+            'address'       => ['nullable','array'],
+            'address.en'    => ['nullable','string','max:500'],
+            'address.bn'    => ['nullable','string','max:500'],
             'latitude'      => ['nullable','numeric'],
             'longitude'     => ['nullable','numeric'],
             'area_id'       => ['nullable','exists:areas,id'],
             'available_24h' => ['boolean'],
             'features'      => ['nullable','array'],
             'features.*'    => ['string','max:255'],
-            'summary'       => ['nullable','string'],
-            'notes'         => ['nullable','string'],
+            'summary'       => ['nullable','array'],
+            'summary.en'    => ['nullable','string'],
+            'summary.bn'    => ['nullable','string'],
+            'notes'         => ['nullable','array'],
+            'notes.en'      => ['nullable','string'],
+            'notes.bn'      => ['nullable','string'],
             'meta_title'    => ['nullable','string','max:255'],
             'meta_description' => ['nullable','string'],
             'active'        => ['boolean'],
@@ -86,7 +97,7 @@ class AdminAmbulanceController extends Controller
         $validated['is_verified']   = $request->boolean('is_verified');
         $validated['is_featured']   = $request->boolean('is_featured');
         if (empty($request->slug)) {
-            $validated['slug'] = Str::slug($validated['provider_name']) . '-' . Str::random(4);
+            $validated['slug'] = Str::slug($validated['provider_name']['en'] ?? '') . '-' . Str::random(4);
         } else {
             $validated['slug'] = $request->slug;
         }
@@ -166,21 +177,29 @@ class AdminAmbulanceController extends Controller
     public function update(Request $request, Ambulance $ambulance)
     {
         $validated = $request->validate([
-            'provider_name' => ['required','string','max:255'],
+            'provider_name' => ['required','array'],
+            'provider_name.en' => ['required','string','max:255'],
+            'provider_name.bn' => ['nullable','string','max:255'],
             'type'          => ['required','array'],
             'type.*'        => ['string','in:ac,non_ac,icu,freezing'],
             'phone'         => ['required','string','max:20'],
             'whatsapp'      => ['nullable','string','max:20'],
             'backup_phone'  => ['nullable','string','max:20'],
-            'address'       => ['nullable','string','max:500'],
+            'address'       => ['nullable','array'],
+            'address.en'    => ['nullable','string','max:500'],
+            'address.bn'    => ['nullable','string','max:500'],
             'latitude'      => ['nullable','numeric'],
             'longitude'     => ['nullable','numeric'],
             'area_id'       => ['nullable','exists:areas,id'],
             'available_24h' => ['boolean'],
             'features'      => ['nullable','array'],
             'features.*'    => ['string','max:255'],
-            'summary'       => ['nullable','string'],
-            'notes'         => ['nullable','string'],
+            'summary'       => ['nullable','array'],
+            'summary.en'    => ['nullable','string'],
+            'summary.bn'    => ['nullable','string'],
+            'notes'         => ['nullable','array'],
+            'notes.en'      => ['nullable','string'],
+            'notes.bn'      => ['nullable','string'],
             'meta_title'    => ['nullable','string','max:255'],
             'meta_description' => ['nullable','string'],
             'active'        => ['boolean'],
@@ -200,7 +219,7 @@ class AdminAmbulanceController extends Controller
         if ($request->filled('slug')) {
             $validated['slug'] = $request->slug;
         } elseif (empty($ambulance->slug)) {
-            $validated['slug'] = Str::slug($validated['provider_name']) . '-' . Str::random(4);
+            $validated['slug'] = Str::slug($validated['provider_name']['en'] ?? '') . '-' . Str::random(4);
         }
 
         if ($request->hasFile('logo')) {

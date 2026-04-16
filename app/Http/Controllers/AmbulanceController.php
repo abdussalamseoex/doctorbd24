@@ -47,6 +47,10 @@ class AmbulanceController extends Controller
         }
         
         $ambulance->incrementViewCount();
+        
+        if (app()->getLocale() === 'bn' && empty($ambulance->getTranslation('provider_name', 'bn', false))) {
+            \Illuminate\Support\Facades\View::share('noindex_page', true);
+        }
 
         // ── SEO ──────────────────────────────────────
         $title = "{$ambulance->provider_name} — Ambulance Service";

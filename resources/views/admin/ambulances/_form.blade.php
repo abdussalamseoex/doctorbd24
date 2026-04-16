@@ -12,43 +12,109 @@
             {{-- Main Content Column --}}
             <div class="lg:col-span-2 space-y-6">
                 
-                {{-- Basic Logic & Identity --}}
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Basic Information</h2>
-                    <div class="space-y-4">
+                {{-- Translatable & Core Identity --}}
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6" x-data="{ activeTab: 'en' }">
+                    <div class="flex gap-2 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3">
+                        <button type="button" @click="activeTab = 'en'" 
+                                :class="activeTab === 'en' ? 'bg-sky-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                                class="px-5 py-2 rounded-xl text-sm font-bold transition-all focus:outline-none">
+                            English (Default)
+                        </button>
+                        <button type="button" @click="activeTab = 'bn'" 
+                                :class="activeTab === 'bn' ? 'bg-emerald-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                                class="px-5 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 focus:outline-none">
+                            Bengali (বাংলা)
+                            <span class="text-[9px] uppercase tracking-wide bg-white/20 text-white px-1.5 py-0.5 rounded-full" x-show="activeTab === 'bn'">Translating</span>
+                        </button>
+                    </div>
+
+                    <!-- ENGLISH TAB -->
+                    <div x-show="activeTab === 'en'" x-transition class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Provider Name <span class="text-red-500">*</span></label>
-                            <input type="text" name="provider_name" required value="{{ old('provider_name', $ambulance->provider_name ?? '') }}"
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Provider Name (English) <span class="text-red-500">*</span></label>
+                            <input type="text" name="provider_name[en]" required value="{{ old('provider_name.en', isset($ambulance) ? $ambulance->getTranslation('provider_name', 'en', false) : '') }}"
+                                   class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">
+                            @error('provider_name.en')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Detailed Address / Stand (English)</label>
+                            <input type="text" name="address[en]" value="{{ old('address.en', isset($ambulance) ? $ambulance->getTranslation('address', 'en', false) : '') }}"
                                    class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">
                         </div>
-                        {{-- Custom Slug --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Custom Slug (URL) <span class="text-gray-400 font-normal whitespace-nowrap">(Leave empty to auto-generate)</span></label>
-                            <div class="flex">
-                                <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-500 text-xs">doctorbd24.com/ambulance/</span>
-                                <input type="text" name="slug" value="{{ old('slug', $ambulance->slug ?? '') }}" placeholder="example-ambulance"
-                                       class="flex-1 w-full px-3 py-2 text-sm rounded-r-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white transition-colors">
-                            </div>
-                            @error('slug')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Short Summary (English) (1-2 sentences)</label>
+                            <textarea name="summary[en]" rows="2"
+                                      class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">{{ old('summary.en', isset($ambulance) ? $ambulance->getTranslation('summary', 'en', false) : '') }}</textarea>
                         </div>
-                        <div class="col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ambulance Type(s) <span class="text-red-500">*</span></label>
-                            @php
-                                $avTypes = \App\Models\Ambulance::typeMap();
-                                $selectedTypes = old('type', $ambulance->type ?? []);
-                                if(is_string($selectedTypes)) $selectedTypes = [$selectedTypes];
-                            @endphp
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                @foreach($avTypes as $val => $label)
-                                    <label class="flex items-center p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors">
-                                        <input type="checkbox" name="type[]" value="{{ $val }}" 
-                                            class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
-                                            @checked(in_array($val, $selectedTypes ?? []))>
-                                        <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ $label }}</span>
-                                    </label>
-                                @endforeach
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Description / Notes (English)</label>
+                                <button type="button" onclick="generateAiContent('ambulance_bio', 'tinymce:notes_en', this)" class="text-[10px] bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-red-200 transition-colors z-50 relative">
+                                    ✨ Auto Generate Copy
+                                </button>
                             </div>
-                            @error('type') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                            <textarea name="notes[en]" id="notes_en" rows="8"
+                                      class="tinymce-editor w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">{{ old('notes.en', isset($ambulance) ? $ambulance->getTranslation('notes', 'en', false) : '') }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- BENGALI TAB -->
+                    <div x-show="activeTab === 'bn'" style="display:none;" class="space-y-4 bg-emerald-50/30 dark:bg-emerald-900/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                        <div>
+                            <label class="block text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-1">Provider Name (Bengali)</label>
+                            <input type="text" name="provider_name[bn]" value="{{ old('provider_name.bn', isset($ambulance) ? $ambulance->getTranslation('provider_name', 'bn', false) : '') }}"
+                                   class="w-full rounded-xl border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-1">Detailed Address / Stand (Bengali)</label>
+                            <input type="text" name="address[bn]" value="{{ old('address.bn', isset($ambulance) ? $ambulance->getTranslation('address', 'bn', false) : '') }}"
+                                   class="w-full rounded-xl border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-1">Short Summary (Bengali)</label>
+                            <textarea name="summary[bn]" rows="2"
+                                      class="w-full rounded-xl border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white">{{ old('summary.bn', isset($ambulance) ? $ambulance->getTranslation('summary', 'bn', false) : '') }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-1">Full Description / Notes (Bengali)</label>
+                            <textarea name="notes[bn]" id="notes_bn" rows="8"
+                                      class="tinymce-editor w-full rounded-xl border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white">{{ old('notes.bn', isset($ambulance) ? $ambulance->getTranslation('notes', 'bn', false) : '') }}</textarea>
+                        </div>
+                    </div>
+
+                    {{-- Core Settings --}}
+                    <div class="mt-8 border-t border-gray-100 dark:border-gray-700 pt-6">
+                        <h4 class="text-xs tracking-wider uppercase font-bold text-gray-400 mb-4">Core Settings (Applies to all languages)</h4>
+                        <div class="space-y-4">
+                            {{-- Custom Slug --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Custom Slug (URL) <span class="text-gray-400 font-normal whitespace-nowrap">(Leave empty to auto-generate)</span></label>
+                                <div class="flex">
+                                    <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-500 text-xs">doctorbd24.com/ambulance/</span>
+                                    <input type="text" name="slug" value="{{ old('slug', $ambulance->slug ?? '') }}" placeholder="example-ambulance"
+                                           class="flex-1 w-full px-3 py-2 text-sm rounded-r-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white transition-colors">
+                                </div>
+                                @error('slug')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ambulance Type(s) <span class="text-red-500">*</span></label>
+                                @php
+                                    $avTypes = \App\Models\Ambulance::typeMap();
+                                    $selectedTypes = old('type', $ambulance->type ?? []);
+                                    if(is_string($selectedTypes)) $selectedTypes = [$selectedTypes];
+                                @endphp
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    @foreach($avTypes as $val => $label)
+                                        <label class="flex items-center p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+                                            <input type="checkbox" name="type[]" value="{{ $val }}" 
+                                                class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                                                @checked(in_array($val, $selectedTypes ?? []))>
+                                            <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ $label }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @error('type') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -167,27 +233,6 @@
                     </div>
                 </div>
 
-                {{-- Biography & Description --}}
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Profile Content</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Short Summary (1-2 sentences)</label>
-                            <textarea name="summary" rows="2"
-                                      class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">{{ old('summary', $ambulance->summary ?? '') }}</textarea>
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Description / Notes</label>
-                                <button type="button" onclick="generateAiContent('ambulance_bio', 'tinymce:notes', this)" class="text-[10px] bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-red-200 transition-colors z-50 relative">
-                                    ✨ Auto Generate Copy
-                                </button>
-                            </div>
-                            <textarea name="notes" id="notes" rows="8"
-                                      class="tinymce-editor w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">{{ old('notes', $ambulance->notes ?? '') }}</textarea>
-                        </div>
-                    </div>
-                </div>
 
                 {{-- Location & Maps --}}
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
@@ -224,11 +269,6 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Detailed Address / Stand</label>
-                        <input type="text" name="address" value="{{ old('address', $ambulance->address ?? '') }}"
-                               class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 text-gray-900 dark:text-white">
-                    </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
