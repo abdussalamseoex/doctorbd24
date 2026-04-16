@@ -1,5 +1,5 @@
 
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto" x-data="{ activeTab: 'en' }">
     <form method="POST"
           action="{{ isset($hospital) ? route('admin.hospitals.update', $hospital->id) : route('admin.hospitals.store') }}"
           enctype="multipart/form-data"
@@ -97,7 +97,7 @@
             </div>
 
             {{-- Basic Fields --}}
-            <div x-data="{ activeTab: 'en' }">
+            <div>
                 <div class="flex flex-col sm:flex-row justify-between gap-4 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3">
                     <div class="flex gap-2">
                         <button type="button" @click="activeTab = 'en'" 
