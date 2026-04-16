@@ -21,7 +21,7 @@ Route::name('api.')->prefix('api')->group(function () {
     Route::get('/areas/{area}', [\App\Http\Controllers\Api\LocationController::class, 'show'])->name('areas.show');
 });
 
-// â”€â”€ Language Switcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Language Switcher ──────────────────────────────────────────
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'bn'])) {
         Session::put('locale', $locale);
@@ -30,108 +30,37 @@ Route::get('/lang/{locale}', function ($locale) {
     return redirect()->back();
 })->name('lang.switch');
 
-// â”€â”€ Public Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-Route::group(['prefix' => '{locale?}', 'where' => ['locale' => 'bn']], function () {
+// ── Public Routes ──────────────────────────────────────────────────
+$publicRoutes = function () {
 
-Route::get('/', [HomeController::class, 'index'])->middleware('cache.response')->name('home');
+    Route::get('/', [HomeController::class, 'index'])->middleware('cache.response')->name('home');
 
-// PWA Manifest
-Route::get('/manifest.json', function () {
-    $faviconUrl = setting('favicon') ? asset('storage/'.setting('favicon')) : asset('favicon.ico');
-    $name = setting('site_name', 'DoctorBD24');
-    
-    return response()->json([
-        'name' => $name,
-        'short_name' => $name,
-        'start_url' => '/',
-        'display' => 'standalone',
-        'background_color' => '#ffffff',
-        'theme_color' => '#0A2540',
-        'icons' => [
-            [
-                'src' => $faviconUrl,
-                'sizes' => '192x192',
-                'type' => 'image/png',
-                'purpose' => 'any maskable'
-            ],
-            [
-                'src' => $faviconUrl,
-                'sizes' => '512x512',
-                'type' => 'image/png',
-                'purpose' => 'any maskable'
+    // PWA Manifest
+    Route::get('/manifest.json', function () {
+        $faviconUrl = setting('favicon') ? asset('storage/'.setting('favicon')) : asset('favicon.ico');
+        $name = setting('site_name', 'DoctorBD24');
+        
+        return response()->json([
+            'name' => $name,
+            'short_name' => $name,
+            'start_url' => '/',
+            'display' => 'standalone',
+            'background_color' => '#ffffff',
+            'theme_color' => '#0A2540',
+            'icons' => [
+                [
+                    'src' => $faviconUrl,
+                    'sizes' => '192x192',
+                    'type' => 'image/png',
+                    'purpose' => 'any maskable'
+                ],
+                [
+                    'src' => $faviconUrl,
+                    'sizes' => '512x512',
+                    'type' => 'image/png',
+                    'purpose' => 'any maskable'
+                ]
             ]
-        ]
-    ]);
-});
-
-// AI and LLM indexing files
-Route::get('/llms.txt', [\App\Http\Controllers\LlmsController::class, 'index'])->name('llms.txt');
-Route::get('/llms-full.txt', [\App\Http\Controllers\LlmsController::class, 'full'])->name('llms.full.txt');
-
-// Contact Page
-Route::get('/contact', [\App\Http\Controllers\PageController::class, 'contact'])->name('contact');
-Route::post('/contact', [\App\Http\Controllers\PageController::class, 'submitContact'])->name('contact.submit')->middleware('throttle:5,10');
-
-// â”€â”€ Doctor Portal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-Route::prefix('doctor')->middleware(['auth', 'role:doctor'])->name('doctor.')->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, '__invoke'])->name('dashboard');
-    Route::get('/profile', [\App\Http\Controllers\DoctorProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [\App\Http\Controllers\DoctorProfileController::class, 'update'])->name('profile.update');
-    Route::get('/reviews', [\App\Http\Controllers\ProviderReviewController::class, 'index'])->name('reviews.index');
-});
-
-// â”€â”€ Hospital Portal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-Route::prefix('hospital')->middleware(['auth', 'role:hospital'])->name('hospital.')->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, '__invoke'])->name('dashboard');
-    Route::get('/profile', [\App\Http\Controllers\HospitalProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [\App\Http\Controllers\HospitalProfileController::class, 'update'])->name('profile.update');
-    Route::get('/reviews', [\App\Http\Controllers\ProviderReviewController::class, 'index'])->name('reviews.index');
-});
-
-Route::middleware(['cache.response'])->group(function () {
-    // Doctors
-    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
-    Route::get('/doctor/{slug}/{tab?}', [DoctorController::class, 'show'])->where('tab', 'overview|videos|blog')->name('doctors.show');
-
-    // Hospitals
-    Route::get('/hospitals', [HospitalController::class, 'index'])->name('hospitals.index');
-    Route::get('/hospital/{slug}/{tab?}', [HospitalController::class, 'show'])->where('tab', 'overview|doctors|diagnostics|video|blog')->name('hospitals.show');
-    Route::get('/hospital/{slug}/diagnostics/{service_slug}', [HospitalController::class, 'showDiagnosticTest'])->name('hospitals.diagnostic.show');
-
-    // Video Single Route
-    Route::get('/hospital/{hospital_slug}/video/{video_slug}', [\App\Http\Controllers\VideoController::class, 'show'])->name('video.show');
-    Route::get('/doctor/{doctor_slug}/video/{video_slug}', [\App\Http\Controllers\VideoController::class, 'showDoctorVideo'])->name('doctor.video.show');
-
-    // Specialties
-    Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
-
-    // Ambulances
-    Route::get('/ambulances', [AmbulanceController::class, 'index'])->name('ambulances.index');
-    Route::get('/ambulance/{slug}', [AmbulanceController::class, 'resolve'])->name('ambulances.type');
-    Route::get('/ambulance/{slug}', [AmbulanceController::class, 'resolve'])->name('ambulances.show');
-
-    // Blog
-    Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-    Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
-});
-
-Route::post('/doctors/{doctor}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'store'])->name('doctors.claim')->middleware('auth');
-Route::post('/hospitals/{hospital}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'storeHospital'])->name('hospitals.claim')->middleware('auth');
-
-// Specialties
-Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
-
-// Ambulances
-Route::get('/ambulances', [AmbulanceController::class, 'index'])->name('ambulances.index');
-Route::get('/ambulance/{slug}', [AmbulanceController::class, 'resolve'])->name('ambulances.type');
-Route::get('/ambulance/{slug}', [AmbulanceController::class, 'resolve'])->name('ambulances.show');
-Route::post('/ambulances/{ambulance}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'storeAmbulance'])->name('ambulances.claim')->middleware('auth');
-
-// Blog
-Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
-
-// Join Forms
 Route::get('/join/doctor', [JoinController::class, 'doctorForm'])->name('join.doctor');
 Route::post('/join/doctor', [JoinController::class, 'submitDoctor'])->name('join.doctor.submit')->middleware('throttle:5,10');
 Route::get('/join/hospital', [JoinController::class, 'hospitalForm'])->name('join.hospital');
@@ -359,10 +288,7 @@ Route::get('storage/{path}', function ($path) {
 })->where('path', '.*');
 
 // ─── Dynamic Pages (Catch-All) ────────────────────────
-// This route must remain at the very bottom
-Route::group(['prefix' => '{locale?}', 'where' => ['locale' => 'bn']], function () {
-    Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
-});
+
 
 Route::get('/test-ai-popup', function () {
     return \Blade::render('<!DOCTYPE html><html><head><script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-gray-100"> <h1>Test</h1> @include("admin.shared._ai_assistant") </body></html>');

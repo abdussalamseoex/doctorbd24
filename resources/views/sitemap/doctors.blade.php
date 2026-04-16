@@ -8,7 +8,7 @@
     @foreach($doctors as $doctor)
     @php
         $enUrl = route('doctors.show', $doctor->slug);
-        $bnUrl = route('doctors.show', ['locale' => 'bn', 'slug' => $doctor->slug]);
+        $bnUrl = route('bn.doctors.show', ['slug' => $doctor->slug]);
         // Doctor model uses Spatie Translatable. Fallback is true by default, so we pass false to check if exists.
         $hasBn = !empty($doctor->getTranslation('name', 'bn', false));
     @endphp

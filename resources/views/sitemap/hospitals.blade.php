@@ -17,7 +17,7 @@
     @foreach($tabs as $t)
     @php
         $enUrl = $t['tab'] ? route('hospitals.show', ['slug' => $hospital->slug, 'tab' => $t['tab']]) : route('hospitals.show', $hospital->slug);
-        $bnUrl = $t['tab'] ? route('hospitals.show', ['locale' => 'bn', 'slug' => $hospital->slug, 'tab' => $t['tab']]) : route('hospitals.show', ['locale' => 'bn', 'slug' => $hospital->slug]);
+        $bnUrl = $t['tab'] ? route('bn.hospitals.show', ['slug' => $hospital->slug, 'tab' => $t['tab']]) : route('bn.hospitals.show', ['slug' => $hospital->slug]);
     @endphp
     <!-- English URL for {{ $t['tab'] ?? 'overview' }} -->
     <url>

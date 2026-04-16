@@ -8,7 +8,7 @@
     @foreach($posts as $post)
     @php
         $enUrl = route('blog.show', $post->slug);
-        $bnUrl = route('blog.show', ['locale' => 'bn', 'slug' => $post->slug]);
+        $bnUrl = route('bn.blog.show', ['slug' => $post->slug]);
         $hasBn = !empty($post->getTranslation('title', 'bn', false));
     @endphp
     <!-- English URL -->

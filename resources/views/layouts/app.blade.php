@@ -29,15 +29,12 @@
         $currentRoute = Route::current();
         $currentRouteParams = $currentRoute ? $currentRoute->parameters() : [];
         
-        $enParams = $currentRouteParams;
-        unset($enParams['locale']);
-        
-        $bnParams = $enParams;
-        $bnParams['locale'] = 'bn';
+        $baseRouteName = preg_replace('/^bn\./', '', (string)$currentRouteName);
         
         try {
-            $enUrl = $currentRouteName ? route($currentRouteName, $enParams) : url('/');
-            $bnUrl = $currentRouteName ? route($currentRouteName, $bnParams) : url('/bn');
+            $enUrl = $baseRouteName && Route::has($baseRouteName) ? route($baseRouteName, $currentRouteParams) : url('/');
+            $bnRouteName = 'bn.' . $baseRouteName;
+            $bnUrl = $baseRouteName && Route::has($bnRouteName) ? route($bnRouteName, $currentRouteParams) : url('/bn');
         } catch (\Exception $e) {
             $enUrl = url('/');
             $bnUrl = url('/bn');

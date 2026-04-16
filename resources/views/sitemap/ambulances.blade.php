@@ -9,7 +9,7 @@
     @php
         // Note: For ambulance route names, checking web.php, it's 'ambulances.show'
         $enUrl = route('ambulances.show', $ambulance->slug);
-        $bnUrl = route('ambulances.show', ['locale' => 'bn', 'slug' => $ambulance->slug]);
+        $bnUrl = !empty($ambulance->slug) ? route('bn.ambulances.show', ['slug' => $ambulance->slug]) : '';
         $hasBn = !empty($ambulance->getTranslation('provider_name', 'bn', false));
     @endphp
     <!-- English URL -->
