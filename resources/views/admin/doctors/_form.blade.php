@@ -314,7 +314,7 @@
                             this.chambers.push({ 
                                 id: null, name: '', hospital_id: '', 
                                 division_id: '', district_id: '', area_id: '', 
-                                address: '', visiting_hours: '', closed_days: '', 
+                                address: {en: '', bn: ''}, visiting_hours: {en: '', bn: ''}, closed_days: {en: '', bn: ''}, 
                                 phone: '', google_maps_url: '', lat: '', lng: '',
                                 districts: [], areas: [] 
                             });
@@ -369,7 +369,13 @@
                                         }
                                     } catch(e) { console.error(e); }
                                 }
-                                if(data.address) this.chambers[index].address = data.address;
+                                if(data.address) {
+                                    if (typeof this.chambers[index].address !== 'object') {
+                                        this.chambers[index].address = {en: '', bn: ''};
+                                    }
+                                    // if the hosp data address is string, assign to en
+                                    this.chambers[index].address.en = typeof data.address === 'string' ? data.address : (data.address.en || '');
+                                }
                                 if(data.phone) this.chambers[index].phone = data.phone;
                                 if(data.google_maps_url) this.chambers[index].google_maps_url = data.google_maps_url;
                                 if(data.lat) this.chambers[index].lat = data.lat;
@@ -377,6 +383,18 @@
                             }
                         }
                     };
+                    
+                    // Normalize existing chamber data on load
+                    if (Array.isArray(config.chambers)) {
+                        config.chambers = config.chambers.map(ch => {
+                            if (typeof ch.address !== 'object' || ch.address === null) ch.address = {en: ch.address || '', bn: ''};
+                            if (typeof ch.visiting_hours !== 'object' || ch.visiting_hours === null) ch.visiting_hours = {en: ch.visiting_hours || '', bn: ''};
+                            if (typeof ch.closed_days !== 'object' || ch.closed_days === null) ch.closed_days = {en: ch.closed_days || '', bn: ''};
+                            return ch;
+                        });
+                    }
+
+                    return config;
                 });
             };
 
@@ -515,19 +533,31 @@
                                            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 focus:ring-2 focus:ring-emerald-300">
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Full Address</label>
-                                    <input type="text" :name="'chambers[' + index + '][address]'" x-model="chamber.address" placeholder="Road 12, House 5, Dhanmondi, Dhaka"
+                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5 flex items-center gap-1">Full Address <span x-show="activeTab === 'bn'" class="text-[10px] bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-300 px-1.5 rounded uppercase tracking-wider">Bengali</span></label>
+                                    
+                                    <input x-show="activeTab === 'en'" type="text" :name="'chambers[' + index + '][address][en]'" x-model="chamber.address.en" placeholder="Road 12, House 5, Dhanmondi, Dhaka"
                                            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 focus:ring-2 focus:ring-emerald-300">
+                                           
+                                    <input x-show="activeTab === 'bn'" style="display:none;" type="text" :name="'chambers[' + index + '][address][bn]'" x-model="chamber.address.bn" placeholder="রোড ১২, বাড়ি ৫, ধানমন্ডি, ঢাকা"
+                                           class="w-full px-3 py-2 text-sm rounded-lg border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/10 focus:ring-2 focus:ring-emerald-400">
                                 </div>
                                 <div>
-                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">📅 Visiting Hours</label>
-                                    <input type="text" :name="'chambers[' + index + '][visiting_hours]'" x-model="chamber.visiting_hours" placeholder="e.g. Sat-Thu: 5PM-9PM"
+                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5 flex items-center gap-1">📅 Visiting Hours <span x-show="activeTab === 'bn'" class="text-[10px] bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-300 px-1.5 rounded uppercase tracking-wider">Bengali</span></label>
+                                    
+                                    <input x-show="activeTab === 'en'" type="text" :name="'chambers[' + index + '][visiting_hours][en]'" x-model="chamber.visiting_hours.en" placeholder="e.g. Sat-Thu: 5PM-9PM"
                                            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 focus:ring-2 focus:ring-emerald-300">
+                                           
+                                    <input x-show="activeTab === 'bn'" style="display:none;" type="text" :name="'chambers[' + index + '][visiting_hours][bn]'" x-model="chamber.visiting_hours.bn" placeholder="উদাঃ শনি-বৃহঃ ৫টা-৯টা"
+                                           class="w-full px-3 py-2 text-sm rounded-lg border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/10 focus:ring-2 focus:ring-emerald-400">
                                 </div>
                                 <div>
-                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">🚫 Closed Days</label>
-                                    <input type="text" :name="'chambers[' + index + '][closed_days]'" x-model="chamber.closed_days" placeholder="e.g. Friday"
+                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5 flex items-center gap-1">🚫 Closed Days <span x-show="activeTab === 'bn'" class="text-[10px] bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-300 px-1.5 rounded uppercase tracking-wider">Bengali</span></label>
+                                    
+                                    <input x-show="activeTab === 'en'" type="text" :name="'chambers[' + index + '][closed_days][en]'" x-model="chamber.closed_days.en" placeholder="e.g. Friday"
                                            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 focus:ring-2 focus:ring-emerald-300">
+                                           
+                                    <input x-show="activeTab === 'bn'" style="display:none;" type="text" :name="'chambers[' + index + '][closed_days][bn]'" x-model="chamber.closed_days.bn" placeholder="উদাঃ শুক্রবার"
+                                           class="w-full px-3 py-2 text-sm rounded-lg border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/10 focus:ring-2 focus:ring-emerald-400">
                                 </div>
 
                                 {{-- Advanced Location Toggle --}}
@@ -987,7 +1017,6 @@
         const designationEn = document.querySelector('[name="designation[en]"]').value;
         const qualificationsEn = document.querySelector('[name="qualifications[en]"]').value;
         
-        // Ensure TinyMCE is loaded
         let bioEn = '';
         if (typeof tinymce !== 'undefined' && tinymce.get('bio_en')) {
             bioEn = tinymce.get('bio_en').getContent();
@@ -1000,13 +1029,33 @@
             return;
         }
 
+        // Gather Chambers payload
+        let chambersPayload = {};
+        if (typeof window.Alpine !== 'undefined') {
+            const chamberData = Alpine.store('chamberManager') || Alpine.$data(document.querySelector('[x-data="chamberManager"]'));
+            if (chamberData && chamberData.chambers) {
+                chamberData.chambers.forEach((c, idx) => {
+                    chambersPayload[`chamber_${idx}_address`] = c.address?.en || '';
+                    chambersPayload[`chamber_${idx}_visiting_hours`] = c.visiting_hours?.en || '';
+                    chambersPayload[`chamber_${idx}_closed_days`] = c.closed_days?.en || '';
+                });
+            }
+        }
+
+        // Gather SEO Payload
+        let seoPayload = {};
+        if (document.querySelector('[name="seo[title][en]"]')) seoPayload.seo_title = document.querySelector('[name="seo[title][en]"]').value;
+        if (document.querySelector('[name="seo[description][en]"]')) seoPayload.seo_desc = document.querySelector('[name="seo[description][en]"]').value;
+
         const payload = {
             target_language: 'Bengali',
             fields: {
                 name: nameEn,
                 designation: designationEn,
                 qualifications: qualificationsEn,
-                bio: bioEn
+                bio: bioEn,
+                ...chambersPayload,
+                ...seoPayload
             }
         };
 
@@ -1031,7 +1080,7 @@
                 throw new Error(data.message || 'Translation failed.');
             }
 
-            // Populate Bengali fields
+            // Populate Basic Bengali fields
             if (data.content.name && document.querySelector('[name="name[bn]"]')) document.querySelector('[name="name[bn]"]').value = data.content.name;
             if (data.content.designation && document.querySelector('[name="designation[bn]"]')) document.querySelector('[name="designation[bn]"]').value = data.content.designation;
             if (data.content.qualifications && document.querySelector('[name="qualifications[bn]"]')) document.querySelector('[name="qualifications[bn]"]').value = data.content.qualifications;
@@ -1041,6 +1090,22 @@
                     tinymce.get('bio_bn').setContent(data.content.bio);
                 } else if(document.querySelector('[name="bio[bn]"]')) {
                     document.querySelector('[name="bio[bn]"]').value = data.content.bio;
+                }
+            }
+
+            // Populate SEO Fields
+            if (data.content.seo_title && document.querySelector('[name="seo[title][bn]"]')) document.querySelector('[name="seo[title][bn]"]').value = data.content.seo_title;
+            if (data.content.seo_desc && document.querySelector('[name="seo[description][bn]"]')) document.querySelector('[name="seo[description][bn]"]').value = data.content.seo_desc;
+
+            // Populate Chambers
+            if (typeof window.Alpine !== 'undefined') {
+                const chamberData = Alpine.$data(document.querySelector('[x-data="chamberManager"]'));
+                if (chamberData && chamberData.chambers) {
+                    chamberData.chambers.forEach((c, idx) => {
+                        if (data.content[`chamber_${idx}_address`]) c.address.bn = data.content[`chamber_${idx}_address`];
+                        if (data.content[`chamber_${idx}_visiting_hours`]) c.visiting_hours.bn = data.content[`chamber_${idx}_visiting_hours`];
+                        if (data.content[`chamber_${idx}_closed_days`]) c.closed_days.bn = data.content[`chamber_${idx}_closed_days`];
+                    });
                 }
             }
 

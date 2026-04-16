@@ -13,25 +13,34 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="md:col-span-2">
             <div class="flex justify-between items-center mb-1.5">
-                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">SEO Title</label>
-                <button type="button" onclick="generateAiContent('seo_title', 'input[name=\'seo[title]\']', this)" class="text-[10px] bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-indigo-200 transition-colors">
+                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">SEO Title <span x-show="activeTab === 'bn'" class="text-[10px] bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-300 px-1.5 rounded uppercase tracking-wider">Bengali</span></label>
+                <button type="button" @click="generateAiContent('seo_title', activeTab === 'bn' ? 'input[name=\'seo[title][bn]\']' : 'input[name=\'seo[title][en]\']', $event.currentTarget)" class="text-[10px] bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-indigo-200 transition-colors">
                     ✨ Auto Generate
                 </button>
             </div>
-            <input type="text" name="seo[title]" value="{{ old('seo.title', $seo->title ?? '') }}" placeholder="Meta Title (recommended < 60 chars)"
+            
+            <input x-show="activeTab === 'en'" type="text" name="seo[title][en]" value="{{ old('seo.title.en', isset($seo) ? $seo->getTranslation('title', 'en', false) : '') }}" placeholder="Meta Title (recommended < 60 chars)"
                    class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-300 transition-colors">
+                   
+            <input x-show="activeTab === 'bn'" style="display:none;" type="text" name="seo[title][bn]" value="{{ old('seo.title.bn', isset($seo) ? $seo->getTranslation('title', 'bn', false) : '') }}" placeholder="এস.ই.ও টাইটেল (৬০ অক্ষরের নিচে)"
+                   class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/10 focus:ring-2 focus:ring-emerald-400 transition-colors">
+                   
             <p class="text-[10px] text-gray-400 mt-1">If empty, the model name will be used.</p>
         </div>
 
         <div class="md:col-span-2">
             <div class="flex justify-between items-center mb-1.5">
-                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">SEO Description</label>
-                <button type="button" onclick="generateAiContent('seo_desc', 'textarea[name=\'seo[description]\']', this)" class="text-[10px] bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-indigo-200 transition-colors">
+                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">SEO Description <span x-show="activeTab === 'bn'" class="text-[10px] bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-300 px-1.5 rounded uppercase tracking-wider">Bengali</span></label>
+                <button type="button" @click="generateAiContent('seo_desc', activeTab === 'bn' ? 'textarea[name=\'seo[description][bn]\']' : 'textarea[name=\'seo[description][en]\']', $event.currentTarget)" class="text-[10px] bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-indigo-200 transition-colors">
                     ✨ Auto Generate
                 </button>
             </div>
-            <textarea name="seo[description]" rows="3" placeholder="Meta Description (recommended < 160 chars)"
-                      class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none transition-colors">{{ old('seo.description', $seo->description ?? '') }}</textarea>
+            
+            <textarea x-show="activeTab === 'en'" name="seo[description][en]" rows="3" placeholder="Meta Description (recommended < 160 chars)"
+                      class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none transition-colors">{{ old('seo.description.en', isset($seo) ? $seo->getTranslation('description', 'en', false) : '') }}</textarea>
+                      
+            <textarea x-show="activeTab === 'bn'" style="display:none;" name="seo[description][bn]" rows="3" placeholder="মেটা ডেসক্রিপশন (১৬০ অক্ষরের নিচে)"
+                      class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/10 focus:ring-2 focus:ring-emerald-400 resize-none transition-colors">{{ old('seo.description.bn', isset($seo) ? $seo->getTranslation('description', 'bn', false) : '') }}</textarea>
         </div>
 
         <div>
