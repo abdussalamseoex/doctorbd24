@@ -87,12 +87,14 @@ class AIGeneratorController extends Controller
         $fields = $request->fields;
         $targetLanguage = $request->target_language;
 
+        $contextType = $request->context_type ?? 'hospital';
+
         $promptText = "You are an expert native-level {$targetLanguage} medical SEO copywriter for a Bangladeshi healthcare platform.\n";
         $promptText .= "MAIN TASK: Write original {$targetLanguage} healthcare website copy based on the meaning of the English content. Do not translate sentence-by-sentence. Do not sound translated. Sound like a top Bangladeshi healthcare brand wrote this content.\n\n";
 
         $promptText .= "QUALITY PRIORITY ORDER:\n";
         $promptText .= "1. Natural human {$targetLanguage} (Shuddho Bangla, conversational)\n";
-        $promptText .= "2. Emotional trust-building tone (like a trusted local hospital receptionist)\n";
+        $promptText .= "2. Emotional trust-building tone\n";
         $promptText .= "3. Readability (Short-medium sentences, max 18 words preferred)\n";
         $promptText .= "4. SEO keyword placement (Natural, avoid stuffing)\n";
         $promptText .= "5. Source meaning accuracy\n\n";
@@ -100,20 +102,41 @@ class AIGeneratorController extends Controller
         $promptText .= "BLACKLIST (NEVER USE THESE PHRASES - REWRITE IMMEDIATELY):\n";
         $promptText .= "স্বাস্থ্যসেবার যাত্রা, মূল্যায়িত বোধ করেন, বৈশ্বিক চিকিৎসা সেবা, উচ্চতর যোগ্যতা, সহানুভূতিশীল যত্ন, চিকিৎসা পদ্ধতি নিশ্চিত করে, ভালবাসায় গঠিত যত্ন, নির্ণয় প্রক্রিয়া, প্রতিরোধক যত্ন.\n\n";
 
-        $promptText .= "STRUCTURAL RULES:\n";
-        $promptText .= "- Write as if the text will be shown on the homepage of a premium Bangladeshi diagnostic center.\n";
-        $promptText .= "- Make formatting natural (Welcome intro, why trust us, services list, closing reassurance) if structure permits.\n";
-        $promptText .= "- Accurately write proper nouns (e.g., 'একতা' instead of 'আকুতা'). 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.).\n";
-        $promptText .= "- HTML & FORMAT: Retain all original HTML tags/structure. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT matching exactly the provided keys. NO markdown ```json blocks.\n\n";
-
-        $promptText .= "FEW-SHOT EXAMPLES OF 10/10 COPYWRITING:\n";
-        $promptText .= "Ex 1 (Opening): 'টাঙ্গাইলে নির্ভরযোগ্য চিকিৎসা পরীক্ষা ও স্বাস্থ্যসেবার জন্য পপুলার ডায়াগনস্টিক সেন্টার একটি পরিচিত নাম। আধুনিক যন্ত্রপাতি ও দক্ষ টিমের মাধ্যমে আমরা মানসম্মত সেবা প্রদান করি।'\n";
-        $promptText .= "Ex 2 (Services): 'আমাদের সেবাসমূহ: • ল্যাবরেটরি পরীক্ষা – রক্ত পরীক্ষা থেকে শুরু করে যাবতীয় টেস্ট নির্ভুলভাবে করা হয়। • বিশেষজ্ঞ পরামর্শ – অভিজ্ঞ চিকিৎসকদের পরামর্শ নেওয়ার সুযোগ রয়েছে।'\n";
-        $promptText .= "Ex 3 (Closing): 'আপনার সুস্থতাই আমাদের মূল লক্ষ্য। যেকোনো প্রয়োজনে আমরা সবসময় আপনার পাশে আছি।'\n\n";
+        if ($contextType === 'doctor') {
+            $promptText .= "STRUCTURAL RULES (DOCTOR PROFILE):\n";
+            $promptText .= "- Write as if this is the official profile biography of a reputed Bangladeshi medical specialist.\n";
+            $promptText .= "- Make formatting natural (Welcome intro, educational background, specialties, closing reassurance) if structure permits.\n";
+            $promptText .= "- Accurately write proper nouns (e.g., names and degrees). 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.).\n";
+            $promptText .= "- HTML & FORMAT: Retain all original HTML tags/structure. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT matching exactly the provided keys. NO markdown ```json blocks.\n\n";
+            $promptText .= "FEW-SHOT EXAMPLES OF 10/10 DOCTOR COPYWRITING:\n";
+            $promptText .= "Ex 1 (Opening): 'ডা. আব্দুল্লাহ আল মামুন একজন প্রখ্যাত মেডিসিন বিশেষজ্ঞ। দীর্ঘ ১৫ বছরের অভিজ্ঞতার সাথে তিনি রোগীদের অত্যন্ত বিশ্বস্ততার সাথে চিকিৎসা প্রদান করে আসছেন।'\n";
+            $promptText .= "Ex 2 (Services): 'উনার বিশেষত্বসমূহ: • ডায়াবেটিস ও হরমোন রোগ • উচ্চ রক্তচাপ ও হৃদরোগ নিয়ন্ত্রণ।'\n";
+            $promptText .= "Ex 3 (Closing): 'রোগীর সুস্থতাই উনার প্রধান লক্ষ্য। সঠিক পরামর্শ ও উন্নত চিকিৎসার জন্য আজই অ্যাপয়েন্টমেন্ট বুক করুন।'\n\n";
+        } elseif ($contextType === 'ambulance') {
+            $promptText .= "STRUCTURAL RULES (AMBULANCE SERVICE):\n";
+            $promptText .= "- Write as if this is the homepage of a 24/7 fast-response Bangladeshi emergency ambulance service.\n";
+            $promptText .= "- Emphasize speed, reliability, and 24/7 availability.\n";
+            $promptText .= "- Accurately write proper nouns. 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.).\n";
+            $promptText .= "- HTML & FORMAT: Retain all original HTML tags/structure. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT matching exactly the provided keys. NO markdown ```json blocks.\n\n";
+            $promptText .= "FEW-SHOT EXAMPLES OF 10/10 AMBULANCE COPYWRITING:\n";
+            $promptText .= "Ex 1 (Opening): 'জরুরি মুহূর্তে নির্ভরযোগ্য অ্যাম্বুলেন্স সার্ভিসের জন্য আমরা সবসময় প্রস্তুত। ঢাকা শহরসহ যেকোনো স্থানে দ্রুত সময়ে পৌঁছানোই আমাদের মূল লক্ষ্য।'\n";
+            $promptText .= "Ex 2 (Services): 'আমাদের সেবাসমূহ: • আইসিইউ অ্যাম্বুলেন্স • ২8/৭ অক্সিজেন সাপোর্টসহ ফ্রিজিং অ্যাম্বুলেন্স।'\n";
+            $promptText .= "Ex 3 (Closing): 'যেকোনো মেডিকেল ইমার্জেন্সিতে কল করুন। আপনার প্রিয়জনের জীবন রক্ষায় আমরা আপনার নিবেদিত সঙ্গী।'\n\n";
+        } else {
+            $promptText .= "STRUCTURAL RULES (HOSPITAL/CLINIC PROFILE):\n";
+            $promptText .= "- Write as if the text will be shown on the homepage of a premium Bangladeshi hospital or diagnostic center.\n";
+            $promptText .= "- Make formatting natural (Welcome intro, why trust us, services list, closing reassurance) if structure permits.\n";
+            $promptText .= "- Accurately write proper nouns (e.g., 'একতা' instead of 'আকুতা'). 'Dr.' MUST ALWAYS be translated as 'ডা.' (Daa.).\n";
+            $promptText .= "- HTML & FORMAT: Retain all original HTML tags/structure. Modify ONLY the inner text. Your final response MUST be a STRICT JSON OBJECT matching exactly the provided keys. NO markdown ```json blocks.\n\n";
+            $promptText .= "FEW-SHOT EXAMPLES OF 10/10 HOSPITAL COPYWRITING:\n";
+            $promptText .= "Ex 1 (Opening): 'টাঙ্গাইলে নির্ভরযোগ্য চিকিৎসা পরীক্ষা ও স্বাস্থ্যসেবার জন্য পপুলার ডায়াগনস্টিক সেন্টার একটি পরিচিত নাম। আধুনিক যন্ত্রপাতি ও দক্ষ টিমের মাধ্যমে আমরা মানসম্মত সেবা প্রদান করি।'\n";
+            $promptText .= "Ex 2 (Services): 'আমাদের সেবাসমূহ: • ল্যাবরেটরি পরীক্ষা – রক্ত পরীক্ষা থেকে শুরু করে যাবতীয় টেস্ট নির্ভুলভাবে করা হয়। • বিশেষজ্ঞ পরামর্শ – অভিজ্ঞ চিকিৎসকদের পরামর্শ নেওয়ার সুযোগ রয়েছে।'\n";
+            $promptText .= "Ex 3 (Closing): 'আপনার সুস্থতাই আমাদের মূল লক্ষ্য। যেকোনো প্রয়োজনে আমরা সবসময় আপনার পাশে আছি।'\n\n";
+        }
 
         $promptText .= "INTERNAL POLISH PASS (THINK BEFORE RESPONDING):\n";
         $promptText .= "1. Polish the text to sound fully native, premium, and human-written.\n";
-        $promptText .= "2. Ask yourself: 'Would a patient in Dhaka/Tangail naturally understand and trust this wording?' If no -> rewrite.\n\n";
+        $promptText .= "2. Ask yourself: 'Would a patient in Bangladesh naturally understand and trust this wording given the context?' If no -> rewrite.\n\n";
 
         $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 

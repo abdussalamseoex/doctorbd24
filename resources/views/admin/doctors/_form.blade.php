@@ -1056,6 +1056,7 @@
 
         const payload = {
             target_language: 'Bengali',
+            context_type: 'doctor',
             fields: {
                 name: nameEn,
                 designation: designationEn,

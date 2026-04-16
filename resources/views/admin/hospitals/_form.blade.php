@@ -821,6 +821,7 @@
 
         const payload = {
             target_language: 'Bengali',
+            context_type: 'hospital',
             fields: {
                 name: nameEn,
                 address: addressEn,
