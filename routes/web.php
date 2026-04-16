@@ -30,6 +30,8 @@ Route::get('/lang/{locale}', function ($locale) {
     return redirect()->back();
 })->name('lang.switch');
 
+
+
 // ── Public Routes ──────────────────────────────────────────────────
 $publicRoutes = function () {
 
@@ -116,6 +118,12 @@ $publicRoutes = function () {
 
     Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
 };
+
+// ── Apply English Group ──────────────────────────────────────
+Route::middleware([])->group($publicRoutes);
+
+// ── Apply Bengali Group ──────────────────────────────────────
+Route::prefix('bn')->name('bn.')->group($publicRoutes);
 
 // Sitemap
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
