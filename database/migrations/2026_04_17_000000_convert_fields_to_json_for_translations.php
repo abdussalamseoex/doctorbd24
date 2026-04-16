@@ -18,7 +18,7 @@ return new class extends Migration
             'ambulances' => ['provider_name', 'address', 'summary', 'notes'],
             'blog_posts' => ['title', 'excerpt', 'body'],
             'pages' => ['title', 'content'],
-            'seo_landing_pages' => ['h1_heading', 'top_content', 'bottom_content'],
+            'seo_landing_pages' => ['title', 'content_top', 'content_bottom'],
             'seo_metas' => ['title', 'description', 'keywords'],
         ];
 
