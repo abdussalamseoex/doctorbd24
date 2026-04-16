@@ -10,7 +10,10 @@ class AiSettingController extends Controller
 {
     public function index()
     {
-        $keys = ['ai_provider', 'openai_api_key', 'gemini_api_key', 'openai_base_url', 'openai_model'];
+        $keys = [
+            'ai_provider', 'openai_api_key', 'gemini_api_key', 'openai_base_url', 'openai_model',
+            'ai_translate_prompt_hospital', 'ai_translate_prompt_doctor', 'ai_translate_prompt_ambulance'
+        ];
         
         $settings = [];
         foreach ($keys as $key) {

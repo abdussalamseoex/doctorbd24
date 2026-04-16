@@ -91,28 +91,36 @@ class AIGeneratorController extends Controller
 
         $contextType = $request->context_type ?? 'hospital';
 
-        $promptText = "You are an expert native Bengali copywriter for a Bangladeshi healthcare website.\n";
-        $promptText .= "CRITICAL INSTRUCTION: Write completely ORIGINAL, natural, and engaging Bengali content based on the provided facts. DO NOT translate the input word-for-word. Wipe the English sentence structure from your mind. Read the input, extract the key information, and write a fresh Bengali copy from scratch.\n\n";
+        // Check if user has defined a custom translation prompt in 'AI Settings' UI
+        $customPrompt = \App\Models\Setting::get("ai_translate_prompt_{$contextType}", "");
 
-        $promptText .= "STYLE GUIDELINES:\n";
-        $promptText .= "1. Use standard, conversational 'Shuddho Bangla'. Make it sound like a premium, trustworthy local brand.\n";
-        $promptText .= "2. Write naturally. If a patient from Bangladesh reads it, they must feel a human wrote it natively.\n";
-        $promptText .= "3. Do not use awkward robotic words. Use natural flow and common healthcare terminology.\n";
-        $promptText .= "4. Always use 'ডা.' instead of 'Dr.'.\n\n";
-
-        if ($contextType === 'doctor') {
-            $promptText .= "CONTEXT: You are writing the official biography of a reputed Bangladeshi medical specialist. Highlight their experience, specialties, and compassionate care in a professional tone.\n\n";
-        } elseif ($contextType === 'ambulance') {
-            $promptText .= "CONTEXT: You are writing for an emergency ambulance service homepage. Emphasize 24/7 availability, speed, and reliability.\n\n";
+        if (!empty($customPrompt)) {
+            $promptText = $customPrompt . "\n\nInput JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
         } else {
-            $promptText .= "CONTEXT: You are writing the homepage content for a premium hospital or diagnostic center in Bangladesh. Write a welcoming introduction, list their services naturally, and close with a reassuring message.\n\n";
+            // Fallback prompt if nothing is set in the UI
+            $promptText = "You are an expert native Bengali copywriter for a Bangladeshi healthcare website.\n";
+            $promptText .= "CRITICAL INSTRUCTION: Write completely ORIGINAL, natural, and engaging Bengali content based on the provided facts. DO NOT translate the input word-for-word. Wipe the English sentence structure from your mind. Read the input, extract the key information, and write a fresh Bengali copy from scratch.\n\n";
+
+            $promptText .= "STYLE GUIDELINES:\n";
+            $promptText .= "1. Use standard, conversational 'Shuddho Bangla'. Make it sound like a premium, trustworthy local brand.\n";
+            $promptText .= "2. Write naturally. If a patient from Bangladesh reads it, they must feel a human wrote it natively.\n";
+            $promptText .= "3. Do not use awkward robotic words. Use natural flow and common healthcare terminology.\n";
+            $promptText .= "4. Always use 'ডা.' instead of 'Dr.'.\n\n";
+
+            if ($contextType === 'doctor') {
+                $promptText .= "CONTEXT: You are writing the official biography of a reputed Bangladeshi medical specialist. Highlight their experience, specialties, and compassionate care in a professional tone.\n\n";
+            } elseif ($contextType === 'ambulance') {
+                $promptText .= "CONTEXT: You are writing for an emergency ambulance service homepage. Emphasize 24/7 availability, speed, and reliability.\n\n";
+            } else {
+                $promptText .= "CONTEXT: You are writing the homepage content for a premium hospital or diagnostic center in Bangladesh. Write a welcoming introduction, list their services naturally, and close with a reassuring message.\n\n";
+            }
+
+            $promptText .= "FORMATTING RULES:\n";
+            $promptText .= "1. Retain any HTML tags (like <p>, <ul>, <li>, <strong>) exactly as they are. Place your original Bengali text inside them.\n";
+            $promptText .= "2. Your final response MUST be a STRICT JSON OBJECT with exactly the same structure/keys as the input. Do NOT add ```json or markdown.\n\n";
+
+            $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
         }
-
-        $promptText .= "FORMATTING RULES:\n";
-        $promptText .= "1. Retain any HTML tags (like <p>, <ul>, <li>, <strong>) exactly as they are. Place your original Bengali text inside them.\n";
-        $promptText .= "2. Your final response MUST be a STRICT JSON OBJECT with exactly the same structure/keys as the input. Do NOT add ```json or markdown.\n\n";
-
-        $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 
         $provider = Setting::get('ai_provider', 'openai');
 
