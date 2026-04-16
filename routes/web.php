@@ -255,6 +255,7 @@ Route::prefix('admin')
         Route::put('ai-prompts', [\App\Http\Controllers\Admin\AiSettingController::class, 'promptsUpdate'])->name('ai-prompts.update')->middleware('permission:manage settings');
         Route::put('ai-settings', [\App\Http\Controllers\Admin\AiSettingController::class, 'update'])->name('ai-settings.update')->middleware('permission:manage settings');
         Route::post('ai/generate', [\App\Http\Controllers\Admin\AIGeneratorController::class, 'generate'])->name('ai.generate');
+        Route::post('ai/translate', [\App\Http\Controllers\Admin\AIGeneratorController::class, 'translate'])->name('ai.translate');
         Route::post('ai/save-prompts', [\App\Http\Controllers\Admin\AIGeneratorController::class, 'savePrompts'])->name('ai.save-prompts');
 
         // Programmatic SEO

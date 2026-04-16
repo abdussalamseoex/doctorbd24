@@ -77,6 +77,59 @@ class AIGeneratorController extends Controller
         }
     }
 
+    public function translate(Request $request)
+    {
+        $request->validate([
+            'fields' => 'required|array',
+            'target_language' => 'required|string|in:Bengali,English'
+        ]);
+
+        $fields = $request->fields;
+        $targetLanguage = $request->target_language;
+
+        $promptText = "You are an automated medical translator and SEO assistant. You must translate the provided JSON object values strictly into {$targetLanguage} medical terminology. \n";
+        $promptText .= "Rules:\n";
+        $promptText .= "1. Retain all original HTML formatting, tags, and structure exactly as it is.\n";
+        $promptText .= "2. Translate ONLY the text content. Do not translate HTML tags, attributes, or URLs.\n";
+        $promptText .= "3. Keep professional medical terminology where appropriate.\n";
+        $promptText .= "4. ABSOLUTE REQUIREMENT: Your final response MUST be a STRICT JSON OBJECT with the exact same keys as the provided JSON. \n";
+        $promptText .= "5. DO NOT wrap the response in markdown ```json blocks. Return ONLY valid parsed JSON.\n\n";
+        $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
+
+        $provider = Setting::get('ai_provider', 'openai');
+
+        try {
+            if ($provider === 'openai' || $provider === 'custom_openai') {
+                $content = $this->callOpenAI($promptText, $provider);
+            } else {
+                $content = $this->callGemini($promptText);
+            }
+
+            // Cleanup potential markdown formatting from AI output
+            $content = preg_replace('/^```(?:json|html)?\s*([\s\S]*?)\s*```$/im', '$1', $content);
+            $content = trim($content);
+
+            $decoded = json_decode($content, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // If AI hallucinated and returned invalid JSON, fallback to error
+                throw new \Exception("AI did not return a valid JSON object.");
+            }
+
+            return response()->json([
+                'success' => true,
+                'is_json' => true,
+                'content' => $decoded
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('AI Translation Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to translate content: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function savePrompts(Request $request)
     {
         $request->validate([

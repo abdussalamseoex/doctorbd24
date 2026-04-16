@@ -145,6 +145,12 @@
 
                 <!-- BENGALI TAB -->
                 <div x-show="activeTab === 'bn'" style="display:none;" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-emerald-50/30 dark:bg-emerald-900/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                    <div class="md:col-span-2 flex justify-end">
+                        <button type="button" onclick="autoTranslateToBengali(this)" class="px-3 py-1.5 text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300 rounded-lg shadow-sm border border-emerald-200 dark:border-emerald-700 hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors flex items-center gap-1.5">
+                            <span class="btn-text">✨ Auto Translate to Bengali (AI)</span>
+                            <svg class="btn-spinner hidden w-4 h-4 animate-spin text-emerald-600 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        </button>
+                    </div>
                     <div>
                         <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">Full Name (Bengali)</label>
                         <input type="text" name="name[bn]" value="{{ old('name.bn', isset($doctor) ? $doctor->getTranslation('name', 'bn', false) : '') }}" placeholder="উদাঃ ডাঃ জন ডো"
@@ -970,3 +976,92 @@
         </div>
     </form>
 </div>
+
+<script>
+    async function autoTranslateToBengali(btn) {
+        const textSpan = btn.querySelector('.btn-text');
+        const spinner = btn.querySelector('.btn-spinner');
+
+        // Gather English fields
+        const nameEn = document.querySelector('[name="name[en]"]').value;
+        const designationEn = document.querySelector('[name="designation[en]"]').value;
+        const qualificationsEn = document.querySelector('[name="qualifications[en]"]').value;
+        
+        // Ensure TinyMCE is loaded
+        let bioEn = '';
+        if (typeof tinymce !== 'undefined' && tinymce.get('bio_en')) {
+            bioEn = tinymce.get('bio_en').getContent();
+        } else {
+            bioEn = document.querySelector('[name="bio[en]"]').value;
+        }
+
+        if (!nameEn && !bioEn) {
+            alert('Please fill out the English Name or Bio first before translating.');
+            return;
+        }
+
+        const payload = {
+            target_language: 'Bengali',
+            fields: {
+                name: nameEn,
+                designation: designationEn,
+                qualifications: qualificationsEn,
+                bio: bioEn
+            }
+        };
+
+        try {
+            btn.disabled = true;
+            spinner.classList.remove('hidden');
+            textSpan.textContent = 'Translating...';
+
+            const response = await fetch('{{ route('admin.ai.translate') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Translation failed.');
+            }
+
+            // Populate Bengali fields
+            if (data.content.name && document.querySelector('[name="name[bn]"]')) document.querySelector('[name="name[bn]"]').value = data.content.name;
+            if (data.content.designation && document.querySelector('[name="designation[bn]"]')) document.querySelector('[name="designation[bn]"]').value = data.content.designation;
+            if (data.content.qualifications && document.querySelector('[name="qualifications[bn]"]')) document.querySelector('[name="qualifications[bn]"]').value = data.content.qualifications;
+
+            if (data.content.bio) {
+                if (typeof tinymce !== 'undefined' && tinymce.get('bio_bn')) {
+                    tinymce.get('bio_bn').setContent(data.content.bio);
+                } else if(document.querySelector('[name="bio[bn]"]')) {
+                    document.querySelector('[name="bio[bn]"]').value = data.content.bio;
+                }
+            }
+
+            // Optional success toast
+            if (typeof notyf !== 'undefined') {
+                notyf.success('Translated successfully to Bengali!');
+            } else {
+                alert('Translated successfully to Bengali!');
+            }
+
+        } catch (error) {
+            console.error('Translation Error:', error);
+            if (typeof notyf !== 'undefined') {
+                notyf.error(error.message || 'Failed to translate.');
+            } else {
+                alert(error.message || 'Failed to translate.');
+            }
+        } finally {
+            btn.disabled = false;
+            spinner.classList.add('hidden');
+            textSpan.textContent = '✨ Auto Translate to Bengali (AI)';
+        }
+    }
+</script>
