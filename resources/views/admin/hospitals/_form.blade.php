@@ -98,18 +98,27 @@
 
             {{-- Basic Fields --}}
             <div x-data="{ activeTab: 'en' }">
-                <div class="flex gap-2 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3">
-                    <button type="button" @click="activeTab = 'en'" 
-                            :class="activeTab === 'en' ? 'bg-sky-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
-                            class="px-5 py-2 rounded-xl text-sm font-bold transition-all focus:outline-none">
-                        English (Default)
-                    </button>
-                    <button type="button" @click="activeTab = 'bn'" 
-                            :class="activeTab === 'bn' ? 'bg-emerald-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
-                            class="px-5 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 focus:outline-none">
-                        Bengali (বাংলা)
-                        <span class="text-[9px] uppercase tracking-wide bg-white/20 text-white px-1.5 py-0.5 rounded-full" x-show="activeTab === 'bn'">Translating</span>
-                    </button>
+                <div class="flex flex-col sm:flex-row justify-between gap-4 mb-5 border-b border-gray-100 dark:border-gray-700 pb-3">
+                    <div class="flex gap-2">
+                        <button type="button" @click="activeTab = 'en'" 
+                                :class="activeTab === 'en' ? 'bg-sky-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                                class="px-5 py-2 rounded-xl text-sm font-bold transition-all focus:outline-none">
+                            English (Default)
+                        </button>
+                        <button type="button" @click="activeTab = 'bn'" 
+                                :class="activeTab === 'bn' ? 'bg-emerald-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                                class="px-5 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 focus:outline-none">
+                            Bengali (বাংলা)
+                            <span class="text-[9px] uppercase tracking-wide bg-white/20 text-white px-1.5 py-0.5 rounded-full" x-show="activeTab === 'bn'">Translating</span>
+                        </button>
+                    </div>
+                    
+                    <div x-show="activeTab === 'bn'" x-transition class="flex items-center">
+                        <button type="button" onclick="autoTranslateToBengali(this)" class="flex items-center gap-1.5 text-xs px-3 py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 transition-colors font-medium border border-emerald-200 dark:border-emerald-800">
+                            <span class="btn-text">✨ Auto Translate to Bengali (AI)</span>
+                            <svg class="btn-spinner hidden w-4 h-4 animate-spin text-emerald-600 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- ENGLISH TAB -->
@@ -781,4 +790,101 @@
     </form>
 </div>
 @include('admin.shared._tinymce')
+
+<script>
+    async function autoTranslateToBengali(btn) {
+        const textSpan = btn.querySelector('.btn-text');
+        const spinner = btn.querySelector('.btn-spinner');
+
+        // Gather English fields
+        let nameEn = '';
+        if (document.querySelector('[name="name[en]"]')) nameEn = document.querySelector('[name="name[en]"]').value;
+        
+        let addressEn = '';
+        if (document.querySelector('[name="address[en]"]')) addressEn = document.querySelector('[name="address[en]"]').value;
+        
+        let aboutEn = '';
+        if (typeof tinymce !== 'undefined' && tinymce.get('about_en')) {
+            aboutEn = tinymce.get('about_en').getContent();
+        } else if (document.querySelector('[name="about[en]"]')) {
+            aboutEn = document.querySelector('[name="about[en]"]').value;
+        }
+
+        if (!nameEn && !aboutEn && !addressEn) {
+            alert('Please fill out the English fields first before translating.');
+            return;
+        }
+
+        // Gather SEO Payload
+        let seoPayload = {};
+        if (document.querySelector('[name="seo[title][en]"]')) seoPayload.seo_title = document.querySelector('[name="seo[title][en]"]').value;
+        if (document.querySelector('[name="seo[description][en]"]')) seoPayload.seo_desc = document.querySelector('[name="seo[description][en]"]').value;
+
+        const payload = {
+            target_language: 'Bengali',
+            fields: {
+                name: nameEn,
+                address: addressEn,
+                about: aboutEn,
+                ...seoPayload
+            }
+        };
+
+        try {
+            btn.disabled = true;
+            spinner.classList.remove('hidden');
+            textSpan.textContent = 'Translating...';
+
+            const response = await fetch('{{ route('admin.ai.translate') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Translation failed.');
+            }
+
+            // Populate Bengali fields
+            if (data.content.name && document.querySelector('[name="name[bn]"]')) document.querySelector('[name="name[bn]"]').value = data.content.name;
+            if (data.content.address && document.querySelector('[name="address[bn]"]')) document.querySelector('[name="address[bn]"]').value = data.content.address;
+
+            if (data.content.about) {
+                if (typeof tinymce !== 'undefined' && tinymce.get('about_bn')) {
+                    tinymce.get('about_bn').setContent(data.content.about);
+                } else if(document.querySelector('[name="about[bn]"]')) {
+                    document.querySelector('[name="about[bn]"]').value = data.content.about;
+                }
+            }
+
+            // Populate SEO Fields
+            if (data.content.seo_title && document.querySelector('[name="seo[title][bn]"]')) document.querySelector('[name="seo[title][bn]"]').value = data.content.seo_title;
+            if (data.content.seo_desc && document.querySelector('[name="seo[description][bn]"]')) document.querySelector('[name="seo[description][bn]"]').value = data.content.seo_desc;
+
+            if (typeof notyf !== 'undefined') {
+                notyf.success('Translated successfully to Bengali!');
+            } else {
+                alert('Translated successfully to Bengali!');
+            }
+
+        } catch (error) {
+            console.error('Translation Error:', error);
+            if (typeof notyf !== 'undefined') {
+                notyf.error(error.message || 'Failed to translate.');
+            } else {
+                alert(error.message || 'Failed to translate.');
+            }
+        } finally {
+            btn.disabled = false;
+            spinner.classList.add('hidden');
+            textSpan.textContent = '✨ Auto Translate to Bengali (AI)';
+        }
+    }
+</script>
 
