@@ -359,7 +359,7 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-[13px] font-semibold text-gray-600 dark:text-gray-300 leading-snug">{{ __('Visiting Hours') }}</p>
-                                    <p class="text-xs text-sky-600 dark:text-sky-400 font-bold mt-0.5 bg-sky-50 dark:bg-sky-900/20 inline-block px-1.5 py-0.5 rounded">{{ $chamber->visiting_hours ?: 'N/A' }}</p>
+                                    <p class="text-xs text-sky-600 dark:text-sky-400 font-bold mt-0.5 bg-sky-50 dark:bg-sky-900/20 inline-block px-1.5 py-0.5 rounded">{{ $chamber->visiting_hours ? format_bangla_time($chamber->visiting_hours) : 'N/A' }}</p>
                                 </div>
                             </div>
                             

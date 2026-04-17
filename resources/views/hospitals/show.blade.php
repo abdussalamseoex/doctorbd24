@@ -308,7 +308,7 @@
                     @foreach($hospital->opening_hours as $day => $hours)
                     <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700">
                         <span class="text-sm font-bold text-gray-700 dark:text-gray-200">{{ __($day) }}</span>
-                        <span class="text-sm text-gray-600 dark:text-gray-400 font-medium">{{ $hours }}</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400 font-medium">{{ format_bangla_time($hours) }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -555,7 +555,7 @@
 
                                         @php
                                             $chamber = $hospital->chambers->where('doctor_id', $doctor->id)->first();
-                                            $visitingHours = $chamber?->visiting_hours ?: __('Contact for Schedule');
+                                            $visitingHours = $chamber?->visiting_hours ? format_bangla_time($chamber->visiting_hours) : __('Contact for Schedule');
                                             $closedDays = $chamber?->closed_days ? (is_string($chamber->closed_days) ? json_decode($chamber->closed_days, true) : $chamber->closed_days) : null;
                                         @endphp
                                         <div class="flex items-start gap-2">
