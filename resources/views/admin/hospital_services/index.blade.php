@@ -125,27 +125,44 @@
         {{-- Right Column: Data Table --}}
         <div class="lg:col-span-2">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col h-full">
+                @php
+                    $allServices = $hospital->hospitalServices()->get();
+                    $missingEnIds = $allServices->filter(fn($s) => empty($s->getTranslations('description')['en'] ?? null))->pluck('id')->values()->toJson();
+                    $missingBnIds = $allServices->filter(fn($s) => empty($s->getTranslations('description')['bn'] ?? null))->pluck('id')->values()->toJson();
+                @endphp
                 <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50 flex-wrap gap-4"
                      x-data="{
                         generating: false,
                         progress: 0,
                         total: 0,
-                        missingIds: {{ $hospital->hospitalServices()->where(function($q) { $q->whereNull('description')->orWhere('description', ''); })->pluck('id')->values()->toJson() }},
+                        missingEn: {{ $missingEnIds }},
+                        missingBn: {{ $missingBnIds }},
+                        targetLanguage: 'bn',
+                        
+                        get activeIds() {
+                            if (this.targetLanguage === 'en') return this.missingEn;
+                            if (this.targetLanguage === 'bn') return this.missingBn;
+                            // Both: union of missing En and missing Bn
+                            return [...new Set([...this.missingEn, ...this.missingBn])];
+                        },
+                        
                         generateAll() {
-                            if (this.missingIds.length === 0) {
-                                alert('All services for this hospital already have complete descriptions!');
+                            let ids = this.activeIds;
+                            if (ids.length === 0) {
+                                alert('All selected services already have complete descriptions!');
                                 return;
                             }
-                            if (!confirm('Generate AI descriptions for ALL ' + this.missingIds.length + ' missing tests in this hospital? Note: This will run across all pages in the background.')) return;
+                            let msg = 'Generate AI descriptions for ' + ids.length + ' tests in ' + (this.targetLanguage === 'en' ? 'English' : (this.targetLanguage === 'bn' ? 'Bengali' : 'Both Languages')) + '?';
+                            if (!confirm(msg)) return;
                             
                             this.generating = true;
-                            this.total = this.missingIds.length;
+                            this.total = ids.length;
                             this.progress = 0;
                             
                             let chunkSize = 10;
                             let chunks = [];
-                            for (let i = 0; i < this.missingIds.length; i += chunkSize) {
-                                chunks.push(this.missingIds.slice(i, i + chunkSize));
+                            for (let i = 0; i < ids.length; i += chunkSize) {
+                                chunks.push(ids.slice(i, i + chunkSize));
                             }
                             
                             this.processChunks(chunks, 0);
@@ -163,7 +180,10 @@
                                     'Content-Type': 'application/json',
                                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                 },
-                                body: JSON.stringify({ service_ids: chunks[index] })
+                                body: JSON.stringify({ 
+                                    service_ids: chunks[index],
+                                    target_language: this.targetLanguage
+                                })
                             })
                             .then(res => res.json())
                             .then(data => {
@@ -181,18 +201,26 @@
                         <h3 class="font-bold text-gray-800 dark:text-gray-200">
                             Existing Services ({{ $services->total() }})
                         </h3>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Showing {{ $services->count() }} items per page.</p>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Showing {{ $services->count() }} items. (Missing: <span class="text-indigo-500" x-text="missingEn.length + ' EN'"></span>, <span class="text-emerald-500" x-text="missingBn.length + ' BN'"></span>)</p>
                     </div>
 
                     <div class="flex items-center gap-4">
                         @if($services->count() > 0)
-                            <button @click="generateAll" :disabled="generating" class="text-xs font-bold px-3 py-1.5 rounded-lg border flex items-center gap-1 transition-colors"
-                                    :class="generating ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-fuchsia-50 text-fuchsia-600 border-fuchsia-200 hover:bg-fuchsia-100 hover:border-fuchsia-300 dark:bg-fuchsia-900/30 dark:border-fuchsia-800 dark:text-fuchsia-400'">
-                                <svg x-show="!generating" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                                <svg x-cloak x-show="generating" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
-                                <span x-show="!generating" x-text="'AI Generate Descriptions (' + missingIds.length + ' missing)'"></span>
-                                <span x-cloak x-show="generating" x-text="'Generating... ' + progress + '/' + total"></span>
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <select x-model="targetLanguage" :disabled="generating" class="text-xs border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="bn">Generate Bengali (BN)</option>
+                                    <option value="en">Generate English (EN)</option>
+                                    <option value="both">Generate Both</option>
+                                </select>
+
+                                <button @click="generateAll" :disabled="generating" class="text-xs font-bold px-3 py-1.5 rounded-lg border flex items-center gap-1 transition-colors"
+                                        :class="generating ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-fuchsia-50 text-fuchsia-600 border-fuchsia-200 hover:bg-fuchsia-100 hover:border-fuchsia-300 dark:bg-fuchsia-900/30 dark:border-fuchsia-800 dark:text-fuchsia-400'">
+                                    <svg x-show="!generating" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    <svg x-cloak x-show="generating" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                    <span x-show="!generating" x-text="'Bulk AI Generate (' + activeIds.length + ' items)'"></span>
+                                    <span x-cloak x-show="generating" x-text="'Generating... ' + progress + '/' + total"></span>
+                                </button>
+                            </div>
                         
                             <form action="{{ route('admin.hospitals.services.clear', $hospital->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete ALL services for this hospital?');">
                                 @csrf @method('DELETE')

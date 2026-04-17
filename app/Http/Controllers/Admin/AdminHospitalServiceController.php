@@ -222,48 +222,80 @@ class AdminHospitalServiceController extends Controller
             return response()->json(['success' => false, 'message' => 'AI API Key is missing.'], 400);
         }
 
+        $targetLang = $request->input('target_language', 'both'); // en, bn, both
         $results = [];
         $services = HospitalService::whereIn('id', $request->service_ids)->where('hospital_id', $hospital->id)->get();
 
         foreach($services as $service) {
-            $prompt = "Write a highly accurate, 2-3 sentence medical description for a diagnostic test/service named '{$service->service_name}'. This description is for patients to understand what the test involves. Do NOT use markdown. Do NOT use html tags except paragraph <p>. Tone: Informative and Professional.";
-            $desc = null;
+            $descEn = $service->getTranslation('description', 'en', false);
+            $descBn = $service->getTranslation('description', 'bn', false);
+            
+            $generateEn = ($targetLang === 'en' || $targetLang === 'both');
+            $generateBn = ($targetLang === 'bn' || $targetLang === 'both');
 
             try {
-                if ($provider === 'gemini') {
-                    $response = \Illuminate\Support\Facades\Http::post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey, [
-                        'contents' => [['parts' => [['text' => "System: You are a medical professional.\n\nUser: " . $prompt]]]],
-                        'generationConfig' => ['temperature' => 0.6]
-                    ]);
-                    if ($response->successful()) {
-                        $desc = trim($response->json()['candidates'][0]['content']['parts'][0]['text'] ?? '');
-                    }
-                } else {
-                    $baseUrl = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_base_url')) 
-                              ? rtrim(preg_replace('#/chat/completions/?$#i', '', \App\Models\Setting::get('openai_base_url')), '/')
-                              : 'https://api.openai.com/v1';
-                    $model = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_model')) 
-                              ? \App\Models\Setting::get('openai_model') : 'gpt-4o-mini';
-
-                    $response = \Illuminate\Support\Facades\Http::withToken($apiKey)->post($baseUrl . '/chat/completions', [
-                        'model' => $model,
-                        'messages' => [
-                            ['role' => 'system', 'content' => 'You are a medical professional writing for patients.'],
-                            ['role' => 'user', 'content' => $prompt]
-                        ],
-                        'temperature' => 0.6
-                    ]);
-                    if ($response->successful()) {
-                        $desc = trim($response->json()['choices'][0]['message']['content'] ?? '');
+                // 1. Generate English if needed
+                if ($generateEn && empty($descEn)) {
+                    $serviceNameEn = $service->getTranslation('service_name', 'en', false) ?: 'Diagnostic Test';
+                    $promptEn = "Write a highly accurate, 2-3 sentence medical description for a diagnostic test/service named '{$serviceNameEn}'. This description is for patients to understand what the test involves. Do NOT use markdown. Do NOT use html tags except paragraph <p>. Tone: Informative and Professional.";
+                    
+                    if ($provider === 'gemini') {
+                        $resEn = \Illuminate\Support\Facades\Http::post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey, [
+                            'contents' => [['parts' => [['text' => "System: You are a medical professional.\n\nUser: " . $promptEn]]]],
+                            'generationConfig' => ['temperature' => 0.6]
+                        ]);
+                        if ($resEn->successful()) $descEn = trim($resEn->json()['candidates'][0]['content']['parts'][0]['text'] ?? '');
+                    } else {
+                        $baseUrl = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_base_url')) 
+                                  ? rtrim(preg_replace('#/chat/completions/?$#i', '', \App\Models\Setting::get('openai_base_url')), '/') : 'https://api.openai.com/v1';
+                        $model = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_model')) ? \App\Models\Setting::get('openai_model') : 'gpt-4o-mini';
+                        
+                        $resEn = \Illuminate\Support\Facades\Http::withToken($apiKey)->post($baseUrl . '/chat/completions', [
+                            'model' => $model,
+                            'messages' => [
+                                ['role' => 'system', 'content' => 'You are a medical professional writing for patients.'],
+                                ['role' => 'user', 'content' => $promptEn]
+                            ], 'temperature' => 0.6
+                        ]);
+                        if ($resEn->successful()) $descEn = trim($resEn->json()['choices'][0]['message']['content'] ?? '');
                     }
                 }
 
-                if ($desc) {
-                    $service->update(['description' => $desc]);
-                    $results[] = ['id' => $service->id, 'status' => 'success', 'description' => Str::limit($desc, 50)];
-                } else {
-                    $results[] = ['id' => $service->id, 'status' => 'failed', 'reason' => 'Empty response from AI'];
+                // 2. Generate Bengali if needed
+                if ($generateBn && empty($descBn)) {
+                    $serviceNameEn = $service->getTranslation('service_name', 'en', false) ?: 'Diagnostic Test';
+                    $contextData = $descEn ?: $serviceNameEn;
+                    $promptBn = "You are a professional medical translator for a healthcare directory in Bangladesh. Translate the following diagnostic test description into standard, conversational Bengali (Shuddho Bangla). \nSTRICT RULE: Do NOT use overly pure dictionary words (Sadhu Bhasha). Keep common medical terms intact via transliteration (e.g., use 'টেস্ট', 'ডায়াগনস্টিক', 'রিপোর্ট', 'আলট্রাসনোগ্রাম') so that ordinary patients can understand easily. Do not use Markdown. \n\nContent to translate: " . $contextData;
+                    
+                    if ($provider === 'gemini') {
+                        $resBn = \Illuminate\Support\Facades\Http::post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey, [
+                            'contents' => [['parts' => [['text' => $promptBn]]]],
+                            'generationConfig' => ['temperature' => 0.6]
+                        ]);
+                        if ($resBn->successful()) $descBn = trim($resBn->json()['candidates'][0]['content']['parts'][0]['text'] ?? '');
+                    } else {
+                        $baseUrl = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_base_url')) 
+                                  ? rtrim(preg_replace('#/chat/completions/?$#i', '', \App\Models\Setting::get('openai_base_url')), '/') : 'https://api.openai.com/v1';
+                        $model = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_model')) ? \App\Models\Setting::get('openai_model') : 'gpt-4o-mini';
+                        
+                        $resBn = \Illuminate\Support\Facades\Http::withToken($apiKey)->post($baseUrl . '/chat/completions', [
+                            'model' => $model,
+                            'messages' => [['role' => 'user', 'content' => $promptBn]], 
+                            'temperature' => 0.6
+                        ]);
+                        if ($resBn->successful()) $descBn = trim($resBn->json()['choices'][0]['message']['content'] ?? '');
+                    }
                 }
+
+                // Append both to model
+                if ($descEn || $descBn) {
+                    $existingDesc = $service->getTranslations('description') ?: [];
+                    if ($descEn) $existingDesc['en'] = $descEn;
+                    if ($descBn) $existingDesc['bn'] = $descBn;
+                    $service->update(['description' => $existingDesc]);
+                }
+                
+                $results[] = ['id' => $service->id, 'status' => 'success'];
 
             } catch (\Exception $e) {
                 $results[] = ['id' => $service->id, 'status' => 'failed', 'reason' => $e->getMessage()];
