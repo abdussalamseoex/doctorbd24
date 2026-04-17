@@ -116,8 +116,24 @@ $publicRoutes = function () {
     Route::get('/join/hospital', [\App\Http\Controllers\JoinController::class, 'hospitalForm'])->name('join.hospital');
     Route::post('/join/hospital', [\App\Http\Controllers\JoinController::class, 'submitHospital'])->name('join.hospital.submit')->middleware('throttle:5,10');
 
+    // â”€â”€ Authenticated User Routes â”€â”€â”€â”€
+    require __DIR__.'/auth.php';
+
     Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
 };
+
+// Sitemap & Robots (Must be OUTSIDE and BEFORE `{slug}` catch-all)
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap/doctors.xml', [\App\Http\Controllers\SitemapController::class, 'doctors']);
+Route::get('/sitemap/hospitals.xml', [\App\Http\Controllers\SitemapController::class, 'hospitals']);
+Route::get('/sitemap/ambulances.xml', [\App\Http\Controllers\SitemapController::class, 'ambulances']);
+Route::get('/sitemap/blog.xml', [\App\Http\Controllers\SitemapController::class, 'blog']);
+
+Route::get('/robots.txt', function () {
+    $default = "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /login\nDisallow: /register\n\nSitemap: " . url('/sitemap.xml') . "\n";
+    $content = \App\Models\Setting::get('robots_txt', $default);
+    return response($content, 200)->header('Content-Type', 'text/plain');
+});
 
 // ── Apply English Group ──────────────────────────────────────
 Route::middleware([])->group($publicRoutes);
@@ -125,23 +141,8 @@ Route::middleware([])->group($publicRoutes);
 // ── Apply Bengali Group ──────────────────────────────────────
 Route::prefix('bn')->name('bn.')->group($publicRoutes);
 
-// Sitemap
-Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
-Route::get('/sitemap/doctors.xml', [\App\Http\Controllers\SitemapController::class, 'doctors']);
-Route::get('/sitemap/hospitals.xml', [\App\Http\Controllers\SitemapController::class, 'hospitals']);
-Route::get('/sitemap/ambulances.xml', [\App\Http\Controllers\SitemapController::class, 'ambulances']);
-Route::get('/sitemap/blog.xml', [\App\Http\Controllers\SitemapController::class, 'blog']);
+// ── Authenticated User Routes ────────────────────────────────
 
-// Robots.txt
-Route::get('/robots.txt', function () {
-    $default = "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /login\nDisallow: /register\n\nSitemap: " . url('/sitemap.xml') . "\n";
-    $content = \App\Models\Setting::get('robots_txt', $default);
-    return response($content, 200)->header('Content-Type', 'text/plain');
-});
-
-
-// â”€â”€ Authenticated User Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
     // User dashboard
