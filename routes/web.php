@@ -132,15 +132,15 @@ Route::get('/robots.txt', function () {
     return response($content, 200)->header('Content-Type', 'text/plain');
 });
 
+// ── Authenticated User Routes ────────────────────────────────
+require __DIR__.'/auth.php';
+Route::prefix('bn')->name('bn.')->group(base_path('routes/auth.php'));
+
 // ── Apply English Group ──────────────────────────────────────
 Route::middleware([])->group($publicRoutes);
 
 // ── Apply Bengali Group ──────────────────────────────────────
 Route::prefix('bn')->name('bn.')->group($publicRoutes);
-
-// ── Authenticated User Routes ────────────────────────────────
-require __DIR__.'/auth.php';
-Route::prefix('bn')->name('bn.')->group(base_path('routes/auth.php'));
 
 Route::middleware('auth')->group(function () {
     // User dashboard
