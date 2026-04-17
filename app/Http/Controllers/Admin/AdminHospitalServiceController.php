@@ -262,17 +262,31 @@ class AdminHospitalServiceController extends Controller
                 }
 
                 // 2. Generate Bengali if needed
-                if ($generateBn && empty($descBn)) {
+                $nameBn = $service->getTranslation('service_name', 'bn', false);
+                if ($generateBn && (empty($descBn) || empty($nameBn))) {
                     $serviceNameEn = $service->getTranslation('service_name', 'en', false) ?: 'Diagnostic Test';
-                    $contextData = $descEn ?: $serviceNameEn;
-                    $promptBn = "You are a professional medical translator for a healthcare directory in Bangladesh. Translate the following diagnostic test description into standard, conversational Bengali (Shuddho Bangla). \nSTRICT RULE: Do NOT use overly pure dictionary words (Sadhu Bhasha). Keep common medical terms intact via transliteration (e.g., use 'টেস্ট', 'ডায়াগনস্টিক', 'রিপোর্ট', 'আলট্রাসনোগ্রাম') so that ordinary patients can understand easily. Do not use Markdown. \n\nContent to translate: " . $contextData;
+                    $contextData = $descEn ?: 'Standard medical diagnostic test.';
                     
+                    $promptBn = "You are a medical translator in Bangladesh. Respond ONLY with a valid JSON.
+RULE FOR NAME: Phonetically transliterate the English test name into Bengali letters (e.g. 'CBC Test' -> 'সিবিসি টেস্ট', 'Ambulance' -> 'অ্যাম্বুলেন্স'). Do NOT use pure dictionary words for names.
+RULE FOR DESCRIPTION: Translate the description into simple, conversational Bengali for ordinary patients.
+
+Test Name: {$serviceNameEn}
+Description: {$contextData}
+
+Return JSON strictly in this format:
+{
+  \"name\": \"...\",
+  \"description\": \"...\"
+}";
+                    
+                    $jsonResult = null;
                     if ($provider === 'gemini') {
                         $resBn = \Illuminate\Support\Facades\Http::post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey, [
                             'contents' => [['parts' => [['text' => $promptBn]]]],
-                            'generationConfig' => ['temperature' => 0.6]
+                            'generationConfig' => ['temperature' => 0.4]
                         ]);
-                        if ($resBn->successful()) $descBn = trim($resBn->json()['candidates'][0]['content']['parts'][0]['text'] ?? '');
+                        if ($resBn->successful()) $jsonResult = trim($resBn->json()['candidates'][0]['content']['parts'][0]['text'] ?? '');
                     } else {
                         $baseUrl = ($provider === 'custom_openai' && \App\Models\Setting::get('openai_base_url')) 
                                   ? rtrim(preg_replace('#/chat/completions/?$#i', '', \App\Models\Setting::get('openai_base_url')), '/') : 'https://api.openai.com/v1';
@@ -281,18 +295,36 @@ class AdminHospitalServiceController extends Controller
                         $resBn = \Illuminate\Support\Facades\Http::withToken($apiKey)->post($baseUrl . '/chat/completions', [
                             'model' => $model,
                             'messages' => [['role' => 'user', 'content' => $promptBn]], 
-                            'temperature' => 0.6
+                            'temperature' => 0.4
                         ]);
-                        if ($resBn->successful()) $descBn = trim($resBn->json()['choices'][0]['message']['content'] ?? '');
+                        if ($resBn->successful()) $jsonResult = trim($resBn->json()['choices'][0]['message']['content'] ?? '');
+                    }
+
+                    if ($jsonResult) {
+                        // Strip markdown formatting if any
+                        $jsonResult = preg_replace('/```json/i', '', $jsonResult);
+                        $jsonResult = preg_replace('/```/', '', $jsonResult);
+                        $decoded = json_decode(trim($jsonResult), true);
+                        if ($decoded && is_array($decoded)) {
+                            if (empty($nameBn) && !empty($decoded['name'])) $nameBn = $decoded['name'];
+                            if (empty($descBn) && !empty($decoded['description'])) $descBn = $decoded['description'];
+                        }
                     }
                 }
 
                 // Append both to model
-                if ($descEn || $descBn) {
+                if ($descEn || $descBn || $nameBn) {
                     $existingDesc = $service->getTranslations('description') ?: [];
+                    $existingName = $service->getTranslations('service_name') ?: [];
+                    
                     if ($descEn) $existingDesc['en'] = $descEn;
                     if ($descBn) $existingDesc['bn'] = $descBn;
-                    $service->update(['description' => $existingDesc]);
+                    if ($nameBn) $existingName['bn'] = $nameBn;
+                    
+                    $service->update([
+                        'description' => $existingDesc,
+                        'service_name' => $existingName
+                    ]);
                 }
                 
                 $results[] = ['id' => $service->id, 'status' => 'success'];

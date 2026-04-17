@@ -128,7 +128,7 @@
                 @php
                     $allServices = $hospital->hospitalServices()->get();
                     $missingEnIds = $allServices->filter(fn($s) => empty($s->getTranslations('description')['en'] ?? null))->pluck('id')->values()->toJson();
-                    $missingBnIds = $allServices->filter(fn($s) => empty($s->getTranslations('description')['bn'] ?? null))->pluck('id')->values()->toJson();
+                    $missingBnIds = $allServices->filter(fn($s) => empty($s->getTranslations('description')['bn'] ?? null) || empty($s->getTranslations('service_name')['bn'] ?? null))->pluck('id')->values()->toJson();
                 @endphp
                 <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50 flex-wrap gap-4"
                      x-data="{
