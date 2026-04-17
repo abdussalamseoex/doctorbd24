@@ -1129,10 +1129,14 @@ document.addEventListener('alpine:init', () => {
             ->where('is_active', true)
             ->get()
             ->map(function ($service) {
-                if ($service->description) {
-                    $service->description = trim(strip_tags($service->description));
-                }
-                return $service;
+                return [
+                    'id' => $service->id,
+                    'slug' => $service->slug,
+                    'service_category' => $service->service_category,
+                    'service_name' => $service->service_name,
+                    'description' => $service->description ? trim(strip_tags($service->description)) : null,
+                    'price' => $service->price
+                ];
             });
     @endphp
 
