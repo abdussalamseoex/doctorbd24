@@ -274,8 +274,17 @@ class AIGeneratorController extends Controller
         // Fetch user-defined DB template or fallback to default
         if (str_starts_with($type, 'ai_translate_prompt_')) {
             $baseText = Setting::get($type, '');
-            // When used via standard generate(), override the JSON requirement with HTML
-            $baseText = preg_replace('/FORMAT:.*?JSON.*$/im', 'FORMAT: Write the output using clean, rich HTML tags (<p>, <ul>, <li>, <strong>) directly, WITHOUT wrapping in markdown blocks.', $baseText);
+            // When used via standard generate(), ensure no JSON structure is forced by mistake
+            $baseText = preg_replace('/FORMAT:.*?JSON.*$/im', '', $baseText);
+            
+            // Explicitly append the context since standard templates don't use {name} placeholders
+            $contextFiltered = array_filter($context, function($v) { return !empty($v); });
+            $baseText .= "\n\n[INPUT DATA TO WRITE ABOUT]\n";
+            foreach($contextFiltered as $k => $v) {
+                if (in_array($k, ['content', 'seo_title', 'seo_desc', 'slug', 'context_type', 'target_language', 'landing_page_type', 'landing_page_specialty'])) continue;
+                $baseText .= ucfirst($k) . ": " . $v . "\n";
+            }
+            $baseText .= "\n\nCRITICAL OUTPUT REQUIREMENT: Output your response as a SINGLE block of plain HTML. DO NOT output JSON objects. DO NOT use keys like {\"title\":...}. Just output the raw HTML paragraphs and lists directly without markdown blocks.\n";
         } else {
             $baseText = Setting::get('ai_prompt_' . $type, $defaults[$type] ?? '');
         }
