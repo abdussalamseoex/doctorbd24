@@ -227,7 +227,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
                 <h2 class="font-black text-gray-900 dark:text-white text-lg mb-3 flex items-center gap-3">
                     <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 text-sm">ℹ</span>
-                    {{ __('About Member') }}
+                    {{ __('About Doctor') }}
                 </h2>
                 <div class="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed px-1">
                     @if(empty($doctor->bio))
