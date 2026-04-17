@@ -118,6 +118,11 @@ async function generateAiContent(promptType, targetSelector, btnElement) {
     btnElement.disabled = true;
 
     try {
+        let contextData = getAiContext();
+        if (targetSelector.includes('[bn]') || targetSelector.includes('_bn')) {
+            contextData.target_language = 'Bengali';
+        }
+
         const response = await fetch('/admin/ai/generate', {
             method: 'POST',
             headers: {
@@ -126,7 +131,7 @@ async function generateAiContent(promptType, targetSelector, btnElement) {
             },
             body: JSON.stringify({
                 prompt_type: promptType,
-                context: getAiContext()
+                context: contextData
             })
         });
 

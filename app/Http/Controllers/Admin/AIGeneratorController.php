@@ -85,36 +85,15 @@ class AIGeneratorController extends Controller
         ]);
 
         $fields = $request->fields;
-        $targetLanguage = $request->target_language;
+        // Since ai_translate_prompt_* are now highly specialized for generating bio/about sections,
+        // we use a generic, high-quality rule here for translating small short fields like name/address/title.
+        $promptText = "You are an expert native Bengali translator for a Bangladeshi healthcare website.\n";
+        $promptText .= "CRITICAL INSTRUCTION: You will receive a JSON object of small UI fields (like Name, Address, Title). Translate the English values into natural, readable Bangladeshi Bengali. Return the exact same JSON format.\n\n";
 
-        $contextType = $request->context_type ?? 'hospital';
-
-        $contextType = $request->context_type ?? 'hospital';
-
-        // Check if user has defined a custom translation prompt in 'AI Settings' UI
-        $customPrompt = \App\Models\Setting::get("ai_translate_prompt_{$contextType}", "");
-
-        if (!empty($customPrompt)) {
-            $promptText = $customPrompt . "\n\n";
-        } else {
-            // Fallback prompt if nothing is set in the UI
-            $promptText = "You are an expert native Bengali copywriter for a Bangladeshi healthcare website.\n";
-            $promptText .= "CRITICAL INSTRUCTION: Write completely ORIGINAL, natural, and engaging Bengali content based on the provided facts. DO NOT translate the input word-for-word. Wipe the English sentence structure from your mind. Read the input, extract the key information, and write a fresh Bengali copy from scratch.\n\n";
-
-            $promptText .= "STYLE GUIDELINES:\n";
-            $promptText .= "1. Use standard, conversational 'Shuddho Bangla'. Make it sound like a premium, trustworthy local brand.\n";
-            $promptText .= "2. Write naturally. If a patient from Bangladesh reads it, they must feel a human wrote it natively.\n";
-            $promptText .= "3. Do not use awkward robotic words. Use natural flow and common healthcare terminology.\n";
-            $promptText .= "4. Always use 'ডা.' instead of 'Dr.'.\n\n";
-
-            if ($contextType === 'doctor') {
-                $promptText .= "CONTEXT: You are writing the official biography of a reputed Bangladeshi medical specialist. Highlight their experience, specialties, and compassionate care in a professional tone.\n\n";
-            } elseif ($contextType === 'ambulance') {
-                $promptText .= "CONTEXT: You are writing for an emergency ambulance service homepage. Emphasize 24/7 availability, speed, and reliability.\n\n";
-            } else {
-                $promptText .= "CONTEXT: You are writing the homepage content for a premium hospital or diagnostic center in Bangladesh. Write a welcoming introduction, list their services naturally, and close with a reassuring message.\n\n";
-            }
-        }
+        $promptText .= "STYLE GUIDELINES:\n";
+        $promptText .= "1. Use standard 'Shuddho Bangla'.\n";
+        $promptText .= "2. Keep brand names phonetic (e.g. 'Popular Diagnostic Centre' -> 'পপুলার ডায়াগনস্টিক সেন্টার').\n";
+        $promptText .= "3. Do not add extra conversational text.\n\n";
 
         // ENFORCE JSON FORMATTING STRICTLY (Extracted outside the else block)
         $promptText .= "FORMATTING RULES:\n";
