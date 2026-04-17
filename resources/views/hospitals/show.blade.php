@@ -1111,7 +1111,8 @@ document.addEventListener('alpine:init', () => {
         switchTab(tab) {
             if (this.currentTab === tab) return;
             this.currentTab = tab;
-            let url = '/hospital/' + this.slug;
+            let baseUrl = '{{ url(app()->getLocale() === "bn" ? "bn/hospital" : "hospital") }}';
+            let url = baseUrl + '/' + this.slug;
             if (tab !== 'overview') {
                 url += '/' + tab;
             }
