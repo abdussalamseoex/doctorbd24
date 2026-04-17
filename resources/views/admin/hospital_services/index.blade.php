@@ -51,13 +51,65 @@
                         <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Category</label>
                         <input type="text" name="service_category" placeholder="e.g. BLOOD BANK" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-300">
                     </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Service/Test Name <span class="text-red-400">*</span></label>
-                        <input type="text" name="service_name" required placeholder="e.g. CBC" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Description (Optional SEO Snippet)</label>
-                        <textarea name="description" rows="2" placeholder="Brief details about this test..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-300"></textarea>
+                    <div x-data="{ 
+                            activeTab: 'en',
+                            name_en: '',
+                            desc_en: '',
+                            name_bn: '',
+                            desc_bn: '',
+                            isGenerating: false,
+                            generateAi() {
+                                if (!this.name_en) return alert('Please enter English test name first');
+                                this.isGenerating = true;
+                                fetch('{{ route('admin.ai.translate') }}', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                    body: JSON.stringify({ 
+                                        fields: { 'service_name': this.name_en, 'description': this.desc_en },
+                                        target_language: 'Bengali'
+                                    })
+                                }).then(r=>r.json()).then(data => {
+                                    if(data.success) {
+                                        this.name_bn = data.content.service_name;
+                                        this.desc_bn = data.content.description;
+                                    }
+                                }).finally(() => { this.isGenerating = false; });
+                            }
+                        }">
+                        <div class="flex items-center gap-2 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            <button type="button" @click="activeTab = 'en'" :class="activeTab === 'en' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'" class="px-3 py-1 text-sm font-semibold">English</button>
+                            <button type="button" @click="activeTab = 'bn'" :class="activeTab === 'bn' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'" class="px-3 py-1 text-sm font-semibold">Bengali</button>
+                            <div class="ml-auto">
+                                <button type="button" @click="generateAi()" :disabled="isGenerating" class="text-xs font-semibold px-2 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded flex items-center gap-1 hover:bg-amber-100 transition-colors">
+                                    <svg x-show="!isGenerating" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    <svg x-show="isGenerating" class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                    <span x-show="!isGenerating">AI Translate</span>
+                                    <span x-show="isGenerating">Translating...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div x-show="activeTab === 'en'" class="space-y-4">
+                            <div>
+                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Service/Test Name (EN) <span class="text-red-400">*</span></label>
+                                <input type="text" name="service_name[en]" x-model="name_en" required placeholder="e.g. CBC" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-300">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Description (EN) (Optional SEO Snippet)</label>
+                                <textarea name="description[en]" x-model="desc_en" rows="2" placeholder="Brief details about this test..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-300"></textarea>
+                            </div>
+                        </div>
+
+                        <div x-show="activeTab === 'bn'" class="space-y-4">
+                            <div>
+                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Service/Test Name (BN)</label>
+                                <input type="text" name="service_name[bn]" x-model="name_bn" placeholder="e.g. সিবিসি" class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-300 bg-emerald-50 focus:bg-emerald-100 dark:bg-emerald-900/30 outline-none focus:ring-2 focus:ring-emerald-300">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Description (BN)</label>
+                                <textarea name="description[bn]" x-model="desc_bn" rows="2" placeholder="Brief details in Bengali..." class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-300 bg-emerald-50 focus:bg-emerald-100 dark:bg-emerald-900/30 outline-none focus:ring-2 focus:ring-emerald-300"></textarea>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1">Price</label>
@@ -181,7 +233,7 @@
                                     <td class="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-semibold">{{ $svc->price ?: '-' }}</td>
                                     <td class="px-4 py-3 text-right">
                                         <button @click="$dispatch('open-edit-modal', {
-                                                data: { name: {{ json_encode($svc->service_name) }}, cat: {{ json_encode($svc->service_category) }}, price: {{ json_encode($svc->price) }}, desc: {{ json_encode($svc->description) }} },
+                                                data: { name: {{ json_encode($svc->getTranslations('service_name')) }}, cat: {{ json_encode($svc->service_category) }}, price: {{ json_encode($svc->price) }}, desc: {{ json_encode($svc->getTranslations('description')) }} },
                                                 url: '{{ route('admin.hospitals.services.update', [$hospital->id, $svc->id]) }}'
                                             })" type="button" class="text-sky-500 hover:text-sky-700 p-1 mr-1">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
@@ -216,14 +268,25 @@
 {{-- Edit Modal --}}
 <div x-data="{
         open: false,
-        service: { name: '', cat: '', price: '', desc: '' },
+        service: { name: {en:'', bn:''}, cat: '', price: '', desc: {en:'', bn:''} },
         actionUrl: '',
         openModal(data, url) {
             this.service = data;
+            // Fallback for legacy string data just in case
+            if (typeof this.service.name === 'string') {
+                this.service.name = { en: this.service.name, bn: '' };
+            }
+            if (typeof this.service.desc === 'string') {
+                this.service.desc = { en: this.service.desc, bn: '' };
+            }
+            // Ensure properties exist
+            if (!this.service.name) this.service.name = {en:'', bn:''};
+            if (!this.service.desc) this.service.desc = {en:'', bn:''};
+            
             this.actionUrl = url;
             this.open = true;
         }
-    }" 
+    }"  
     @open-edit-modal.window="openModal($event.detail.data, $event.detail.url)"
     x-show="open" 
     class="relative z-50" 
@@ -239,22 +302,73 @@
                     <div class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
                         <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Edit Service</h3>
                         
-                        <div class="space-y-4">
+                        <div class="space-y-4" x-data="{ 
+                            activeTab: 'en',
+                            isGenerating: false,
+                            generateAi() {
+                                if (!this.service.name.en) return alert('Please enter English test name first');
+                                this.isGenerating = true;
+                                fetch('{{ route('admin.ai.translate') }}', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                    body: JSON.stringify({ 
+                                        fields: {
+                                            'service_name': this.service.name.en,
+                                            'description': this.service.desc.en
+                                        },
+                                        target_language: 'Bengali'
+                                    })
+                                }).then(r=>r.json()).then(data => {
+                                    if(data.success) {
+                                        this.service.name.bn = data.content.service_name;
+                                        this.service.desc.bn = data.content.description;
+                                    }
+                                }).finally(() => { this.isGenerating = false; });
+                            }
+                        }">
+                            <div class="flex items-center gap-2 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                                <button type="button" @click="activeTab = 'en'" :class="activeTab === 'en' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'" class="px-3 py-1 text-sm font-semibold">English</button>
+                                <button type="button" @click="activeTab = 'bn'" :class="activeTab === 'bn' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'" class="px-3 py-1 text-sm font-semibold">Bengali</button>
+                                <div class="ml-auto">
+                                    <button type="button" @click="generateAi()" :disabled="isGenerating" class="text-xs font-semibold px-2 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded flex items-center gap-1 hover:bg-amber-100 transition-colors">
+                                        <svg x-show="!isGenerating" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                        <svg x-show="isGenerating" class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                        <span x-show="!isGenerating">AI Translate</span>
+                                        <span x-show="isGenerating">Translating...</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Category</label>
                                 <input type="text" name="service_category" x-model="service.cat" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500">
                             </div>
-                            <div>
-                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Service Name <span class="text-red-500">*</span></label>
-                                <input type="text" name="service_name" x-model="service.name" required class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500">
+
+                            <div x-show="activeTab === 'en'" class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Service Name (EN) <span class="text-red-500">*</span></label>
+                                    <input type="text" name="service_name[en]" x-model="service.name.en" required class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Description (EN)</label>
+                                    <textarea name="description[en]" x-model="service.desc.en" rows="3" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white"></textarea>
+                                </div>
                             </div>
+
+                            <div x-show="activeTab === 'bn'" class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Service Name (BN) (Phonetic spelling recommended)</label>
+                                    <input type="text" name="service_name[bn]" x-model="service.name.bn" class="w-full px-3 py-2 text-sm rounded-xl border-emerald-300 bg-emerald-50 focus:border-emerald-500 dark:bg-emerald-900/30">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Description (BN)</label>
+                                    <textarea name="description[bn]" x-model="service.desc.bn" rows="3" class="w-full px-3 py-2 text-sm rounded-xl border-emerald-300 bg-emerald-50 focus:border-emerald-500 dark:bg-emerald-900/30"></textarea>
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Price / Charge</label>
                                 <input type="text" name="price" x-model="service.price" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            </div>
-                            <div>
-                                <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Description</label>
-                                <textarea name="description" x-model="service.desc" rows="3" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
                             </div>
                         </div>
                     </div>

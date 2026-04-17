@@ -22,8 +22,9 @@ class AdminHospitalServiceController extends Controller
     {
         $request->validate([
             'service_category' => 'nullable|string|max:255',
-            'service_name'     => 'required|string|max:500',
-            'description'      => 'nullable|string',
+            'service_name'     => 'required|array',
+            'service_name.en'  => 'required|string|max:500',
+            'description'      => 'nullable|array',
             'price'            => 'nullable|string|max:255',
             'is_active'        => 'boolean',
         ]);
@@ -47,8 +48,9 @@ class AdminHospitalServiceController extends Controller
 
         $request->validate([
             'service_category' => 'nullable|string|max:255',
-            'service_name'     => 'required|string|max:500',
-            'description'      => 'nullable|string',
+            'service_name'     => 'required|array',
+            'service_name.en'  => 'required|string|max:500',
+            'description'      => 'nullable|array',
             'price'            => 'nullable|string|max:255',
             'is_active'        => 'boolean',
         ]);

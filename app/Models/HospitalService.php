@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Support\Str;
+use Spatie\Translatable\HasTranslations;
 
 class HospitalService extends Model
 {
+    use HasTranslations;
+
+    public $translatable = ['service_name', 'description'];
+
     protected $fillable = [
         'hospital_id',
         'service_category',
