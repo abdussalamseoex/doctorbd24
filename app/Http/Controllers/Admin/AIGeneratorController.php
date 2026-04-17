@@ -95,7 +95,8 @@ class AIGeneratorController extends Controller
         $promptText .= "2. Keep brand names phonetic (e.g. 'Popular Diagnostic Centre' -> 'পপুলার ডায়াগনস্টিক সেন্টার').\n";
         $promptText .= "3. CRITICAL: If translating a medical Doctor's Name or Bio, you MUST ALWAYS translate 'Dr.' as 'ডা.' (Medical Doctor) and NEVER as 'ড.' (PhD).\n";
         $promptText .= "4. Use third-person neutral directory tone, avoiding 'we' or 'our' (আমরা/আমাদের).\n";
-        $promptText .= "5. Do not add extra conversational bot text.\n\n";
+        $promptText .= "5. TRANSLITERATION OVER TRANSLATION: For well-known English healthcare terms (like 'Ambulance', 'X-Ray', 'MRI', 'Blood Test', 'Diagnostics'), DO NOT try to translate to pure Bengali words (e.g. do not write রোগীবাহী গাড়ি). Instead, use exact phonetic alphabets (e.g. 'Ambulance' -> 'অ্যাম্বুলেন্স', 'Diagnostics' -> 'ডায়াগনস্টিক').\n";
+        $promptText .= "6. Do not add extra conversational bot text.\n\n";
 
         // ENFORCE JSON FORMATTING STRICTLY (Extracted outside the else block)
         $promptText .= "FORMATTING RULES:\n";
