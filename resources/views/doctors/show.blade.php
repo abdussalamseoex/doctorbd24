@@ -229,13 +229,13 @@
                     <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 text-sm">ℹ</span>
                     {{ __('About Doctor') }}
                 </h2>
-                <div class="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed px-1">
+                <div class="prose prose-lg dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed px-1">
                     @if(empty($doctor->bio))
                         {{ __('No bio available') }}
-                    @elseif(strip_tags($doctor->bio) === $doctor->bio)
-                        {!! nl2br(e($doctor->bio)) !!}
+                    @elseif(strip_tags($doctor->getTranslation('bio', app()->getLocale())) === $doctor->getTranslation('bio', app()->getLocale()))
+                        {!! nl2br(e($doctor->getTranslation('bio', app()->getLocale()))) !!}
                     @else
-                        {!! $doctor->bio !!}
+                        {!! $doctor->getTranslation('bio', app()->getLocale()) !!}
                     @endif
                 </div>
             </div>
@@ -333,7 +333,7 @@
                                 {{-- Chamber Type Badge --}}
                                 <div class="mt-2">
                                     <span class="px-2 py-1 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 text-xs font-bold uppercase">
-                                        {{ $chamber->is_main ? 'Main Chamber' : 'Visiting Chamber' }}
+                                        {{ $chamber->is_main ? __('Main Chamber') : __('Visiting Chamber') }}
                                     </span>
                                 </div>
                             </div>
@@ -408,19 +408,21 @@
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-6">
                 <h2 class="font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">⭐</span>
-                    {{ __('Reviews & Ratings') }} ({{ $doctor->approvedReviews->count() }})
+                    {{ __('Reviews & Ratings') }} ({{ app()->getLocale() === 'bn' ? en2bn($doctor->approvedReviews->count()) : $doctor->approvedReviews->count() }})
                 </h2>
                 
                 {{-- Rating Summary --}}
                 <div class="flex items-center gap-4 mb-6 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/30">
-                    <div class="text-3xl font-black text-amber-700 dark:text-amber-400">{{ number_format($doctor->average_rating, 1) }}</div>
+                    <div class="text-3xl font-black text-amber-700 dark:text-amber-400">{{ app()->getLocale() === 'bn' ? en2bn(number_format($doctor->average_rating, 1)) : number_format($doctor->average_rating, 1) }}</div>
                     <div>
                         <div class="flex mb-1">
                             @for($i=1; $i<=5; $i++)
                                 <svg class="w-5 h-5 {{ $i <= $doctor->average_rating ? 'text-amber-400' : ($i-0.5 <= $doctor->average_rating ? 'text-amber-300' : 'text-gray-300 dark:text-gray-600') }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                             @endfor
                         </div>
-                        <p class="text-xs text-amber-700 dark:text-amber-400 font-bold">{{ $doctor->approvedReviews->count() }} {{ __('reviews') }}</p>
+                        <p class="text-xs text-amber-700 dark:text-amber-400 font-bold">
+                            {{ app()->getLocale() === 'bn' ? en2bn($doctor->approvedReviews->count()) . 'টি ' . __('reviews') : $doctor->approvedReviews->count() . ' ' . __('reviews') }}
+                        </p>
                     </div>
                 </div>
                 
