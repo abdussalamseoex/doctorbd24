@@ -95,7 +95,7 @@ class AIGeneratorController extends Controller
         $customPrompt = \App\Models\Setting::get("ai_translate_prompt_{$contextType}", "");
 
         if (!empty($customPrompt)) {
-            $promptText = $customPrompt . "\n\nInput JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
+            $promptText = $customPrompt . "\n\n";
         } else {
             // Fallback prompt if nothing is set in the UI
             $promptText = "You are an expert native Bengali copywriter for a Bangladeshi healthcare website.\n";
@@ -114,13 +114,14 @@ class AIGeneratorController extends Controller
             } else {
                 $promptText .= "CONTEXT: You are writing the homepage content for a premium hospital or diagnostic center in Bangladesh. Write a welcoming introduction, list their services naturally, and close with a reassuring message.\n\n";
             }
-
-            $promptText .= "FORMATTING RULES:\n";
-            $promptText .= "1. Retain any HTML tags (like <p>, <ul>, <li>, <strong>) exactly as they are. Place your original Bengali text inside them.\n";
-            $promptText .= "2. Your final response MUST be a STRICT JSON OBJECT with exactly the same structure/keys as the input. Do NOT add ```json or markdown.\n\n";
-
-            $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
         }
+
+        // ENFORCE JSON FORMATTING STRICTLY (Extracted outside the else block)
+        $promptText .= "FORMATTING RULES:\n";
+        $promptText .= "1. Retain any HTML tags (like <p>, <ul>, <li>, <strong>) exactly as they are. Place your original Bengali text inside them.\n";
+        $promptText .= "2. Your final response MUST be a STRICT JSON OBJECT with exactly the same structure/keys as the input. Do NOT wrap the JSON inside ```json or markdown blocks.\n\n";
+
+        $promptText .= "Input JSON:\n" . json_encode($fields, JSON_UNESCAPED_UNICODE);
 
         $provider = Setting::get('ai_provider', 'openai');
 
