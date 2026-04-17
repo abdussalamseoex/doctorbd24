@@ -1,14 +1,36 @@
 function getAiContext() {
+    // 1. Language
+    let langNode = document.querySelector('select[name="language"]');
+    let language = langNode ? langNode.value : 'English';
+
+    // 2. Resolve target Name/Title from Spatie array keys if needed
+    // First try standard name, title, provider_name
+    let nameNode = document.querySelector('input[name="name"], input[name="title"], input[name="provider_name"]');
+    if (!nameNode) {
+        // Fallback to Translatable bn/en
+        let isBnTab = document.querySelector('[x-show="activeTab === \'bn\'"]') && document.querySelector('[x-show="activeTab === \'bn\'"]').style.display !== 'none';
+        
+        let bnName = document.querySelector('input[name="name[bn]"]');
+        let enName = document.querySelector('input[name="name[en]"]');
+        
+        // If we are visibly on BN tab, prefer bn name. Otherwise prefer EN name.
+        if (bnName && bnName.value.trim() !== '') {
+             nameNode = bnName;
+        } else if (enName) {
+             nameNode = enName;
+        }
+    }
+
     let context = {
-        language: document.querySelector('select[name="language"]') ? document.querySelector('select[name="language"]').value : 'English',
-        name: document.querySelector('input[name="name"], input[name="title"], input[name="provider_name"]') ? document.querySelector('input[name="name"], input[name="title"], input[name="provider_name"]').value : ''
+        language: language,
+        name: nameNode ? nameNode.value : ''
     };
 
     let keywordInput = document.querySelector('input[name="keyword"]');
     if (keywordInput) context.keyword = keywordInput.value;
 
     let titleInput = document.querySelector('input[name="title"]');
-    if (titleInput) context.title = titleInput.value;
+    if (!context.name && titleInput) context.title = titleInput.value;
 
     // Doctor specific contexts
     let specSelect = document.querySelectorAll('input[name="specialties[]"]:checked');
@@ -55,6 +77,15 @@ function getAiContext() {
 
     // Hospital/Ambulance contexts
     let addrBox = document.querySelector('input[name="address"], textarea[name="address"]');
+    if (!addrBox) {
+        let bnAddr = document.querySelector('input[name="address[bn]"]');
+        let enAddr = document.querySelector('input[name="address[en]"]');
+        if (bnAddr && bnAddr.value.trim() !== '') {
+            addrBox = bnAddr;
+        } else if (enAddr) {
+            addrBox = enAddr;
+        }
+    }
     if (addrBox) context.address = addrBox.value;
 
     let servicesInput = document.querySelector('input[name="services"]');
