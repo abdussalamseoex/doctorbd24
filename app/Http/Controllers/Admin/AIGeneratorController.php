@@ -151,7 +151,7 @@ class AIGeneratorController extends Controller
 
     private function buildPrompt($type, $context)
     {
-        $lang = $context['language'] ?? 'English';
+        $lang = $context['target_language'] ?? ($context['language'] ?? 'English');
         $tone = $context['tone'] ?? 'Professional';
         $style = $context['writing_style'] ?? 'Informative';
         $country = $context['country'] ?? 'Bangladesh';

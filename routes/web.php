@@ -110,16 +110,13 @@ $publicRoutes = function () {
     Route::post('/hospitals/{hospital}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'storeHospital'])->name('hospitals.claim')->middleware('auth');
     Route::post('/ambulances/{ambulance}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'storeAmbulance'])->name('ambulances.claim')->middleware('auth');
 
-    // Join Forms
     Route::get('/join/doctor', [\App\Http\Controllers\JoinController::class, 'doctorForm'])->name('join.doctor');
     Route::post('/join/doctor', [\App\Http\Controllers\JoinController::class, 'submitDoctor'])->name('join.doctor.submit')->middleware('throttle:5,10');
     Route::get('/join/hospital', [\App\Http\Controllers\JoinController::class, 'hospitalForm'])->name('join.hospital');
     Route::post('/join/hospital', [\App\Http\Controllers\JoinController::class, 'submitHospital'])->name('join.hospital.submit')->middleware('throttle:5,10');
-
-    Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
 };
 
-// Sitemap & Robots (Must be OUTSIDE and BEFORE `{slug}` catch-all)
+// ── Sitemap & Robots ──────────────────────────────────────
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/sitemap/doctors.xml', [\App\Http\Controllers\SitemapController::class, 'doctors']);
 Route::get('/sitemap/hospitals.xml', [\App\Http\Controllers\SitemapController::class, 'hospitals']);
@@ -345,12 +342,8 @@ Route::get('storage/{path}', function ($path) {
 })->where('path', '.*');
 
 // ─── Dynamic Pages (Catch-All) ────────────────────────
-
-
-Route::get('/test-ai-popup', function () {
-    return \Blade::render('<!DOCTYPE html><html><head><script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-gray-100"> <h1>Test</h1> @include("admin.shared._ai_assistant") </body></html>');
-});
-
-Route::get('/test-ai-3', function () {
-    return \Blade::render('<!DOCTYPE html><html><head><script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-gray-100"> <h1>Test 3</h1> @include("admin.shared._ai_assistant") </body></html>');
+// Must be at the absolute bottom so it doesn't swallow other routes!
+Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
+Route::prefix('bn')->name('bn.')->group(function () {
+    Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
 });
