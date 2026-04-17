@@ -116,9 +116,6 @@ $publicRoutes = function () {
     Route::get('/join/hospital', [\App\Http\Controllers\JoinController::class, 'hospitalForm'])->name('join.hospital');
     Route::post('/join/hospital', [\App\Http\Controllers\JoinController::class, 'submitHospital'])->name('join.hospital.submit')->middleware('throttle:5,10');
 
-    // â”€â”€ Authenticated User Routes â”€â”€â”€â”€
-    require __DIR__.'/auth.php';
-
     Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
 };
 
@@ -142,7 +139,8 @@ Route::middleware([])->group($publicRoutes);
 Route::prefix('bn')->name('bn.')->group($publicRoutes);
 
 // ── Authenticated User Routes ────────────────────────────────
-
+require __DIR__.'/auth.php';
+Route::prefix('bn')->name('bn.')->group(base_path('routes/auth.php'));
 
 Route::middleware('auth')->group(function () {
     // User dashboard
