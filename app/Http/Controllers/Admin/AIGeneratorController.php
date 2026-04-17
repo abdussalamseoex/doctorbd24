@@ -263,7 +263,8 @@ class AIGeneratorController extends Controller
                 if (in_array($k, ['content', 'seo_title', 'seo_desc', 'slug', 'context_type', 'target_language', 'landing_page_type', 'landing_page_specialty'])) continue;
                 $baseText .= ucfirst($k) . ": " . $v . "\n";
             }
-            $baseText .= "\n\nCRITICAL OUTPUT REQUIREMENT: Output your response as a SINGLE block of plain HTML. DO NOT output JSON objects. DO NOT use keys like {\"title\":...}. Just output the raw HTML paragraphs and lists directly without markdown blocks.\n";
+            $baseText .= "\n\nCRITICAL ANTI-HALLUCINATION RULE: You MUST write the profile EXACTLY about the 'Name' or 'Bn_name' provided above. DO NOT invent, substitute, or change the hospital/entity name to a different one. If the name contains English transliteration (e.g., 'Popular'), keep it exactly as provided.\n";
+            $baseText .= "CRITICAL OUTPUT REQUIREMENT: Output your response as a SINGLE block of plain HTML. DO NOT output JSON objects. DO NOT use keys like {\"title\":...}. Just output the raw HTML paragraphs and lists directly without markdown blocks.\n";
         } else {
             $baseText = Setting::get('ai_prompt_' . $type, $defaults[$type] ?? '');
         }
