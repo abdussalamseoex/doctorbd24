@@ -272,7 +272,14 @@ class AIGeneratorController extends Controller
         }
 
         // Fetch user-defined DB template or fallback to default
-        $baseText = Setting::get('ai_prompt_' . $type, $defaults[$type] ?? '');
+        if (str_starts_with($type, 'ai_translate_prompt_')) {
+            $baseText = Setting::get($type, '');
+            // When used via standard generate(), override the JSON requirement with HTML
+            $baseText = preg_replace('/FORMAT:.*?JSON.*$/im', 'FORMAT: Write the output using clean, rich HTML tags (<p>, <ul>, <li>, <strong>) directly, WITHOUT wrapping in markdown blocks.', $baseText);
+        } else {
+            $baseText = Setting::get('ai_prompt_' . $type, $defaults[$type] ?? '');
+        }
+        
         if (!$baseText) {
             return null; // Invalid prompt type
         }

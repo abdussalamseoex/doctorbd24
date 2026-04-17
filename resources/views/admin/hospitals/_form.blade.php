@@ -159,7 +159,12 @@
                                class="w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors text-gray-800 dark:text-gray-200">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block mb-1.5">About Hospital (Bengali)</label>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block">About Hospital (Bengali)</label>
+                            <button type="button" onclick="generateAiContent('ai_translate_prompt_hospital', 'tinymce:about_bn', this)" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors z-50 relative">
+                                ✨ Auto Generate Copy (Bengali)
+                            </button>
+                        </div>
                         <textarea name="about[bn]" id="about_bn" rows="8" placeholder="হাসপাতালের বিবরণ ও সুবিধাসমুহ..."
                                   class="tinymce-editor w-full px-3 py-2 text-sm rounded-xl border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-none transition-colors">{{ old('about.bn', isset($hospital) ? $hospital->getTranslation('about', 'bn', false) : '') }}</textarea>
                     </div>
@@ -809,24 +814,17 @@
             aboutEn = document.querySelector('[name="about[en]"]').value;
         }
 
-        if (!nameEn && !aboutEn && !addressEn) {
-            alert('Please fill out the English fields first before translating.');
+        if (!nameEn && !addressEn) {
+            alert('Please fill out the Hospital Name or Address first before translating.');
             return;
         }
-
-        // Gather SEO Payload
-        let seoPayload = {};
-        if (document.querySelector('[name="seo[title][en]"]')) seoPayload.seo_title = document.querySelector('[name="seo[title][en]"]').value;
-        if (document.querySelector('[name="seo[description][en]"]')) seoPayload.seo_desc = document.querySelector('[name="seo[description][en]"]').value;
 
         const payload = {
             target_language: 'Bengali',
             context_type: 'hospital',
             fields: {
                 name: nameEn,
-                address: addressEn,
-                about: aboutEn,
-                ...seoPayload
+                address: addressEn
             }
         };
 
