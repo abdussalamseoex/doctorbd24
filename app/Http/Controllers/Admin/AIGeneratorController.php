@@ -320,8 +320,14 @@ class AIGeneratorController extends Controller
 
         $promptText = $baseText . "\n\n";
 
-                // Apply advanced settings strictly
-                $promptText .= "Settings to STRICTLY follow: ";
+        // If this is a translation or highly specific prompt, we MUST NOT append generic 
+        // blog-style formatting rules (like H2, bullets, length limits), as they will break the benchmark structure.
+        if (str_starts_with($type, 'ai_translate_prompt_')) {
+            return $promptText;
+        }
+
+        // Apply advanced settings strictly
+        $promptText .= "Settings to STRICTLY follow: ";
                 $promptText .= "- Language: {$lang}. ";
                 $promptText .= "- Target Audience Country: {$country}. ";
                 $promptText .= "- Tone: {$tone}. ";
