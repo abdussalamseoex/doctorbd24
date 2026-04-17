@@ -91,9 +91,11 @@ class AIGeneratorController extends Controller
         $promptText .= "CRITICAL INSTRUCTION: You will receive a JSON object of small UI fields (like Name, Address, Title). Translate the English values into natural, readable Bangladeshi Bengali. Return the exact same JSON format.\n\n";
 
         $promptText .= "STYLE GUIDELINES:\n";
-        $promptText .= "1. Use standard 'Shuddho Bangla'.\n";
+        $promptText .= "1. Use standard 'Shuddho Bangla' with a highly natural, human-like professional tone.\n";
         $promptText .= "2. Keep brand names phonetic (e.g. 'Popular Diagnostic Centre' -> 'পপুলার ডায়াগনস্টিক সেন্টার').\n";
-        $promptText .= "3. Do not add extra conversational text.\n\n";
+        $promptText .= "3. CRITICAL: If translating a medical Doctor's Name or Bio, you MUST ALWAYS translate 'Dr.' as 'ডা.' (Medical Doctor) and NEVER as 'ড.' (PhD).\n";
+        $promptText .= "4. Use third-person neutral directory tone, avoiding 'we' or 'our' (আমরা/আমাদের).\n";
+        $promptText .= "5. Do not add extra conversational bot text.\n\n";
 
         // ENFORCE JSON FORMATTING STRICTLY (Extracted outside the else block)
         $promptText .= "FORMATTING RULES:\n";
