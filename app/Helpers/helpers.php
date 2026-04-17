@@ -20,11 +20,14 @@ if (!function_exists('format_bangla_time')) {
         if (app()->getLocale() !== 'bn') return $timeString;
         if (empty($timeString)) return $timeString;
 
+        // Clean invisible/non-breaking spaces to standard spaces
+        $timeString = preg_replace('/[\x{00A0}\x{200B}\x{202F}]/u', ' ', $timeString);
+
         // Specialized replacement for "24 Hours" and "Closed"
         $formatted = str_ireplace(['24 hours', 'closed'], ['২৪ ঘণ্টা', 'বন্ধ'], $timeString);
 
         // 1. Convert hours like 7 AM or 8:30 PM
-        $formatted = preg_replace_callback('/(\d{1,2})(?::(\d{2}))?\s*(AM|PM|am|pm)/i', function($matches) {
+        $formatted = preg_replace_callback('/(\d{1,2})(?::(\d{2}))?\s*(AM|PM|am|pm)/iu', function($matches) {
             $numContext = (int)$matches[1];
             $minutes = isset($matches[2]) && $matches[2] !== '' ? $matches[2] : null;
             $meridian = strtoupper($matches[3]);
@@ -60,7 +63,14 @@ if (!function_exists('format_bangla_time')) {
         // Replace hyphens with en-dashes, and ensure spaces
         $formatted = str_replace('-', ' – ', $formatted);
         // Collapse multiple spaces
-        $formatted = preg_replace('/\s+/', ' ', $formatted);
+        $formatted = preg_replace('/\s+/u', ' ', $formatted);
+        
+        // Final fallback: transform any remaining English digits to Bengali digits
+        $formatted = str_replace(
+            ['1','2','3','4','5','6','7','8','9','0'],
+            ['১','২','৩','৪','৫','৬','৭','৮','৯','০'],
+            $formatted
+        );
 
         return trim($formatted);
     }
