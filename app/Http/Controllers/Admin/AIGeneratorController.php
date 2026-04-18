@@ -97,7 +97,8 @@ class AIGeneratorController extends Controller
         $promptText .= "   - GOOD (Phonetic Transliteration): 'Senior Consultant' -> 'সিনিয়র কনসালটেন্ট', 'Chest Diseases' -> 'চেস্ট ডিজিজ', 'Medicine' -> 'মেডিসিন', 'Surgery' -> 'সার্জারি'.\n";
         $promptText .= "3. NO ABBREVIATION TRANSLATIONS: Do not attempt to translate 'e.g.', 'etc'. Just drop them or transliterate. If it says 'e.g. Senior Consultant', just return 'সিনিয়র কনসালটেন্ট'.\n";
         $promptText .= "4. DOCTOR/PHD PREFIX: ALWAYS translate 'Dr.' as 'ডা.' (Medical Doctor) and NEVER as 'ড.' (PhD).\n";
-        $promptText .= "5. BRAND NAMES: Keep them phonetic (e.g. 'Popular Diagnostic Centre' -> 'পপুলার ডায়াগনস্টিক সেন্টার', 'Max Hospital' -> 'ম্যাক্স হাসপাতাল').\n\n";
+        $promptText .= "5. BRAND NAMES: Keep them phonetic (e.g. 'Popular Diagnostic Centre' -> 'পপুলার ডায়াগনস্টিক সেন্টার', 'Max Hospital' -> 'ম্যাক্স হাসপাতাল').\n";
+        $promptText .= "6. COLLOQUIAL MEDICAL TERMS: ALWAYS use locally popular, colloquial Bengali or transliterated English names for diseases, departments, and medical terms. NEVER translate into obscure or highly formal dictionary Bengali that people do not use in daily life. Examples: Use 'ডেন্টাল' or 'দাঁতের চিকিৎসা' instead of 'দন্ত চিকিৎসা', use 'ডায়াবেটিস' instead of 'বহুমূত্র রোগ'.\n\n";
 
         // ENFORCE JSON FORMATTING STRICTLY (Extracted outside the else block)
         $promptText .= "FORMATTING RULES:\n";
