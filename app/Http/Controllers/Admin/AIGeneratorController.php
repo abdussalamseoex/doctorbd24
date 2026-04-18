@@ -95,7 +95,7 @@ class AIGeneratorController extends Controller
         $promptText .= "2. Keep brand names phonetic (e.g. 'Popular Diagnostic Centre' -> 'পপুলার ডায়াগনস্টিক সেন্টার').\n";
         $promptText .= "3. CRITICAL: If translating a medical Doctor's Name or Bio, you MUST ALWAYS translate 'Dr.' as 'ডা.' (Medical Doctor) and NEVER as 'ড.' (PhD).\n";
         $promptText .= "4. Use third-person neutral directory tone, avoiding 'we' or 'our' (আমরা/আমাদের).\n";
-        $promptText .= "5. TRANSLITERATION OVER TRANSLATION: For well-known English healthcare terms (like 'Ambulance', 'X-Ray', 'MRI', 'Blood Test', 'Diagnostics'), DO NOT try to translate to pure Bengali words (e.g. do not write রোগীবাহী গাড়ি). Instead, use exact phonetic alphabets (e.g. 'Ambulance' -> 'অ্যাম্বুলেন্স', 'Diagnostics' -> 'ডায়াগনস্টিক').\n";
+        $promptText .= "5. TRANSLITERATION OVER TRANSLATION (CRITICAL): For Medical Specialties, Designations, Degrees, Body Parts, and well-known English healthcare terms, DO NOT use pure dictionary Bengali words (e.g., DO NOT write 'সেক্সরোগ', 'ছিন্ন শ্বাসরোগ', 'উম্নয়', 'চর্মরোগ', 'রোগীবাহী গাড়ি'). Instead, you MUST use exact Phonetic Transliteration of the English words in Bengali letters (e.g., 'পালমোনোলজিস্ট', 'সেক্সোলজিস্ট', 'ডার্মাটোলজিস্ট', 'সিনিয়র কনসালটেন্ট', 'অ্যাম্বুলেন্স', 'অ্যাজমা', 'ইমারজেন্সি'). English medical terms are standard in Bangladesh.\n";
         $promptText .= "6. Do not add extra conversational bot text.\n\n";
 
         // ENFORCE JSON FORMATTING STRICTLY (Extracted outside the else block)
