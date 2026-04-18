@@ -347,3 +347,17 @@ Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->na
 Route::prefix('bn')->name('bn.')->group(function () {
     Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
 });
+
+// ─── System Fallback Redirects for Legacy URLs (SEO) ──
+Route::fallback(function () {
+    $path = request()->path();
+
+    if (str_starts_with($path, 'doctor/')) return redirect('/doctors', 301);
+    if (str_starts_with($path, 'doctors-list')) return redirect('/doctors', 301);
+    if (str_starts_with($path, 'hospital_tag/') || str_starts_with($path, 'hospital-category/') || str_starts_with($path, 'hospital/')) return redirect('/hospitals', 301);
+    if (str_starts_with($path, 'ambulance/')) return redirect('/ambulances', 301);
+    if (str_starts_with($path, 'speciality/')) return redirect('/specialties', 301);
+    if (str_starts_with($path, 'category/') || str_starts_with($path, 'tag/')) return redirect('/blog', 301);
+
+    abort(404);
+});
