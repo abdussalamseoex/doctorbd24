@@ -88,15 +88,16 @@ class AIGeneratorController extends Controller
         // Since ai_translate_prompt_* are now highly specialized for generating bio/about sections,
         // we use a generic, high-quality rule here for translating small short fields like name/address/title.
         $promptText = "You are an expert native Bengali translator for a Bangladeshi healthcare website.\n";
-        $promptText .= "CRITICAL INSTRUCTION: You will receive a JSON object of small UI fields (like Name, Address, Title). Translate the English values into natural, readable Bangladeshi Bengali. Return the exact same JSON format.\n\n";
+        $promptText .= "CRITICAL INSTRUCTION: You will receive a JSON object string containing profile fields. Translate the English sentences into high-quality, natural Bangladeshi Bengali. However, you MUST follow the Transliteration rule for specific nouns.\n\n";
 
-        $promptText .= "STYLE GUIDELINES:\n";
-        $promptText .= "1. Use standard 'Shuddho Bangla' with a highly natural, human-like professional tone.\n";
-        $promptText .= "2. Keep brand names phonetic (e.g. 'Popular Diagnostic Centre' -> 'পপুলার ডায়াগনস্টিক সেন্টার').\n";
-        $promptText .= "3. CRITICAL: If translating a medical Doctor's Name or Bio, you MUST ALWAYS translate 'Dr.' as 'ডা.' (Medical Doctor) and NEVER as 'ড.' (PhD).\n";
-        $promptText .= "4. Use third-person neutral directory tone, avoiding 'we' or 'our' (আমরা/আমাদের).\n";
-        $promptText .= "5. TRANSLITERATION OVER TRANSLATION (CRITICAL): For Medical Specialties, Designations, Degrees, Body Parts, and well-known English healthcare terms, DO NOT use pure dictionary Bengali words (e.g., DO NOT write 'সেক্সরোগ', 'ছিন্ন শ্বাসরোগ', 'উম্নয়', 'চর্মরোগ', 'রোগীবাহী গাড়ি'). Instead, you MUST use exact Phonetic Transliteration of the English words in Bengali letters (e.g., 'পালমোনোলজিস্ট', 'সেক্সোলজিস্ট', 'ডার্মাটোলজিস্ট', 'সিনিয়র কনসালটেন্ট', 'অ্যাম্বুলেন্স', 'অ্যাজমা', 'ইমারজেন্সি'). English medical terms are standard in Bangladesh.\n";
-        $promptText .= "6. Do not add extra conversational bot text.\n\n";
+        $promptText .= "STYLE GUIDELINES & CRITICAL RULES:\n";
+        $promptText .= "1. NATURAL BENGALI sentences for general bio text. Use third-person neutral tone.\n";
+        $promptText .= "2. ►►ABSOLUTE RULE FOR DESIGNATIONS, DEGREES, & SPECIALTIES: NEVER translate medical terms, designations, or degrees to pure Bengali dictionary words! You MUST keep the English pronunciation and write it in Bengali letters (Phonetic Transliteration).\n";
+        $promptText .= "   - BAD (Pure Translation): 'Senior Consultant' -> 'উচ্চপদস্থ পরামর্শদাতা', 'Chest Diseases' -> 'বক্ষরোগ/ছত্র রোগ', 'e.g.' -> 'উঁদাঃ'.\n";
+        $promptText .= "   - GOOD (Phonetic Transliteration): 'Senior Consultant' -> 'সিনিয়র কনসালটেন্ট', 'Chest Diseases' -> 'চেস্ট ডিজিজ', 'Medicine' -> 'মেডিসিন', 'Surgery' -> 'সার্জারি'.\n";
+        $promptText .= "3. NO ABBREVIATION TRANSLATIONS: Do not attempt to translate 'e.g.', 'etc'. Just drop them or transliterate. If it says 'e.g. Senior Consultant', just return 'সিনিয়র কনসালটেন্ট'.\n";
+        $promptText .= "4. DOCTOR/PHD PREFIX: ALWAYS translate 'Dr.' as 'ডা.' (Medical Doctor) and NEVER as 'ড.' (PhD).\n";
+        $promptText .= "5. BRAND NAMES: Keep them phonetic (e.g. 'Popular Diagnostic Centre' -> 'পপুলার ডায়াগনস্টিক সেন্টার', 'Max Hospital' -> 'ম্যাক্স হাসপাতাল').\n\n";
 
         // ENFORCE JSON FORMATTING STRICTLY (Extracted outside the else block)
         $promptText .= "FORMATTING RULES:\n";
