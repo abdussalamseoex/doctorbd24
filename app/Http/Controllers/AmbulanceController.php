@@ -10,6 +10,9 @@ class AmbulanceController extends Controller
 {
     public function index()
     {
+        \Artesaos\SEOTools\Facades\SEOTools::setTitle('Ambulance Services | DoctorBD24');
+        \Artesaos\SEOTools\Facades\SEOTools::setDescription('Find 24/7 emergency ambulance services across Bangladesh. Search ICU, NICU, Freezing, and AC/Non-AC ambulances near you.');
+        \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
         return view('ambulances.index');
     }
 

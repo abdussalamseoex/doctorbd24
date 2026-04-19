@@ -12,6 +12,9 @@ class JoinController extends Controller
     {
         $specialties = Specialty::orderBy('name->en')->get();
         $divisions   = \App\Models\Division::orderBy('id')->get();
+        \Artesaos\SEOTools\Facades\SEOTools::setTitle('Join as a Doctor | DoctorBD24');
+        \Artesaos\SEOTools\Facades\SEOTools::setDescription('Join DoctorBD24 as a doctor. Register your profile to connect with thousands of patients seeking medical consultation across Bangladesh.');
+        \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
         return view('join.doctor', compact('specialties', 'divisions'));
     }
 
@@ -37,6 +40,9 @@ class JoinController extends Controller
     public function hospitalForm()
     {
         $divisions = \App\Models\Division::orderBy('id')->get();
+        \Artesaos\SEOTools\Facades\SEOTools::setTitle('Join as a Hospital | DoctorBD24');
+        \Artesaos\SEOTools\Facades\SEOTools::setDescription('List your hospital or clinic on DoctorBD24. Reach more patients and provide verified healthcare services in Bangladesh.');
+        \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
         return view('join.hospital', compact('divisions'));
     }
 

@@ -54,11 +54,21 @@ class PageController extends Controller
             }
             abort(404);
         }
+
+        $pageTitle = $page->getTranslation('title', app()->getLocale(), false) ?: $page->title;
+        \Artesaos\SEOTools\Facades\SEOTools::setTitle($pageTitle . ' | DoctorBD24');
+        $desc = \Illuminate\Support\Str::limit(strip_tags($page->getTranslation('content', app()->getLocale(), false) ?: $page->content), 160);
+        \Artesaos\SEOTools\Facades\SEOTools::setDescription($desc);
+        \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
+
         return view('pages.show', compact('page'));
     }
 
     public function contact()
     {
+        \Artesaos\SEOTools\Facades\SEOTools::setTitle('Contact Us | DoctorBD24');
+        \Artesaos\SEOTools\Facades\SEOTools::setDescription('Contact DoctorBD24 for any inquiries, healthcare support, or assistance with finding doctors and hospitals in Bangladesh.');
+        \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
         return view('pages.contact');
     }
 
