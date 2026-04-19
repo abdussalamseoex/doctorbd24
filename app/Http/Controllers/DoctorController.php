@@ -12,8 +12,45 @@ use Artesaos\SEOTools\Facades\JsonLd;
 
 class DoctorController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
+        $title = __('Find Doctor');
+        $desc = "Find the best doctors, specialists, and medical experts in Bangladesh. Discover their detailed profiles, visit timings, chamber locations, and contact info.";
+
+        $specialtyStr = '';
+
+        if ($request->has('specialty')) {
+            $specialty = \App\Models\Specialty::where('slug', $request->query('specialty'))->first();
+            if ($specialty) {
+                $spName = $specialty->getTranslation('name', app()->getLocale());
+                $title = app()->getLocale() == 'bn' 
+                    ? "সেরা {$spName} ডাক্তার খুঁজুন" 
+                    : "Best {$spName} Doctors";
+                $specialtyStr = $spName;
+            } else {
+                $title = "Doctor Specialty: " . ucfirst(str_replace('-', ' ', $request->query('specialty')));
+            }
+        }
+
+        if ($request->has('search')) {
+            $search = substr(strip_tags((string)$request->query('search')), 0, 50);
+            $title = app()->getLocale() == 'bn' ? "{$search} এর জন্য ফলাফল" : "Search results for: {$search}";
+        }
+
+        if ($specialtyStr) {
+            $desc = "Find top-rated {$specialtyStr} doctors. View patient reviews, fees, profiles, and book appointments easily on DoctorBD24.";
+        }
+
+        SEOTools::setTitle($title . ' | DoctorBD24', false);
+        SEOTools::setDescription($desc);
+        
+        $queryParams = array_filter($request->only(['specialty', 'district', 'area', 'search', 'gender']));
+        if (!empty($queryParams)) {
+            SEOTools::setCanonical(url()->current() . '?' . http_build_query($queryParams));
+        } else {
+            SEOTools::setCanonical(url()->current());
+        }
+
         return view('doctors.index');
     }
 
