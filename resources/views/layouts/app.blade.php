@@ -31,9 +31,10 @@
         $baseRouteName = preg_replace('/^bn\./', '', (string)$currentRouteName);
         
         try {
-            $enUrl = $baseRouteName && Route::has($baseRouteName) ? route($baseRouteName, $currentRouteParams) : url('/');
+            $queryParams = request()->query();
+            $enUrl = $baseRouteName && Route::has($baseRouteName) ? route($baseRouteName, array_merge($currentRouteParams, $queryParams)) : url('/');
             $bnRouteName = 'bn.' . $baseRouteName;
-            $bnUrl = $baseRouteName && Route::has($bnRouteName) ? route($bnRouteName, $currentRouteParams) : url('/bn');
+            $bnUrl = $baseRouteName && Route::has($bnRouteName) ? route($bnRouteName, array_merge($currentRouteParams, $queryParams)) : url('/bn');
         } catch (\Exception $e) {
             $enUrl = url('/');
             $bnUrl = url('/bn');
