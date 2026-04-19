@@ -76,7 +76,7 @@ class AmbulanceController extends Controller
             \Artesaos\SEOTools\Facades\SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
         }
 
-        \Artesaos\SEOTools\Facades\SEOTools::setCanonical(route('ambulances.show', $ambulance->slug));
+        \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
         \Artesaos\SEOTools\Facades\OpenGraph::setUrl(route('ambulances.show', $ambulance->slug));
         \Artesaos\SEOTools\Facades\OpenGraph::setType('website');
 

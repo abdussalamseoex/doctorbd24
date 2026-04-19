@@ -49,7 +49,7 @@ class BlogController extends Controller
 
         SEOTools::setTitle($post->title . ' | DoctorBD24');
         SEOTools::setDescription($desc);
-        SEOTools::setCanonical(route('blog.show', $post->slug));
+        SEOTools::setCanonical(url()->current());
 
         OpenGraph::setType('article');
         OpenGraph::setUrl(route('blog.show', $post->slug));

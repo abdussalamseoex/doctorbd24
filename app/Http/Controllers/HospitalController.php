@@ -71,7 +71,7 @@ class HospitalController extends Controller
             SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
         }
 
-        SEOTools::setCanonical(route('hospitals.show', $hospital->slug));
+        SEOTools::setCanonical(url()->current());
         OpenGraph::setUrl(route('hospitals.show', $hospital->slug));
         OpenGraph::setType('place');
 
@@ -136,7 +136,7 @@ class HospitalController extends Controller
         $keywords = [$testName, "{$testName} test cost", "{$testName} price in {$hospital->name}", $hospital->name, $areaName];
         SEOTools::metatags()->addKeyword(array_filter($keywords));
 
-        SEOTools::setCanonical(route('hospitals.diagnostic.show', [$hospital->slug, $service->slug]));
+        SEOTools::setCanonical(url()->current());
         OpenGraph::setUrl(route('hospitals.diagnostic.show', [$hospital->slug, $service->slug]));
         OpenGraph::setType('article');
 

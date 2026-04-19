@@ -63,12 +63,12 @@ class DoctorController extends Controller
         
         if ($tab === 'videos') {
             $title = "Videos of {$doctor->name} | DoctorBD24";
-            SEOTools::setCanonical(route('doctors.show', ['slug' => $doctor->slug, 'tab' => 'videos']));
+            SEOTools::setCanonical(url()->current());
         } elseif ($tab === 'blog') {
             $title = "Blog by {$doctor->name} | DoctorBD24";
-            SEOTools::setCanonical(route('doctors.show', ['slug' => $doctor->slug, 'tab' => 'blog']));
+            SEOTools::setCanonical(url()->current());
         } else {
-            SEOTools::setCanonical(route('doctors.show', $doctor->slug));
+            SEOTools::setCanonical(url()->current());
         }
 
         SEOTools::setTitle($title, false);
