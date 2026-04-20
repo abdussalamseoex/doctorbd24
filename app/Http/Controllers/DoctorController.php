@@ -134,7 +134,6 @@ class DoctorController extends Controller
         JsonLdMulti::setDescription($desc);
         JsonLdMulti::addValue('url', route('doctors.show', $doctor->slug));
         if ($ogImage) JsonLdMulti::addValue('image', $ogImage);
-        if ($spNames) JsonLdMulti::addValue('medicalSpecialty', $spNames);
         
         if ($primaryChamber) {
             if (!empty($primaryChamber->phone)) {
