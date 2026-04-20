@@ -97,6 +97,29 @@ class HospitalController extends Controller
         }
         
         if ($ogImage) JsonLdMulti::addValue('image', $ogImage);
+        
+        $breadcrumb = \Artesaos\SEOTools\Facades\JsonLdMulti::newJsonLd();
+        $breadcrumb->setType('BreadcrumbList');
+        $breadcrumb->addValue('itemListElement', [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => url('/')
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'Hospitals',
+                'item' => url('/hospitals')
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $hospital->name,
+                'item' => route('hospitals.show', $hospital->slug)
+            ]
+        ]);
         // ─────────────────────────────────────────────
 
         // get unique doctors from chambers

@@ -56,6 +56,35 @@ class BlogController extends Controller
 
         $query = BlogPost::published()->with('category', 'author');
 
+        $breadcrumb = \Artesaos\SEOTools\Facades\JsonLdMulti::newJsonLd();
+        $breadcrumb->setType('BreadcrumbList');
+        
+        $itemList = [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => url('/')
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'Blog',
+                'item' => route('blog.index')
+            ]
+        ];
+
+        if ($categorySlug && isset($catName)) {
+            $itemList[] = [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $catName,
+                'item' => url()->current() . '?category=' . $categorySlug
+            ];
+        }
+
+        $breadcrumb->addValue('itemListElement', $itemList);
+
         if ($request->category) {
             $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
         }
@@ -119,6 +148,35 @@ class BlogController extends Controller
             'logo'  => [
                 '@type' => 'ImageObject',
                 'url'   => asset('assets/images/logo.png')
+            ]
+        ]);
+
+        $breadcrumb = \Artesaos\SEOTools\Facades\JsonLdMulti::newJsonLd();
+        $breadcrumb->setType('BreadcrumbList');
+        $breadcrumb->addValue('itemListElement', [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => url('/')
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'Blog',
+                'item' => route('blog.index')
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $post->category?->name ?? 'Article',
+                'item' => $post->category ? url()->current() . '?category=' . $post->category->slug : route('blog.index')
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 4,
+                'name' => $post->title,
+                'item' => route('blog.show', $post->slug)
             ]
         ]);
         // ─────────────────────────────────────────────

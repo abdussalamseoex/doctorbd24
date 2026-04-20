@@ -35,6 +35,28 @@ class PageController extends Controller
             }
             \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('url', url()->current());
 
+            $breadcrumb = \Artesaos\SEOTools\Facades\JsonLdMulti::newJsonLd();
+            $breadcrumb->setType('BreadcrumbList');
+            
+            $itemList = [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => url('/')
+                ]
+            ];
+            
+            // Programmatic SEO pages are highly top-level
+            $itemList[] = [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $seoPage->title,
+                'item' => url()->current()
+            ];
+
+            $breadcrumb->addValue('itemListElement', $itemList);
+
             return view('pages.seo-show', compact('seoPage'));
         }
 
