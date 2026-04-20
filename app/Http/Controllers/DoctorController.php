@@ -169,7 +169,7 @@ class DoctorController extends Controller
                     }
                 }
                 
-                if (preg_match('/\b([1-9]\d{3})\b/', $primaryChamber->address, $matches)) {
+                if (preg_match('/([1-9]\d{3})\s*$/', $primaryChamber->address, $matches)) {
                     $addressData['postalCode'] = $matches[1];
                 }
                 

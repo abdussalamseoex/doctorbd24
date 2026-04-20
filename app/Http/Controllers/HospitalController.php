@@ -99,7 +99,7 @@ class HospitalController extends Controller
                 $addressData['addressLocality'] = $areaName;
             }
             
-            if (preg_match('/\b([1-9]\d{3})\b/', $hospital->address, $matches)) {
+            if (preg_match('/([1-9]\d{3})\s*$/', $hospital->address, $matches)) {
                 $addressData['postalCode'] = $matches[1];
             }
             

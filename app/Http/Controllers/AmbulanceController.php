@@ -108,7 +108,7 @@ class AmbulanceController extends Controller
                 $addressData['addressLocality'] = $areaName;
             }
             
-            if (preg_match('/\b([1-9]\d{3})\b/', $addressField, $matches)) {
+            if (preg_match('/([1-9]\d{3})\s*$/', $addressField, $matches)) {
                 $addressData['postalCode'] = $matches[1];
             }
             
