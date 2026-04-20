@@ -8,7 +8,7 @@ use App\Models\Division;
 use Illuminate\Http\Request;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Artesaos\SEOTools\Facades\OpenGraph;
-use Artesaos\SEOTools\Facades\JsonLd;
+use Artesaos\SEOTools\Facades\JsonLdMulti;
 
 class DoctorController extends Controller
 {
@@ -129,19 +129,19 @@ class DoctorController extends Controller
         $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($doctor->photo ? asset('storage/' . $doctor->photo) : null);
         if ($ogImage) OpenGraph::addImage($ogImage);
 
-        JsonLd::setType('Physician');
-        JsonLd::setTitle($seo->title ?? $title);
-        JsonLd::setDescription($desc);
-        JsonLd::addValue('url', route('doctors.show', $doctor->slug));
-        if ($ogImage) JsonLd::addValue('image', $ogImage);
-        if ($spNames) JsonLd::addValue('medicalSpecialty', $spNames);
+        JsonLdMulti::setType('Physician');
+        JsonLdMulti::setTitle($seo->title ?? $title);
+        JsonLdMulti::setDescription($desc);
+        JsonLdMulti::addValue('url', route('doctors.show', $doctor->slug));
+        if ($ogImage) JsonLdMulti::addValue('image', $ogImage);
+        if ($spNames) JsonLdMulti::addValue('medicalSpecialty', $spNames);
         
         if ($primaryChamber) {
             if (!empty($primaryChamber->phone)) {
-                JsonLd::addValue('telephone', $primaryChamber->phone);
+                JsonLdMulti::addValue('telephone', $primaryChamber->phone);
             }
             if (!empty($primaryChamber->address)) {
-                JsonLd::addValue('address', [
+                JsonLdMulti::addValue('address', [
                     '@type' => 'PostalAddress',
                     'streetAddress' => $primaryChamber->address,
                     'addressCountry' => 'BD'
@@ -150,7 +150,7 @@ class DoctorController extends Controller
         }
 
         if ($doctor->approvedReviews && $doctor->approvedReviews->count() > 0) {
-            JsonLd::addValue('aggregateRating', [
+            JsonLdMulti::addValue('aggregateRating', [
                 '@type'       => 'AggregateRating',
                 'ratingValue' => round((float)$doctor->average_rating, 1),
                 'reviewCount' => $doctor->approvedReviews->count(),

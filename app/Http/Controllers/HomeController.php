@@ -9,7 +9,7 @@ use App\Models\Specialty;
 use App\Models\Division;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Artesaos\SEOTools\Facades\OpenGraph;
-use Artesaos\SEOTools\Facades\JsonLd;
+use Artesaos\SEOTools\Facades\JsonLdMulti;
 
 use App\Models\Setting;
 
@@ -31,11 +31,11 @@ class HomeController extends Controller
         OpenGraph::setType('website');
         OpenGraph::addProperty('locale', 'bn_BD');
 
-        JsonLd::setType('WebSite');
-        JsonLd::setTitle('DoctorBD24');
-        JsonLd::setDescription('বাংলাদেশের স্বাস্থ্যসেবা ডিরেক্টরি');
-        JsonLd::addValue('url', url('/'));
-        JsonLd::addValue('potentialAction', [
+        JsonLdMulti::setType('WebSite');
+        JsonLdMulti::setTitle('DoctorBD24');
+        JsonLdMulti::setDescription('বাংলাদেশের স্বাস্থ্যসেবা ডিরেক্টরি');
+        JsonLdMulti::addValue('url', url('/'));
+        JsonLdMulti::addValue('potentialAction', [
             '@type'       => 'SearchAction',
             'target'      => url('/doctors') . '?search={search_term_string}',
             'query-input' => 'required name=search_term_string',

@@ -8,7 +8,7 @@ use App\Models\Division;
 use Illuminate\Http\Request;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Artesaos\SEOTools\Facades\OpenGraph;
-use Artesaos\SEOTools\Facades\JsonLd;
+use Artesaos\SEOTools\Facades\JsonLdMulti;
 
 class HospitalController extends Controller
 {
@@ -78,17 +78,17 @@ class HospitalController extends Controller
         $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($hospital->logo ? asset('storage/' . $hospital->logo) : null);
         if ($ogImage) OpenGraph::addImage($ogImage);
 
-        JsonLd::setType('Hospital');
-        JsonLd::setTitle($seo->title ?? $hospital->name);
-        JsonLd::setDescription($desc);
-        JsonLd::addValue('url', route('hospitals.show', $hospital->slug));
+        JsonLdMulti::setType('Hospital');
+        JsonLdMulti::setTitle($seo->title ?? $hospital->name);
+        JsonLdMulti::setDescription($desc);
+        JsonLdMulti::addValue('url', route('hospitals.show', $hospital->slug));
         
         if ($hospital->phone) {
-            JsonLd::addValue('telephone', $hospital->phone);
+            JsonLdMulti::addValue('telephone', $hospital->phone);
         }
         
         if ($hospital->address) {
-            JsonLd::addValue('address', [
+            JsonLdMulti::addValue('address', [
                 '@type' => 'PostalAddress',
                 'streetAddress' => $hospital->address,
                 'addressLocality' => $hospital->area?->getTranslation('name', 'en') ?? '',
@@ -96,7 +96,7 @@ class HospitalController extends Controller
             ]);
         }
         
-        if ($ogImage) JsonLd::addValue('image', $ogImage);
+        if ($ogImage) JsonLdMulti::addValue('image', $ogImage);
         // ─────────────────────────────────────────────
 
         // get unique doctors from chambers
@@ -155,10 +155,10 @@ class HospitalController extends Controller
         $ogImage = $hospital->logo ? asset('storage/' . $hospital->logo) : null;
         if ($ogImage) OpenGraph::addImage($ogImage);
 
-        JsonLd::setType('MedicalTest');
-        JsonLd::setTitle($title);
-        JsonLd::setDescription($desc);
-        JsonLd::addValue('url', route('hospitals.diagnostic.show', [$hospital->slug, $service->slug]));
+        JsonLdMulti::setType('MedicalTest');
+        JsonLdMulti::setTitle($title);
+        JsonLdMulti::setDescription($desc);
+        JsonLdMulti::addValue('url', route('hospitals.diagnostic.show', [$hospital->slug, $service->slug]));
         // ─────────────────────────────────────────────
 
         return view('hospitals.diagnostic_show', compact('hospital', 'service'));

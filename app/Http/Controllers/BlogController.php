@@ -7,7 +7,7 @@ use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Artesaos\SEOTools\Facades\OpenGraph;
-use Artesaos\SEOTools\Facades\JsonLd;
+use Artesaos\SEOTools\Facades\JsonLdMulti;
 
 class BlogController extends Controller
 {
@@ -94,25 +94,25 @@ class BlogController extends Controller
         OpenGraph::addProperty('article:published_time', $post->published_at?->toIso8601String());
         if ($post->image) OpenGraph::addImage(asset('storage/' . $post->image));
 
-        JsonLd::setType('BlogPosting');
-        JsonLd::setTitle($post->title);
-        JsonLd::setDescription($desc);
-        JsonLd::addValue('headline', $post->title);
-        JsonLd::addValue('url', route('blog.show', $post->slug));
-        JsonLd::addValue('datePublished', $post->published_at?->toIso8601String());
-        JsonLd::addValue('dateModified', $post->updated_at?->toIso8601String() ?? $post->published_at?->toIso8601String());
+        JsonLdMulti::setType('BlogPosting');
+        JsonLdMulti::setTitle($post->title);
+        JsonLdMulti::setDescription($desc);
+        JsonLdMulti::addValue('headline', $post->title);
+        JsonLdMulti::addValue('url', route('blog.show', $post->slug));
+        JsonLdMulti::addValue('datePublished', $post->published_at?->toIso8601String());
+        JsonLdMulti::addValue('dateModified', $post->updated_at?->toIso8601String() ?? $post->published_at?->toIso8601String());
         
         if ($post->image) {
-            JsonLd::addValue('image', asset('storage/' . $post->image));
+            JsonLdMulti::addValue('image', asset('storage/' . $post->image));
         }
 
-        JsonLd::addValue('author', [
+        JsonLdMulti::addValue('author', [
             '@type' => 'Person',
             'name'  => $post->author->name,
             'url'   => url('/')
         ]);
         
-        JsonLd::addValue('publisher', [
+        JsonLdMulti::addValue('publisher', [
             '@type' => 'Organization',
             'name'  => 'DoctorBD24',
             'url'   => url('/'),

@@ -28,12 +28,12 @@ class PageController extends Controller
             \SEO::opengraph()->setUrl(url()->current());
             \SEO::opengraph()->setType('website');
             
-            \Artesaos\SEOTools\Facades\JsonLd::setType('CollectionPage');
-            \Artesaos\SEOTools\Facades\JsonLd::setTitle($seoPage->meta_title ?: $seoPage->title);
+            \Artesaos\SEOTools\Facades\JsonLdMulti::setType('CollectionPage');
+            \Artesaos\SEOTools\Facades\JsonLdMulti::setTitle($seoPage->meta_title ?: $seoPage->title);
             if ($seoPage->meta_description) {
-                \Artesaos\SEOTools\Facades\JsonLd::setDescription($seoPage->meta_description);
+                \Artesaos\SEOTools\Facades\JsonLdMulti::setDescription($seoPage->meta_description);
             }
-            \Artesaos\SEOTools\Facades\JsonLd::addValue('url', url()->current());
+            \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('url', url()->current());
 
             return view('pages.seo-show', compact('seoPage'));
         }
@@ -68,10 +68,10 @@ class PageController extends Controller
         \Artesaos\SEOTools\Facades\SEOTools::setDescription($desc);
         \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
 
-        \Artesaos\SEOTools\Facades\JsonLd::setType($slug == 'about-us' ? 'AboutPage' : 'WebPage');
-        \Artesaos\SEOTools\Facades\JsonLd::setTitle($pageTitle);
-        \Artesaos\SEOTools\Facades\JsonLd::setDescription($desc);
-        \Artesaos\SEOTools\Facades\JsonLd::addValue('url', url()->current());
+        \Artesaos\SEOTools\Facades\JsonLdMulti::setType($slug == 'about-us' ? 'AboutPage' : 'WebPage');
+        \Artesaos\SEOTools\Facades\JsonLdMulti::setTitle($pageTitle);
+        \Artesaos\SEOTools\Facades\JsonLdMulti::setDescription($desc);
+        \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('url', url()->current());
 
         return view('pages.show', compact('page'));
     }
@@ -82,10 +82,10 @@ class PageController extends Controller
         \Artesaos\SEOTools\Facades\SEOTools::setDescription('Contact DoctorBD24 for any inquiries, healthcare support, or assistance with finding doctors and hospitals in Bangladesh.');
         \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
         
-        \Artesaos\SEOTools\Facades\JsonLd::setType('ContactPage');
-        \Artesaos\SEOTools\Facades\JsonLd::setTitle('Contact Us | DoctorBD24');
-        \Artesaos\SEOTools\Facades\JsonLd::setDescription('Contact DoctorBD24 for any inquiries, healthcare support, or assistance with finding doctors and hospitals in Bangladesh.');
-        \Artesaos\SEOTools\Facades\JsonLd::addValue('url', url()->current());
+        \Artesaos\SEOTools\Facades\JsonLdMulti::setType('ContactPage');
+        \Artesaos\SEOTools\Facades\JsonLdMulti::setTitle('Contact Us | DoctorBD24');
+        \Artesaos\SEOTools\Facades\JsonLdMulti::setDescription('Contact DoctorBD24 for any inquiries, healthcare support, or assistance with finding doctors and hospitals in Bangladesh.');
+        \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('url', url()->current());
 
         return view('pages.contact');
     }
