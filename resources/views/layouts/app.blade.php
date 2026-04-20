@@ -42,7 +42,6 @@
     @endphp
     @if($currentRouteName)
     <link rel="alternate" hreflang="en" href="{{ $enUrl }}" />
-    <link rel="alternate" hreflang="x-default" href="{{ $enUrl }}" />
     @if(!isset($has_bn_translation) || $has_bn_translation !== false)
     <link rel="alternate" hreflang="bn-BD" href="{{ $bnUrl }}" />
     @endif
