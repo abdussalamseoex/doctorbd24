@@ -91,6 +91,8 @@ class AmbulanceController extends Controller
         \Artesaos\SEOTools\Facades\JsonLdMulti::setDescription($desc);
         \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('url', route('ambulances.show', $ambulance->slug));
         
+        \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('priceRange', '৳1000-৳5000');
+        
         if (!empty($ambulance->hotline)) {
             \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('telephone', $ambulance->hotline);
         }

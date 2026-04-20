@@ -83,6 +83,9 @@ class HospitalController extends Controller
         JsonLdMulti::setDescription($desc);
         JsonLdMulti::addValue('url', route('hospitals.show', $hospital->slug));
         
+        // Add dynamic price range for hospital to resolve schema error
+        JsonLdMulti::addValue('priceRange', '৳500-৳5000');
+        
         if ($hospital->phone) {
             JsonLdMulti::addValue('telephone', $hospital->phone);
         }
