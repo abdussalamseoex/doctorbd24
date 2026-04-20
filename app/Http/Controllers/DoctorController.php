@@ -148,6 +148,9 @@ class DoctorController extends Controller
             JsonLdMulti::addValue('medicalSpecialty', $specialtySchema);
         }
         
+        $fee = $doctor->fee ?? $doctor->consultation_fee ?? '৳500-৳1000';
+        JsonLdMulti::addValue('priceRange', (string)$fee);
+        
         if ($primaryChamber) {
             if (!empty($primaryChamber->phone)) {
                 JsonLdMulti::addValue('telephone', $primaryChamber->phone);
@@ -164,6 +167,10 @@ class DoctorController extends Controller
                     if ($areaName) {
                         $addressData['addressLocality'] = $areaName;
                     }
+                }
+                
+                if (preg_match('/\b([1-9]\d{3})\b/', $primaryChamber->address, $matches)) {
+                    $addressData['postalCode'] = $matches[1];
                 }
                 
                 JsonLdMulti::addValue('address', $addressData);

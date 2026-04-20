@@ -99,6 +99,10 @@ class HospitalController extends Controller
                 $addressData['addressLocality'] = $areaName;
             }
             
+            if (preg_match('/\b([1-9]\d{3})\b/', $hospital->address, $matches)) {
+                $addressData['postalCode'] = $matches[1];
+            }
+            
             JsonLdMulti::addValue('address', $addressData);
         }
         

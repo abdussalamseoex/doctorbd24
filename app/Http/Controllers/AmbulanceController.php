@@ -108,6 +108,10 @@ class AmbulanceController extends Controller
                 $addressData['addressLocality'] = $areaName;
             }
             
+            if (preg_match('/\b([1-9]\d{3})\b/', $addressField, $matches)) {
+                $addressData['postalCode'] = $matches[1];
+            }
+            
             \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('address', $addressData);
         }
         
