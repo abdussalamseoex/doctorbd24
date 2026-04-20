@@ -121,7 +121,9 @@ class BlogController extends Controller
         OpenGraph::setUrl(url()->current());
         OpenGraph::addProperty('article:author', $post->author->name);
         OpenGraph::addProperty('article:published_time', $post->published_at?->toIso8601String());
-        if ($post->image) OpenGraph::addImage(asset('storage/' . $post->image));
+        
+        $ogImage = $post->image ? asset('storage/' . $post->image) : asset('assets/images/logo.png');
+        OpenGraph::addImage($ogImage);
 
         JsonLdMulti::setType('BlogPosting');
         JsonLdMulti::setTitle($post->title);

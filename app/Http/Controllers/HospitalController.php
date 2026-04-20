@@ -78,7 +78,7 @@ class HospitalController extends Controller
         OpenGraph::setUrl(url()->current());
         OpenGraph::setType('place');
 
-        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($hospital->logo ? asset('storage/' . $hospital->logo) : null);
+        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($hospital->logo ? asset('storage/' . $hospital->logo) : asset('assets/images/logo.png'));
         if ($ogImage) OpenGraph::addImage($ogImage);
 
         JsonLdMulti::setType('Hospital');

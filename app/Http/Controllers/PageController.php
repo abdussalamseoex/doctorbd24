@@ -27,6 +27,7 @@ class PageController extends Controller
             }
             \SEO::opengraph()->setUrl(url()->current());
             \SEO::opengraph()->setType('website');
+            \SEO::opengraph()->addImage(asset('assets/images/logo.png'));
             
             \Artesaos\SEOTools\Facades\JsonLdMulti::setType('CollectionPage');
             \Artesaos\SEOTools\Facades\JsonLdMulti::setTitle($seoPage->meta_title ?: $seoPage->title);

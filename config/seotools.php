@@ -42,7 +42,9 @@ return [
             'url'         => null,  // use current URL
             'type'        => 'website',
             'site_name'   => 'DoctorBD24',
-            'images'      => [],
+            'images'      => [
+                env('APP_URL') . '/assets/images/logo.png'
+            ],
         ],
     ],
     'twitter' => [

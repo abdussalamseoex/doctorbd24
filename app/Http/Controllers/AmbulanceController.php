@@ -83,7 +83,7 @@ class AmbulanceController extends Controller
         \Artesaos\SEOTools\Facades\OpenGraph::setUrl(url()->current());
         \Artesaos\SEOTools\Facades\OpenGraph::setType('website');
 
-        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($ambulance->gallery && count($ambulance->gallery) > 0 ? asset('storage/' . $ambulance->gallery[0]) : null);
+        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($ambulance->gallery && count($ambulance->gallery) > 0 ? asset('storage/' . $ambulance->gallery[0]) : asset('assets/images/logo.png'));
         if ($ogImage) \Artesaos\SEOTools\Facades\OpenGraph::addImage($ogImage);
 
         \Artesaos\SEOTools\Facades\JsonLdMulti::setType('LocalBusiness');

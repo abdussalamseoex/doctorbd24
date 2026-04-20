@@ -129,7 +129,7 @@ class DoctorController extends Controller
         OpenGraph::setUrl(url()->current());
         OpenGraph::setType('profile');
         
-        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($doctor->photo ? asset('storage/' . $doctor->photo) : null);
+        $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($doctor->photo ? asset('storage/' . $doctor->photo) : asset('assets/images/logo.png'));
         if ($ogImage) OpenGraph::addImage($ogImage);
 
         JsonLdMulti::setType('Physician');
