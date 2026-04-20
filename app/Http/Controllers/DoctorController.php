@@ -130,10 +130,25 @@ class DoctorController extends Controller
         if ($ogImage) OpenGraph::addImage($ogImage);
 
         JsonLdMulti::setType('Physician');
-        JsonLdMulti::setTitle($seo->title ?? $title);
+        JsonLdMulti::setTitle($doctor->name); // Using explicit doctor name instead of SEO Title
         JsonLdMulti::setDescription($desc);
         JsonLdMulti::addValue('url', route('doctors.show', $doctor->slug));
+        
         if ($ogImage) JsonLdMulti::addValue('image', $ogImage);
+        
+        if ($spNames) {
+            $specialtiesArray = explode(',', $spNames);
+            $specialtySchema = [];
+            foreach ($specialtiesArray as $sp) {
+                $specialtySchema[] = [
+                    '@type' => 'MedicalSpecialty',
+                    'name'  => trim($sp)
+                ];
+            }
+            JsonLdMulti::addValue('medicalSpecialty', $specialtySchema);
+        }
+        
+        JsonLdMulti::addValue('priceRange', '$$');
         
         if ($primaryChamber) {
             if (!empty($primaryChamber->phone)) {
@@ -155,6 +170,30 @@ class DoctorController extends Controller
                 'reviewCount' => $doctor->approvedReviews->count(),
             ]);
         }
+
+        // Breadcrumb Schema
+        $breadcrumb = \Artesaos\SEOTools\Facades\JsonLdMulti::newJsonLd();
+        $breadcrumb->setType('BreadcrumbList');
+        $breadcrumb->addValue('itemListElement', [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => url('/')
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'Doctors',
+                'item' => url('/doctors')
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $doctor->name,
+                'item' => route('doctors.show', $doctor->slug)
+            ]
+        ]);
         // ─────────────────────────────────────────────
 
         $related = Doctor::published()->whereHas('specialties', function ($q) use ($doctor) {
