@@ -86,9 +86,23 @@ class AmbulanceController extends Controller
         $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($ambulance->gallery && count($ambulance->gallery) > 0 ? asset('storage/' . $ambulance->gallery[0]) : null);
         if ($ogImage) \Artesaos\SEOTools\Facades\OpenGraph::addImage($ogImage);
 
+        \Artesaos\SEOTools\Facades\JsonLd::setType('LocalBusiness');
         \Artesaos\SEOTools\Facades\JsonLd::setTitle($seo->title ?? $ambulance->provider_name);
         \Artesaos\SEOTools\Facades\JsonLd::setDescription($desc);
         \Artesaos\SEOTools\Facades\JsonLd::addValue('url', route('ambulances.show', $ambulance->slug));
+        
+        if (!empty($ambulance->hotline)) {
+            \Artesaos\SEOTools\Facades\JsonLd::addValue('telephone', $ambulance->hotline);
+        }
+        
+        if (!empty($ambulance->base_location)) {
+            \Artesaos\SEOTools\Facades\JsonLd::addValue('address', [
+                '@type' => 'PostalAddress',
+                'streetAddress' => $ambulance->base_location,
+                'addressCountry' => 'BD'
+            ]);
+        }
+        
         if ($ogImage) \Artesaos\SEOTools\Facades\JsonLd::addValue('image', $ogImage);
         // ─────────────────────────────────────────────
         

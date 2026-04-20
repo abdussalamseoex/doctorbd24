@@ -2,17 +2,7 @@
 @section('title', $doctor->name . ' — ' . $doctor->designation . ' | DoctorBD24')
 @section('meta_description', $doctor->name . ' — ' . $doctor->qualifications . ' — ' . $doctor->designation)
 
-@section('schema')
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Physician",
-  "name": "{{ $doctor->name }}",
-  "description": "{{ $doctor->bio }}",
-  "medicalSpecialty": "{{ $doctor->specialties->pluck('name')->map(fn($n) => $n['en'] ?? $n)->implode(', ') }}"
-}
-</script>
-@endsection
+
 
 @section('content')
 <style>

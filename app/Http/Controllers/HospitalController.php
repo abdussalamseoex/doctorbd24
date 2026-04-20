@@ -82,8 +82,20 @@ class HospitalController extends Controller
         JsonLd::setTitle($seo->title ?? $hospital->name);
         JsonLd::setDescription($desc);
         JsonLd::addValue('url', route('hospitals.show', $hospital->slug));
-        if ($hospital->phone) JsonLd::addValue('telephone', $hospital->phone);
-        if ($hospital->address) JsonLd::addValue('address', $hospital->address);
+        
+        if ($hospital->phone) {
+            JsonLd::addValue('telephone', $hospital->phone);
+        }
+        
+        if ($hospital->address) {
+            JsonLd::addValue('address', [
+                '@type' => 'PostalAddress',
+                'streetAddress' => $hospital->address,
+                'addressLocality' => $hospital->area?->getTranslation('name', 'en') ?? '',
+                'addressCountry' => 'BD'
+            ]);
+        }
+        
         if ($ogImage) JsonLd::addValue('image', $ogImage);
         // ─────────────────────────────────────────────
 

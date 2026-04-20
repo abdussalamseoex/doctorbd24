@@ -13,9 +13,46 @@ class BlogController extends Controller
 {
     public function index(Request $request)
     {
-        SEOTools::setTitle('স্বাস্থ্য ব্লগ — টিপস ও পরামর্শ | DoctorBD24');
-        SEOTools::setDescription('বাংলাদেশের শীর্ষ ডাক্তারদের লেখা স্বাস্থ্য বিষয়ক আর্টিকেল, টিপস ও পরামর্শ পড়ুন।');
+        $page = $request->query('page', 1);
+        $categorySlug = $request->query('category');
+        $search = $request->query('search');
+
+        $title = 'স্বাস্থ্য ব্লগ — টিপস ও পরামর্শ';
+        $desc = 'বাংলাদেশের শীর্ষ ডাক্তারদের লেখা স্বাস্থ্য বিষয়ক আর্টিকেল, টিপস ও পরামর্শ পড়ুন।';
+
+        if ($categorySlug) {
+            $cat = BlogCategory::where('slug', $categorySlug)->first();
+            if ($cat) {
+                $catName = $cat->getTranslation('name', app()->getLocale()) ?: $cat->name;
+                $title = "{$catName} ডক্টর ব্লগ";
+                $desc = "{$catName} সম্পর্কে আমাদের ডাক্তারদের দেওয়া পরামর্শ এবং আর্টিকেলগুলো পড়ুন।";
+            }
+        }
+
+        if ($search) {
+            $title = "{$search} এর জন্য ফলাফল";
+            $desc = "{$search} নিয়ে আমাদের ব্লগের সকল তথ্য।";
+        }
+
+        if ($page > 1) {
+            $title .= " (পৃষ্ঠা {$page})";
+            $desc .= " - পৃষ্ঠা {$page}";
+        }
+
+        SEOTools::setTitle($title . ' | DoctorBD24');
+        SEOTools::setDescription($desc);
         OpenGraph::setType('website');
+
+        $queryParams = array_filter($request->only(['category', 'search']));
+        if ($page > 1) {
+            $queryParams['page'] = $page;
+        }
+
+        if (!empty($queryParams)) {
+            SEOTools::setCanonical(url()->current() . '?' . http_build_query($queryParams));
+        } else {
+            SEOTools::setCanonical(url()->current());
+        }
 
         $query = BlogPost::published()->with('category', 'author');
 
@@ -57,16 +94,32 @@ class BlogController extends Controller
         OpenGraph::addProperty('article:published_time', $post->published_at?->toIso8601String());
         if ($post->image) OpenGraph::addImage(asset('storage/' . $post->image));
 
-        JsonLd::setType('Article');
+        JsonLd::setType('BlogPosting');
         JsonLd::setTitle($post->title);
         JsonLd::setDescription($desc);
+        JsonLd::addValue('headline', $post->title);
         JsonLd::addValue('url', route('blog.show', $post->slug));
         JsonLd::addValue('datePublished', $post->published_at?->toIso8601String());
-        JsonLd::addValue('author', ['@type' => 'Person', 'name' => $post->author->name]);
+        JsonLd::addValue('dateModified', $post->updated_at?->toIso8601String() ?? $post->published_at?->toIso8601String());
+        
+        if ($post->image) {
+            JsonLd::addValue('image', asset('storage/' . $post->image));
+        }
+
+        JsonLd::addValue('author', [
+            '@type' => 'Person',
+            'name'  => $post->author->name,
+            'url'   => url('/')
+        ]);
+        
         JsonLd::addValue('publisher', [
             '@type' => 'Organization',
             'name'  => 'DoctorBD24',
             'url'   => url('/'),
+            'logo'  => [
+                '@type' => 'ImageObject',
+                'url'   => asset('assets/images/logo.png')
+            ]
         ]);
         // ─────────────────────────────────────────────
 

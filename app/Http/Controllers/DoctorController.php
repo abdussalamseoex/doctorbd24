@@ -82,10 +82,19 @@ class DoctorController extends Controller
 
         // ── SEO for profile ──────────────────────────
         $spNames = $doctor->specialties->map(fn($s) => $s->getTranslation('name', 'en'))->join(', ');
-        $title   = "{$doctor->name} — {$doctor->designation}";
-        $desc    = "{$doctor->name} is a {$doctor->designation}" .
-                   ($spNames ? " specializing in {$spNames}" : '') .
-                   ". {$doctor->experience_years} years of experience. Find chamber locations, visiting hours & contact.";
+        $primarySpecialty = $doctor->specialties->first() ? $doctor->specialties->first()->getTranslation('name', 'en') : 'Specialist';
+        $primaryChamber = $doctor->chambers->sortByDesc('is_main')->first();
+        $locationName = $primaryChamber && $primaryChamber->area ? $primaryChamber->area->getTranslation('name', 'en') : ($primaryChamber && $primaryChamber->hospital ? $primaryChamber->hospital->name : 'Bangladesh');
+        
+        if ($doctor->designation) {
+            $title = "{$doctor->name} — {$doctor->designation} in {$locationName}";
+        } else {
+            $title = "{$doctor->name} — {$primarySpecialty} in {$locationName}";
+        }
+
+        $desc = "{$doctor->name} is a {$doctor->designation}" .
+                ($spNames ? " specializing in {$spNames}" : '') .
+                ". {$doctor->experience_years} years of experience. Find chamber locations, visiting hours & contact.";
 
         $seo = $doctor->seoMeta;
         if ($seo && $seo->title) {
@@ -120,12 +129,33 @@ class DoctorController extends Controller
         $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($doctor->photo ? asset('storage/' . $doctor->photo) : null);
         if ($ogImage) OpenGraph::addImage($ogImage);
 
-        JsonLd::setType('Person');
-        JsonLd::setTitle($seo->title ?? $doctor->name);
+        JsonLd::setType('Physician');
+        JsonLd::setTitle($seo->title ?? $title);
         JsonLd::setDescription($desc);
-        JsonLd::addValue('jobTitle', $doctor->designation);
         JsonLd::addValue('url', route('doctors.show', $doctor->slug));
         if ($ogImage) JsonLd::addValue('image', $ogImage);
+        if ($spNames) JsonLd::addValue('medicalSpecialty', $spNames);
+        
+        if ($primaryChamber) {
+            if (!empty($primaryChamber->phone)) {
+                JsonLd::addValue('telephone', $primaryChamber->phone);
+            }
+            if (!empty($primaryChamber->address)) {
+                JsonLd::addValue('address', [
+                    '@type' => 'PostalAddress',
+                    'streetAddress' => $primaryChamber->address,
+                    'addressCountry' => 'BD'
+                ]);
+            }
+        }
+
+        if ($doctor->approvedReviews && $doctor->approvedReviews->count() > 0) {
+            JsonLd::addValue('aggregateRating', [
+                '@type'       => 'AggregateRating',
+                'ratingValue' => round((float)$doctor->average_rating, 1),
+                'reviewCount' => $doctor->approvedReviews->count(),
+            ]);
+        }
         // ─────────────────────────────────────────────
 
         $related = Doctor::published()->whereHas('specialties', function ($q) use ($doctor) {
