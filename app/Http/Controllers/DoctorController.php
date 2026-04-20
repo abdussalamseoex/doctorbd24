@@ -148,18 +148,25 @@ class DoctorController extends Controller
             JsonLdMulti::addValue('medicalSpecialty', $specialtySchema);
         }
         
-        JsonLdMulti::addValue('priceRange', '$$');
-        
         if ($primaryChamber) {
             if (!empty($primaryChamber->phone)) {
                 JsonLdMulti::addValue('telephone', $primaryChamber->phone);
             }
             if (!empty($primaryChamber->address)) {
-                JsonLdMulti::addValue('address', [
+                $addressData = [
                     '@type' => 'PostalAddress',
                     'streetAddress' => $primaryChamber->address,
                     'addressCountry' => 'BD'
-                ]);
+                ];
+                
+                if ($primaryChamber->area) {
+                    $areaName = $primaryChamber->area->getTranslation('name', 'en', false) ?: $primaryChamber->area->name;
+                    if ($areaName) {
+                        $addressData['addressLocality'] = $areaName;
+                    }
+                }
+                
+                JsonLdMulti::addValue('address', $addressData);
             }
         }
 

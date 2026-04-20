@@ -88,12 +88,18 @@ class HospitalController extends Controller
         }
         
         if ($hospital->address) {
-            JsonLdMulti::addValue('address', [
+            $addressData = [
                 '@type' => 'PostalAddress',
                 'streetAddress' => $hospital->address,
-                'addressLocality' => $hospital->area?->getTranslation('name', 'en') ?? '',
                 'addressCountry' => 'BD'
-            ]);
+            ];
+            
+            $areaName = $hospital->area?->getTranslation('name', 'en', false) ?: ($hospital->area?->name ?? '');
+            if ($areaName) {
+                $addressData['addressLocality'] = $areaName;
+            }
+            
+            JsonLdMulti::addValue('address', $addressData);
         }
         
         if ($ogImage) JsonLdMulti::addValue('image', $ogImage);

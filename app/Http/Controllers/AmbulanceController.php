@@ -95,12 +95,20 @@ class AmbulanceController extends Controller
             \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('telephone', $ambulance->hotline);
         }
         
-        if (!empty($ambulance->base_location)) {
-            \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('address', [
+        $addressField = $ambulance->address ?: ($ambulance->base_location ?? null);
+        if (!empty($addressField)) {
+            $addressData = [
                 '@type' => 'PostalAddress',
-                'streetAddress' => $ambulance->base_location,
+                'streetAddress' => $addressField,
                 'addressCountry' => 'BD'
-            ]);
+            ];
+            
+            $areaName = $ambulance->area?->getTranslation('name', 'en', false) ?: ($ambulance->area?->name ?? '');
+            if ($areaName) {
+                $addressData['addressLocality'] = $areaName;
+            }
+            
+            \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('address', $addressData);
         }
         
         if ($ogImage) \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('image', $ogImage);
