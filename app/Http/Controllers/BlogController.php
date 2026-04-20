@@ -118,7 +118,7 @@ class BlogController extends Controller
         SEOTools::setCanonical(url()->current());
 
         OpenGraph::setType('article');
-        OpenGraph::setUrl(route('blog.show', $post->slug));
+        OpenGraph::setUrl(url()->current());
         OpenGraph::addProperty('article:author', $post->author->name);
         OpenGraph::addProperty('article:published_time', $post->published_at?->toIso8601String());
         if ($post->image) OpenGraph::addImage(asset('storage/' . $post->image));
@@ -127,7 +127,7 @@ class BlogController extends Controller
         JsonLdMulti::setTitle($post->title);
         JsonLdMulti::setDescription($desc);
         JsonLdMulti::addValue('headline', $post->title);
-        JsonLdMulti::addValue('url', route('blog.show', $post->slug));
+        JsonLdMulti::addValue('url', url()->current());
         JsonLdMulti::addValue('datePublished', $post->published_at?->toIso8601String());
         JsonLdMulti::addValue('dateModified', $post->updated_at?->toIso8601String() ?? $post->published_at?->toIso8601String());
         
@@ -135,16 +135,20 @@ class BlogController extends Controller
             JsonLdMulti::addValue('image', asset('storage/' . $post->image));
         }
 
+        $isBn = request()->routeIs('bn.*');
+        $baseUrl = $isBn ? url('/bn') : url('/');
+        $blogIndexUrl = $baseUrl . '/blog';
+
         JsonLdMulti::addValue('author', [
             '@type' => 'Person',
             'name'  => $post->author->name,
-            'url'   => url('/')
+            'url'   => $baseUrl
         ]);
         
         JsonLdMulti::addValue('publisher', [
             '@type' => 'Organization',
             'name'  => 'DoctorBD24',
-            'url'   => url('/'),
+            'url'   => $baseUrl,
             'logo'  => [
                 '@type' => 'ImageObject',
                 'url'   => asset('assets/images/logo.png')
@@ -158,25 +162,25 @@ class BlogController extends Controller
                 '@type' => 'ListItem',
                 'position' => 1,
                 'name' => 'Home',
-                'item' => url('/')
+                'item' => $baseUrl
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 2,
                 'name' => 'Blog',
-                'item' => route('blog.index')
+                'item' => $blogIndexUrl
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 3,
                 'name' => $post->category?->name ?? 'Article',
-                'item' => $post->category ? url()->current() . '?category=' . $post->category->slug : route('blog.index')
+                'item' => $post->category ? url()->current() . '?category=' . $post->category->slug : $blogIndexUrl
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 4,
                 'name' => $post->title,
-                'item' => route('blog.show', $post->slug)
+                'item' => url()->current()
             ]
         ]);
         // ─────────────────────────────────────────────

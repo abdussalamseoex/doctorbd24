@@ -123,7 +123,10 @@ class DoctorController extends Controller
             SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
         }
 
-        OpenGraph::setUrl(route('doctors.show', $doctor->slug));
+        $isBn = request()->routeIs('bn.*');
+        $baseUrl = $isBn ? url('/bn') : url('/');
+
+        OpenGraph::setUrl(url()->current());
         OpenGraph::setType('profile');
         
         $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($doctor->photo ? asset('storage/' . $doctor->photo) : null);
@@ -132,7 +135,7 @@ class DoctorController extends Controller
         JsonLdMulti::setType('Physician');
         JsonLdMulti::setTitle($doctor->name); // Using explicit doctor name instead of SEO Title
         JsonLdMulti::setDescription($desc);
-        JsonLdMulti::addValue('url', route('doctors.show', $doctor->slug));
+        JsonLdMulti::addValue('url', url()->current());
         
         if ($ogImage) JsonLdMulti::addValue('image', $ogImage);
         
@@ -195,19 +198,19 @@ class DoctorController extends Controller
                 '@type' => 'ListItem',
                 'position' => 1,
                 'name' => 'Home',
-                'item' => url('/')
+                'item' => $baseUrl
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 2,
                 'name' => 'Doctors',
-                'item' => url('/doctors')
+                'item' => $baseUrl . '/doctors'
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 3,
                 'name' => $doctor->name,
-                'item' => route('doctors.show', $doctor->slug)
+                'item' => url()->current()
             ]
         ]);
         // ─────────────────────────────────────────────

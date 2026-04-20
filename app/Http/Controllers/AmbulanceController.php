@@ -80,7 +80,7 @@ class AmbulanceController extends Controller
         }
 
         \Artesaos\SEOTools\Facades\SEOTools::setCanonical(url()->current());
-        \Artesaos\SEOTools\Facades\OpenGraph::setUrl(route('ambulances.show', $ambulance->slug));
+        \Artesaos\SEOTools\Facades\OpenGraph::setUrl(url()->current());
         \Artesaos\SEOTools\Facades\OpenGraph::setType('website');
 
         $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($ambulance->gallery && count($ambulance->gallery) > 0 ? asset('storage/' . $ambulance->gallery[0]) : null);
@@ -89,7 +89,7 @@ class AmbulanceController extends Controller
         \Artesaos\SEOTools\Facades\JsonLdMulti::setType('LocalBusiness');
         \Artesaos\SEOTools\Facades\JsonLdMulti::setTitle($seo->title ?? $ambulance->provider_name);
         \Artesaos\SEOTools\Facades\JsonLdMulti::setDescription($desc);
-        \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('url', route('ambulances.show', $ambulance->slug));
+        \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('url', url()->current());
         
         \Artesaos\SEOTools\Facades\JsonLdMulti::addValue('priceRange', '৳1000-৳5000');
         

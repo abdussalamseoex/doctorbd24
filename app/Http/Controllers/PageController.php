@@ -38,12 +38,15 @@ class PageController extends Controller
             $breadcrumb = \Artesaos\SEOTools\Facades\JsonLdMulti::newJsonLd();
             $breadcrumb->setType('BreadcrumbList');
             
+            $isBn = request()->routeIs('bn.*');
+            $baseUrl = $isBn ? url('/bn') : url('/');
+
             $itemList = [
                 [
                     '@type' => 'ListItem',
                     'position' => 1,
                     'name' => 'Home',
-                    'item' => url('/')
+                    'item' => $baseUrl
                 ]
             ];
             

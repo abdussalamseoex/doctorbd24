@@ -71,8 +71,11 @@ class HospitalController extends Controller
             SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
         }
 
+        $isBn = request()->routeIs('bn.*');
+        $baseUrl = $isBn ? url('/bn') : url('/');
+
         SEOTools::setCanonical(url()->current());
-        OpenGraph::setUrl(route('hospitals.show', $hospital->slug));
+        OpenGraph::setUrl(url()->current());
         OpenGraph::setType('place');
 
         $ogImage = ($seo && $seo->og_image) ? (str_starts_with($seo->og_image, 'http') ? $seo->og_image : asset('storage/' . $seo->og_image)) : ($hospital->logo ? asset('storage/' . $hospital->logo) : null);
@@ -81,7 +84,7 @@ class HospitalController extends Controller
         JsonLdMulti::setType('Hospital');
         JsonLdMulti::setTitle($seo->title ?? $hospital->name);
         JsonLdMulti::setDescription($desc);
-        JsonLdMulti::addValue('url', route('hospitals.show', $hospital->slug));
+        JsonLdMulti::addValue('url', url()->current());
         
         // Add dynamic price range for hospital to resolve schema error
         JsonLdMulti::addValue('priceRange', '৳500-৳5000');
@@ -120,19 +123,19 @@ class HospitalController extends Controller
                 '@type' => 'ListItem',
                 'position' => 1,
                 'name' => 'Home',
-                'item' => url('/')
+                'item' => $baseUrl
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 2,
                 'name' => 'Hospitals',
-                'item' => url('/hospitals')
+                'item' => $baseUrl . '/hospitals'
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 3,
                 'name' => $hospital->name,
-                'item' => route('hospitals.show', $hospital->slug)
+                'item' => url()->current()
             ]
         ]);
         // ─────────────────────────────────────────────
