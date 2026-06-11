@@ -77,15 +77,7 @@ class AdminBlogController extends Controller
 
         }
 
-        $post =
- $validated['status'] = $request->input('status', 'draft');
- if ($validated['status'] === 'published') {
-     $validated['published_at'] = now();
- } elseif ($validated['status'] === 'scheduled') {
-     $validated['published_at'] = $request->input('published_at');
- } else {
-     $validated['published_at'] = null;
- } BlogPost::create($validated);
+        $post = BlogPost::create($validated);
 
         if ($request->has('seo')) {
             $seoData = $request->input('seo');
@@ -193,5 +185,18 @@ class AdminBlogController extends Controller
     public function show(BlogPost $blogPost)
     {
         return redirect()->route('admin.blog-posts.edit', $blogPost->id);
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+        ]);
+
+        $path = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('file'), 'blog/content', 1200);
+
+        return response()->json([
+            'location' => asset('storage/' . $path)
+        ]);
     }
 }

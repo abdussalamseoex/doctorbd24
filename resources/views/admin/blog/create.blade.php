@@ -18,7 +18,30 @@
         toolbar: 'undo redo | blocks | ' +
         'bold italic backcolor | alignleft aligncenter ' +
         'alignright alignjustify | bullist numlist outdent indent | ' +
-        'removeformat | help',
+        'image | removeformat | help',
+        images_upload_handler: function (blobInfo, progress) {
+            return new Promise((resolve, reject) => {
+                var xhr, formData;
+                xhr = new XMLHttpRequest();
+                xhr.withCredentials = false;
+                xhr.open('POST', '{{ route('admin.blog-posts.upload-image') }}');
+                xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                xhr.upload.onprogress = function (e) {
+                    progress(e.loaded / e.total * 100);
+                };
+                xhr.onload = function() {
+                    if (xhr.status === 403) { reject({ message: 'HTTP Error: ' + xhr.status, remove: true }); return; }
+                    if (xhr.status < 200 || xhr.status >= 300) { reject('HTTP Error: ' + xhr.status); return; }
+                    var json = JSON.parse(xhr.responseText);
+                    if (!json || typeof json.location != 'string') { reject('Invalid JSON: ' + xhr.responseText); return; }
+                    resolve(json.location);
+                };
+                xhr.onerror = function () { reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status); };
+                formData = new FormData();
+                formData.append('file', blobInfo.blob(), blobInfo.filename());
+                xhr.send(formData);
+            });
+        },
         skin: document.documentElement.classList.contains('dark') ? 'oxide-dark' : 'oxide',
         content_css: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
         setup: function(editor) {
@@ -37,7 +60,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <form method="POST" action="{{ isset($blogPost) ? route('admin.blog-posts.update', $blogPost->id) : route('admin.blog-posts.store') }}" enctype="multipart/form-data" class="space-y-5">
+        <form x-data="{ activeTab: 'en' }" method="POST" action="{{ isset($blogPost) ? route('admin.blog-posts.update', $blogPost->id) : route('admin.blog-posts.store') }}" enctype="multipart/form-data" class="space-y-5">
             @csrf
             @if(isset($blogPost)) @method('PUT') @endif
 

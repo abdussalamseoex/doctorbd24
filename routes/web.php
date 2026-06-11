@@ -300,6 +300,7 @@ Route::prefix('admin')
         
         // Blog Posts
         Route::post('blog-posts/bulk-action', [\App\Http\Controllers\Admin\AdminBlogController::class, 'bulkAction'])->name('blog-posts.bulk-action');
+        Route::post('blog-posts/upload-image', [\App\Http\Controllers\Admin\AdminBlogController::class, 'uploadImage'])->name('blog-posts.upload-image');
         Route::resource('blog-posts', \App\Http\Controllers\Admin\AdminBlogController::class)->middleware('permission:manage blog');
 
         // Blog Categories
