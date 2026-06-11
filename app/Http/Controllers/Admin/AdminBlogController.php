@@ -190,7 +190,7 @@ class AdminBlogController extends Controller
     public function uploadImage(Request $request)
     {
         $request->validate([
-            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'file' => 'required|image|max:5120',
         ]);
 
         $path = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('file'), 'blog/content', 1200);

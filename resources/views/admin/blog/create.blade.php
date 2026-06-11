@@ -26,19 +26,38 @@
                 xhr.withCredentials = false;
                 xhr.open('POST', '{{ route('admin.blog-posts.upload-image') }}');
                 xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                xhr.setRequestHeader('Accept', 'application/json');
                 xhr.upload.onprogress = function (e) {
                     progress(e.loaded / e.total * 100);
                 };
                 xhr.onload = function() {
                     if (xhr.status === 403) { reject({ message: 'HTTP Error: ' + xhr.status, remove: true }); return; }
+                    if (xhr.status === 422) { 
+                        try {
+                            var json = JSON.parse(xhr.responseText);
+                            reject(json.message || 'Validation Error');
+                        } catch (e) {
+                            reject('Validation Error (422)');
+                        }
+                        return;
+                    }
                     if (xhr.status < 200 || xhr.status >= 300) { reject('HTTP Error: ' + xhr.status); return; }
-                    var json = JSON.parse(xhr.responseText);
-                    if (!json || typeof json.location != 'string') { reject('Invalid JSON: ' + xhr.responseText); return; }
-                    resolve(json.location);
+                    try {
+                        var json = JSON.parse(xhr.responseText);
+                        if (!json || typeof json.location != 'string') { reject('Invalid JSON format'); return; }
+                        resolve(json.location);
+                    } catch (err) {
+                        reject('Invalid response from server');
+                    }
                 };
                 xhr.onerror = function () { reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status); };
                 formData = new FormData();
-                formData.append('file', blobInfo.blob(), blobInfo.filename());
+                
+                // Add a default extension if missing to help validation
+                var filename = blobInfo.filename();
+                if (!filename.includes('.')) filename += '.png';
+                
+                formData.append('file', blobInfo.blob(), filename);
                 xhr.send(formData);
             });
         },
