@@ -23,7 +23,6 @@
             return new Promise((resolve, reject) => {
                 var xhr, formData;
                 xhr = new XMLHttpRequest();
-                xhr.withCredentials = false;
                 xhr.open('POST', '{{ route('admin.blog-posts.upload-image') }}');
                 xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
                 xhr.setRequestHeader('Accept', 'application/json');
@@ -31,29 +30,29 @@
                     progress(e.loaded / e.total * 100);
                 };
                 xhr.onload = function() {
-                    if (xhr.status === 403) { reject({ message: 'HTTP Error: ' + xhr.status, remove: true }); return; }
+                    if (xhr.status === 403) { reject({ message: 'HTTP Error: 403 Forbidden', remove: true }); return; }
+                    if (xhr.status === 419) { reject({ message: 'Session expired. Please refresh the page.', remove: true }); return; }
                     if (xhr.status === 422) { 
                         try {
                             var json = JSON.parse(xhr.responseText);
-                            reject(json.message || 'Validation Error');
+                            reject({ message: json.message || 'Validation Error', remove: true });
                         } catch (e) {
-                            reject('Validation Error (422)');
+                            reject({ message: 'Validation Error (422)', remove: true });
                         }
                         return;
                     }
-                    if (xhr.status < 200 || xhr.status >= 300) { reject('HTTP Error: ' + xhr.status); return; }
+                    if (xhr.status < 200 || xhr.status >= 300) { reject({ message: 'HTTP Error: ' + xhr.status, remove: true }); return; }
                     try {
                         var json = JSON.parse(xhr.responseText);
-                        if (!json || typeof json.location != 'string') { reject('Invalid JSON format'); return; }
+                        if (!json || typeof json.location != 'string') { reject({ message: 'Invalid JSON format', remove: true }); return; }
                         resolve(json.location);
                     } catch (err) {
-                        reject('Invalid response from server');
+                        reject({ message: 'Invalid response from server', remove: true });
                     }
                 };
-                xhr.onerror = function () { reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status); };
+                xhr.onerror = function () { reject({ message: 'Image upload failed due to a network error. Code: ' + xhr.status, remove: true }); };
                 formData = new FormData();
                 
-                // Add a default extension if missing to help validation
                 var filename = blobInfo.filename();
                 if (!filename.includes('.')) filename += '.png';
                 
