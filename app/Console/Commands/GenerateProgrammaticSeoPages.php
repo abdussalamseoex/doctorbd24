@@ -124,6 +124,98 @@ class GenerateProgrammaticSeoPages extends Command
         }
 
         $this->info("SUCCESS: {$count} Phase 1 Programmatic SEO Landing Pages synchronized!");
+
+        // Step 3: Auto-map Data Context (area_id, district_id, division_id) from live DB
+        $this->info("Auto-mapping Data Context from live database...");
+        $mapped = 0;
+
+        // Load all areas, districts, divisions — names are stored as JSON {"en":"...","bn":"..."}
+        $areas     = \DB::table('areas')->select('id', 'name', 'district_id', 'division_id')->get();
+        $districts = \DB::table('districts')->select('id', 'name', 'division_id')->get();
+        $divisions = \DB::table('divisions')->select('id', 'name')->get();
+
+        // Build lookup maps: lowercase EN name → record
+        $areaMap     = [];
+        $districtMap = [];
+        $divisionMap = [];
+
+        foreach ($areas as $a) {
+            $decoded = json_decode($a->name, true);
+            $enName  = strtolower(trim($decoded['en'] ?? $a->name));
+            $areaMap[$enName] = $a;
+        }
+        foreach ($districts as $d) {
+            $decoded = json_decode($d->name, true);
+            $enName  = strtolower(trim($decoded['en'] ?? $d->name));
+            $districtMap[$enName] = $d;
+        }
+        foreach ($divisions as $dv) {
+            $decoded = json_decode($dv->name, true);
+            $enName  = strtolower(trim($decoded['en'] ?? $dv->name));
+            $divisionMap[$enName] = $dv;
+        }
+
+        // Process each seo page
+        $allPages = SeoLandingPage::all();
+        foreach ($allPages as $page) {
+            $slug = $page->slug;
+            $locationName = null;
+
+            if (str_starts_with($slug, 'doctors-in-')) {
+                $locationName = str_replace('-', ' ', substr($slug, 11));
+            } elseif (str_starts_with($slug, 'hospitals-in-')) {
+                $locationName = str_replace('-', ' ', substr($slug, 13));
+            }
+
+            if (!$locationName) continue;
+
+            $locationLower = strtolower($locationName);
+
+            // Try area match first
+            if (isset($areaMap[$locationLower])) {
+                $area = $areaMap[$locationLower];
+                $areaDistrictId = $area->district_id ?? null;
+                // Resolve division via district
+                $divisionId = null;
+                if ($areaDistrictId && isset($districtMap)) {
+                    foreach ($districtMap as $d) {
+                        if ($d->id == $areaDistrictId) {
+                            $divisionId = $d->division_id ?? null;
+                            break;
+                        }
+                    }
+                }
+                $page->area_id     = $area->id;
+                $page->district_id = $areaDistrictId;
+                $page->division_id = $divisionId;
+                $page->save();
+                $mapped++;
+                continue;
+            }
+
+            // Try district match
+            if (isset($districtMap[$locationLower])) {
+                $district = $districtMap[$locationLower];
+                $page->district_id = $district->id;
+                $page->division_id = $district->division_id ?? null;
+                $page->area_id     = null;
+                $page->save();
+                $mapped++;
+                continue;
+            }
+
+            // Try division match
+            if (isset($divisionMap[$locationLower])) {
+                $division = $divisionMap[$locationLower];
+                $page->division_id = $division->id;
+                $page->district_id = null;
+                $page->area_id     = null;
+                $page->save();
+                $mapped++;
+            }
+        }
+
+        $this->info("Data Context mapped for {$mapped} pages.");
         return 0;
     }
 
