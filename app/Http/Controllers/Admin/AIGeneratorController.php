@@ -472,7 +472,7 @@ class AIGeneratorController extends Controller
             throw new \Exception("Anthropic Claude API key is missing. Please configure it in the AI Settings.");
         }
 
-        $modelName = $forceModel ?: Setting::get('anthropic_model', 'claude-3-5-sonnet-20241022');
+        $modelName = $forceModel ?: Setting::get('anthropic_model', 'claude-sonnet-5');
 
         $request = Http::withHeaders([
             'x-api-key' => $apiKey,
@@ -487,7 +487,6 @@ class AIGeneratorController extends Controller
         $response = $request->post('https://api.anthropic.com/v1/messages', [
             'model' => $modelName,
             'max_tokens' => 4096,
-            'temperature' => 0.7,
             'system' => 'You are an expert medical copywriter and SEO specialist.',
             'messages' => [
                 ['role' => 'user', 'content' => $prompt]
@@ -499,6 +498,14 @@ class AIGeneratorController extends Controller
         }
 
         $data = $response->json();
-        return trim($data['content'][0]['text'] ?? '');
+        $textOutput = '';
+        if (!empty($data['content']) && is_array($data['content'])) {
+            foreach ($data['content'] as $block) {
+                if (($block['type'] ?? '') === 'text' && isset($block['text'])) {
+                    $textOutput .= $block['text'];
+                }
+            }
+        }
+        return trim($textOutput);
     }
 }

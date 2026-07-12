@@ -94,8 +94,9 @@
                     <div>
                         <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Claude Model</label>
                         <select name="anthropic_model" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
-                            <option value="claude-3-5-sonnet-20241022" {{ ($settings['anthropic_model'] ?? '') == 'claude-3-5-sonnet-20241022' ? 'selected' : '' }}>Claude 3.5 Sonnet (Best Quality)</option>
-                            <option value="claude-3-haiku-20240307" {{ ($settings['anthropic_model'] ?? '') == 'claude-3-haiku-20240307' ? 'selected' : '' }}>Claude 3 Haiku (Fast & Budget-Friendly)</option>
+                            <option value="claude-sonnet-5" {{ ($settings['anthropic_model'] ?? '') == 'claude-sonnet-5' ? 'selected' : '' }}>Claude Sonnet 5 (Best Quality)</option>
+                            <option value="claude-sonnet-4-6" {{ ($settings['anthropic_model'] ?? '') == 'claude-sonnet-4-6' ? 'selected' : '' }}>Claude Sonnet 4.6</option>
+                            <option value="claude-haiku-4-5-20251001" {{ ($settings['anthropic_model'] ?? '') == 'claude-haiku-4-5-20251001' ? 'selected' : '' }}>Claude Haiku 4.5 (Fast & Budget-Friendly)</option>
                         </select>
                     </div>
                 </div>
