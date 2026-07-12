@@ -14,6 +14,14 @@ class GenerateProgrammaticSeoPages extends Command
     {
         $this->info("Starting generation/updating of 882 Programmatic SEO Landing Pages...");
 
+        // Load slug manifest from JSON (committed to repo alongside seeder)
+        $slugFile = database_path('seeders/seo_page_slugs.json');
+        if (!file_exists($slugFile)) {
+            $this->error("Slug manifest not found: {$slugFile}");
+            return 1;
+        }
+        $slugManifest = json_decode(file_get_contents($slugFile), true);
+
         $bnLocMap = [
             'Mirpur' => 'মিরপুর', 'Dhanmondi' => 'ধানমন্ডি', 'Uttara' => 'উত্তরা', 'Gulshan' => 'গুলশান',
             'Banani' => 'বনানী', 'Motijheel' => 'মতিঝিল', 'Tejgaon' => 'তেজগাঁও', 'Badda' => 'বাড্ডা',
@@ -46,62 +54,59 @@ class GenerateProgrammaticSeoPages extends Command
             'Sadar Coxs Bazar' => 'কক্সবাজার সদর', 'Ramu' => 'রামু', 'Ukhia' => 'উখিয়া'
         ];
 
-        $pages = SeoLandingPage::all();
         $count = 0;
 
-        foreach ($pages as $page) {
-            $slug = $page->slug;
-            $type = $page->type ?: (str_starts_with($slug, 'hospitals-in-') ? 'hospital' : 'doctor');
+        foreach ($slugManifest as $manifest) {
+            $slug = $manifest['slug'];
+            $type = $manifest['type'] ?? (str_starts_with($slug, 'hospitals-in-') ? 'hospital' : 'doctor');
+            $keyword = $manifest['keyword'] ?? '';
+            $title = $manifest['title'] ?? ['en' => $slug, 'bn' => $slug];
+            $metaTitle = $manifest['meta_title'] ?? $title;
+            $metaDescription = $manifest['meta_description'] ?? ['en' => '', 'bn' => ''];
 
+            // Build content based on slug prefix
             if (str_starts_with($slug, 'doctors-in-')) {
                 $locEn = ucwords(str_replace('-', ' ', substr($slug, 11)));
                 $locBn = $bnLocMap[$locEn] ?? (preg_match('/^Zone (\d+)$/i', $locEn, $m) ? 'জোন ' . str_replace(['0','1','2','3','4','5','6','7','8','9'], ['০','১','২','৩','৪','৫','৬','৭','৮','৯'], $m[1]) : $locEn);
                 $locBnPossessive = $this->toBanglaPossessive($locBn);
                 $keywordEn = "Doctors in {$locEn}";
                 $keywordBn = "{$locBnPossessive} সেরা বিশেষজ্ঞ ডাক্তার তালিকা";
+                $type = 'doctor';
+                $contentTop    = ['en' => $this->buildEEATTopEnExact($locEn, $keywordEn), 'bn' => $this->buildEEATTopBnExact($locBn, $locBnPossessive, $keywordBn)];
+                $contentBottom = ['en' => $this->buildEEATBottomEnExact($locEn, $keywordEn), 'bn' => $this->buildEEATBottomBnExact($locBn, $locBnPossessive, $keywordBn)];
 
-                $page->type = 'doctor';
-                $page->content_top = [
-                    'en' => $this->buildEEATTopEnExact($locEn, $keywordEn),
-                    'bn' => $this->buildEEATTopBnExact($locBn, $locBnPossessive, $keywordBn)
-                ];
-                $page->content_bottom = [
-                    'en' => $this->buildEEATBottomEnExact($locEn, $keywordEn),
-                    'bn' => $this->buildEEATBottomBnExact($locBn, $locBnPossessive, $keywordBn)
-                ];
             } elseif (str_starts_with($slug, 'hospitals-in-')) {
                 $locEn = ucwords(str_replace('-', ' ', substr($slug, 13)));
                 $locBn = $bnLocMap[$locEn] ?? (preg_match('/^Zone (\d+)$/i', $locEn, $m) ? 'জোন ' . str_replace(['0','1','2','3','4','5','6','7','8','9'], ['০','১','২','৩','৪','৫','৬','৭','৮','৯'], $m[1]) : $locEn);
                 $locBnPossessive = $this->toBanglaPossessive($locBn);
                 $keywordEn = "Hospitals in {$locEn}";
                 $keywordBn = "{$locBnPossessive} হাসপাতাল তালিকা";
+                $type = 'hospital';
+                $contentTop    = ['en' => $this->buildEEATTopEnExact($locEn, $keywordEn), 'bn' => $this->buildEEATTopBnExact($locBn, $locBnPossessive, $keywordBn)];
+                $contentBottom = ['en' => $this->buildEEATBottomEnExact($locEn, $keywordEn), 'bn' => $this->buildEEATBottomBnExact($locBn, $locBnPossessive, $keywordBn)];
 
-                $page->type = 'hospital';
-                $page->content_top = [
-                    'en' => $this->buildEEATTopEnExact($locEn, $keywordEn),
-                    'bn' => $this->buildEEATTopBnExact($locBn, $locBnPossessive, $keywordBn)
-                ];
-                $page->content_bottom = [
-                    'en' => $this->buildEEATBottomEnExact($locEn, $keywordEn),
-                    'bn' => $this->buildEEATBottomBnExact($locBn, $locBnPossessive, $keywordBn)
-                ];
             } else {
                 $locEn = ucwords(str_replace('-', ' ', $slug));
                 $keywordEn = "Best {$locEn} in Bangladesh";
                 $keywordBn = "বাংলাদেশে সেরা চিকিৎসক ডিরেক্টরি";
-
-                $page->type = $type;
-                $page->content_top = [
-                    'en' => $this->buildEEATTopEnExact("Bangladesh", $keywordEn),
-                    'bn' => $this->buildEEATTopBnExact("বাংলাদেশ", "বাংলাদেশের", $keywordBn)
-                ];
-                $page->content_bottom = [
-                    'en' => $this->buildEEATBottomEnExact("Bangladesh", $keywordEn),
-                    'bn' => $this->buildEEATBottomBnExact("বাংলাদেশ", "বাংলাদেশের", $keywordBn)
-                ];
+                $contentTop    = ['en' => $this->buildEEATTopEnExact("Bangladesh", $keywordEn), 'bn' => $this->buildEEATTopBnExact("বাংলাদেশ", "বাংলাদেশের", $keywordBn)];
+                $contentBottom = ['en' => $this->buildEEATBottomEnExact("Bangladesh", $keywordEn), 'bn' => $this->buildEEATBottomBnExact("বাংলাদেশ", "বাংলাদেশের", $keywordBn)];
             }
 
-            $page->save();
+            SeoLandingPage::updateOrCreate(
+                ['slug' => $slug],
+                [
+                    'type'             => $type,
+                    'keyword'          => $keyword,
+                    'title'            => $title,
+                    'meta_title'       => $metaTitle,
+                    'meta_description' => $metaDescription,
+                    'content_top'      => $contentTop,
+                    'content_bottom'   => $contentBottom,
+                    'is_active'        => $manifest['is_active'] ?? 1,
+                    'status'           => $manifest['status'] ?? 'published',
+                ]
+            );
             $count++;
         }
 
