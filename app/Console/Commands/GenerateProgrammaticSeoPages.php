@@ -103,6 +103,10 @@ class GenerateProgrammaticSeoPages extends Command
                     'meta_description' => $metaDescription,
                     'content_top'      => $contentTop,
                     'content_bottom'   => $contentBottom,
+                    'specialty_id'     => $manifest['specialty_id'] ?? null,
+                    'division_id'      => $manifest['division_id'] ?? null,
+                    'district_id'      => $manifest['district_id'] ?? null,
+                    'area_id'          => $manifest['area_id'] ?? null,
                     'is_active'        => $manifest['is_active'] ?? 1,
                     'status'           => $manifest['status'] ?? 'published',
                 ]
