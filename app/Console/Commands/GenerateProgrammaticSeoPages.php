@@ -369,6 +369,9 @@ class GenerateProgrammaticSeoPages extends Command
                 $page->district_id = $district->id;
                 $page->division_id = $district->division_id ?? null;
                 $page->area_id     = null;
+                $dec = json_decode($district->name, true);
+                $officialName = trim($dec['en'] ?? $district->name);
+                $this->syncPageSpelling($page, $locationName, $officialName);
                 $page->save();
                 $mappedLocation++;
                 continue;
@@ -380,6 +383,9 @@ class GenerateProgrammaticSeoPages extends Command
                 $page->division_id = $division->id;
                 $page->district_id = null;
                 $page->area_id     = null;
+                $dec = json_decode($division->name, true);
+                $officialName = trim($dec['en'] ?? $division->name);
+                $this->syncPageSpelling($page, $locationName, $officialName);
                 $page->save();
                 $mappedLocation++;
                 continue;
@@ -396,6 +402,9 @@ class GenerateProgrammaticSeoPages extends Command
                 $page->area_id     = $area->id;
                 $page->district_id = $areaDistrictId;
                 $page->division_id = $divisionId;
+                $dec = json_decode($area->name, true);
+                $officialName = trim($dec['en'] ?? $area->name);
+                $this->syncPageSpelling($page, $locationName, $officialName);
                 $page->save();
                 $mappedLocation++;
                 continue;
@@ -415,6 +424,9 @@ class GenerateProgrammaticSeoPages extends Command
                     $page->area_id     = $a->id;
                     $page->district_id = $areaDistrictId;
                     $page->division_id = $divisionId;
+                    $dec = json_decode($a->name, true);
+                    $officialName = trim($dec['en'] ?? $a->name);
+                    $this->syncPageSpelling($page, $locationName, $officialName);
                     $page->save();
                     $mappedLocation++;
                     $matchedFallback = true;
@@ -439,6 +451,42 @@ class GenerateProgrammaticSeoPages extends Command
 
         $this->info("Data Context mapped for {$mappedLocation} Locations and {$mappedSpecialty} Specialties.");
         return 0;
+    }
+
+    protected function syncPageSpelling($page, $oldWord, $officialEnName)
+    {
+        if (!$oldWord || !$officialEnName || strtolower(trim($oldWord)) === strtolower(trim($officialEnName))) {
+            return;
+        }
+
+        $oldSlugPart = str_replace(' ', '-', strtolower(trim($oldWord)));
+        $newSlugPart = str_replace(' ', '-', strtolower(trim($officialEnName)));
+
+        // 1. Update slug if it contains the old spelling and won't conflict with an existing page
+        if (str_contains(strtolower($page->slug), $oldSlugPart) && $oldSlugPart !== $newSlugPart) {
+            $candidateSlug = str_replace($oldSlugPart, $newSlugPart, strtolower($page->slug));
+            if (!\App\Models\SeoLandingPage::where('slug', $candidateSlug)->where('id', '!=', $page->id)->exists()) {
+                $page->slug = $candidateSlug;
+            }
+        }
+
+        // 2. Update page title, meta_title, meta_description
+        $fields = ['title', 'meta_title', 'meta_description'];
+        foreach ($fields as $f) {
+            if (!empty($page->{$f})) {
+                $val = $page->{$f};
+                $isJson = is_string($val) && str_starts_with(trim($val), '{');
+                if ($isJson) {
+                    $decoded = json_decode($val, true);
+                    if (is_array($decoded) && isset($decoded['en'])) {
+                        $decoded['en'] = preg_replace('/\b' . preg_quote($oldWord, '/') . '\b/i', $officialEnName, $decoded['en']);
+                        $page->{$f} = json_encode($decoded, JSON_UNESCAPED_UNICODE);
+                    }
+                } else {
+                    $page->{$f} = preg_replace('/\b' . preg_quote($oldWord, '/') . '\b/i', $officialEnName, $val);
+                }
+            }
+        }
     }
 
     protected function toBanglaPossessive($bnWord)
