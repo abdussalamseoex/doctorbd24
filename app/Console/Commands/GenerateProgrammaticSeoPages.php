@@ -54,6 +54,19 @@ class GenerateProgrammaticSeoPages extends Command
             'Sadar Coxs Bazar' => 'কক্সবাজার সদর', 'Ramu' => 'রামু', 'Ukhia' => 'উখিয়া'
         ];
 
+        // Step 1: Delete Zone pages that have no SEO value
+        $deletedZones = SeoLandingPage::where('slug', 'like', 'doctors-in-zone-%')->delete();
+        if ($deletedZones > 0) {
+            $this->info("Deleted {$deletedZones} Zone pages (no SEO value).");
+        }
+
+        // Step 2: Remove any slugs NOT in the manifest (cleanup orphaned pages)
+        $validSlugs = array_column($slugManifest, 'slug');
+        $deletedOrphans = SeoLandingPage::whereNotIn('slug', $validSlugs)->delete();
+        if ($deletedOrphans > 0) {
+            $this->info("Deleted {$deletedOrphans} orphaned pages not in manifest.");
+        }
+
         $count = 0;
 
         foreach ($slugManifest as $manifest) {
