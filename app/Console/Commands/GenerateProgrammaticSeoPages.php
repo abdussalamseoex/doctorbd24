@@ -130,14 +130,15 @@ class GenerateProgrammaticSeoPages extends Command
         $mapped = 0;
 
         // Load all areas, districts, divisions — names are stored as JSON {"en":"...","bn":"..."}
-        $areas     = \DB::table('areas')->select('id', 'name', 'district_id', 'division_id')->get();
+        $areas     = \DB::table('areas')->select('id', 'name', 'district_id')->get();
         $districts = \DB::table('districts')->select('id', 'name', 'division_id')->get();
         $divisions = \DB::table('divisions')->select('id', 'name')->get();
 
         // Build lookup maps: lowercase EN name → record
-        $areaMap     = [];
-        $districtMap = [];
-        $divisionMap = [];
+        $areaMap      = [];
+        $districtMap  = [];
+        $divisionMap  = [];
+        $districtById = []; // id → district record (for area→division resolution)
 
         foreach ($areas as $a) {
             $decoded = json_decode($a->name, true);
@@ -148,6 +149,7 @@ class GenerateProgrammaticSeoPages extends Command
             $decoded = json_decode($d->name, true);
             $enName  = strtolower(trim($decoded['en'] ?? $d->name));
             $districtMap[$enName] = $d;
+            $districtById[$d->id] = $d;
         }
         foreach ($divisions as $dv) {
             $decoded = json_decode($dv->name, true);
@@ -175,15 +177,10 @@ class GenerateProgrammaticSeoPages extends Command
             if (isset($areaMap[$locationLower])) {
                 $area = $areaMap[$locationLower];
                 $areaDistrictId = $area->district_id ?? null;
-                // Resolve division via district
+                // Resolve division via districtById map (O(1) lookup)
                 $divisionId = null;
-                if ($areaDistrictId && isset($districtMap)) {
-                    foreach ($districtMap as $d) {
-                        if ($d->id == $areaDistrictId) {
-                            $divisionId = $d->division_id ?? null;
-                            break;
-                        }
-                    }
+                if ($areaDistrictId && isset($districtById[$areaDistrictId])) {
+                    $divisionId = $districtById[$areaDistrictId]->division_id ?? null;
                 }
                 $page->area_id     = $area->id;
                 $page->district_id = $areaDistrictId;
