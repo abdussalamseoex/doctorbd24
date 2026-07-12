@@ -440,5 +440,8 @@ class DatabaseSeeder extends Seeder
         foreach ($posts as $p) {
             BlogPost::firstOrCreate(['slug' => $p['slug']], $p);
         }
+
+        // ── Programmatic SEO Landing Pages (882 Pages) ───────────
+        $this->call(SeoLandingPageSeeder::class);
     }
 }
