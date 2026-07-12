@@ -162,14 +162,49 @@ class GenerateProgrammaticSeoPages extends Command
         ];
 
         $locationAliases = [
-            'chattogram' => 'chittagong',
-            'cumilla'    => 'comilla',
-            'jashore'    => 'jessore',
-            'jhalokati'  => 'jhalokathi',
-            'khagrachari'=> 'khagrachhari',
-            'barisal'    => 'barishal',
-            'bogra'      => 'bogura',
-            'coxs-bazar' => 'coxs bazar',
+            'adabar'            => 'adabor',
+            'chattogram'        => 'chittagong',
+            'cumilla'           => 'comilla',
+            'jashore'           => 'jessore',
+            'jhalokati'         => 'jhalokathi',
+            'khagrachari'       => 'khagrachhari',
+            'barisal'           => 'barishal',
+            'bogra'             => 'bogura',
+            'coxs-bazar'        => 'coxs bazar',
+            'sadar-sylhet'      => 'sylhet sadar',
+            'sadar sylhet'      => 'sylhet sadar',
+            'sadar-khulna'      => 'khulna sadar',
+            'sadar khulna'      => 'khulna sadar',
+            'sadar-gazipur'     => 'gazipur sadar',
+            'sadar gazipur'     => 'gazipur sadar',
+            'sadar-narayanganj' => 'narayanganj sadar',
+            'sadar narayanganj' => 'narayanganj sadar',
+            'sadar-rajshahi'    => 'rajshahi sadar',
+            'sadar rajshahi'    => 'rajshahi sadar',
+            'sadar-rangpur'     => 'rangpur sadar',
+            'sadar rangpur'     => 'rangpur sadar',
+            'sadar-barishal'    => 'barishal sadar',
+            'sadar barishal'    => 'barishal sadar',
+            'sadar-cumilla'     => 'comilla sadar',
+            'sadar cumilla'     => 'comilla sadar',
+            'sadar-coxs-bazar'  => "cox's bazar sadar",
+            'sadar coxs bazar'  => "cox's bazar sadar",
+            'cantonment'        => 'dhaka cantonment',
+            'airport'           => 'airport area',
+            'kotwali-ctg'       => 'kotwali',
+            'kotwali ctg'       => 'kotwali',
+            'kotwali-rangpur'   => 'kotwali',
+            'kotwali rangpur'   => 'kotwali',
+            'kotwali-barishal'  => 'kotwali',
+            'kotwali barishal'  => 'kotwali',
+            'sherpur-bogura'    => 'sherpur',
+            'sherpur bogura'    => 'sherpur',
+            'bandar-narayanganj'=> 'bandar',
+            'bandar narayanganj'=> 'bandar',
+            'sripur'            => 'sreepur',
+            'sabujbagh'         => 'sabujbag',
+            'green-road'        => 'green road',
+            'gec-circle'        => 'gec circle',
         ];
 
         foreach ($specialties as $s) {
@@ -177,9 +212,9 @@ class GenerateProgrammaticSeoPages extends Command
         }
 
         // Load all areas, districts, divisions — names are stored as JSON {"en":"...","bn":"..."}
-        $areas     = \DB::table('areas')->select('id', 'name', 'district_id')->get();
-        $districts = \DB::table('districts')->select('id', 'name', 'division_id')->get();
-        $divisions = \DB::table('divisions')->select('id', 'name')->get();
+        $areas     = \DB::table('areas')->select('id', 'name', 'slug', 'district_id')->get();
+        $districts = \DB::table('districts')->select('id', 'name', 'slug', 'division_id')->get();
+        $divisions = \DB::table('divisions')->select('id', 'name', 'slug')->get();
 
         // Build lookup maps: lowercase EN name → record
         $areaMap      = [];
@@ -191,17 +226,38 @@ class GenerateProgrammaticSeoPages extends Command
             $decoded = json_decode($a->name, true);
             $enName  = strtolower(trim($decoded['en'] ?? $a->name));
             $areaMap[$enName] = $a;
+            $areaMap[str_replace(' ', '-', $enName)] = $a;
+            $areaMap[str_replace('-', ' ', $enName)] = $a;
+            if ($a->slug) {
+                $slugLower = strtolower($a->slug);
+                $areaMap[$slugLower] = $a;
+                $parts = explode('-', $slugLower);
+                $lastSlug = end($parts);
+                if (!isset($areaMap[$lastSlug])) {
+                    $areaMap[$lastSlug] = $a;
+                }
+            }
         }
         foreach ($districts as $d) {
             $decoded = json_decode($d->name, true);
             $enName  = strtolower(trim($decoded['en'] ?? $d->name));
             $districtMap[$enName] = $d;
+            $districtMap[str_replace(' ', '-', $enName)] = $d;
+            $districtMap[str_replace('-', ' ', $enName)] = $d;
+            if ($d->slug) {
+                $districtMap[strtolower($d->slug)] = $d;
+            }
             $districtById[$d->id] = $d;
         }
         foreach ($divisions as $dv) {
             $decoded = json_decode($dv->name, true);
             $enName  = strtolower(trim($decoded['en'] ?? $dv->name));
             $divisionMap[$enName] = $dv;
+            $divisionMap[str_replace(' ', '-', $enName)] = $dv;
+            $divisionMap[str_replace('-', ' ', $enName)] = $dv;
+            if ($dv->slug) {
+                $divisionMap[strtolower($dv->slug)] = $dv;
+            }
         }
 
         // Process each seo page
@@ -269,7 +325,7 @@ class GenerateProgrammaticSeoPages extends Command
                 continue;
             }
 
-            // Try AREA match third (e.g. Dhanmondi, Mirpur, Uttara, Gulshan, Banani, etc.)
+            // Try AREA match third (e.g. Adabor, Dhanmondi, Mirpur, Uttara, Gulshan, Banani, etc.)
             if (isset($areaMap[$lookupLoc])) {
                 $area = $areaMap[$lookupLoc];
                 $areaDistrictId = $area->district_id ?? null;
@@ -285,7 +341,30 @@ class GenerateProgrammaticSeoPages extends Command
                 continue;
             }
 
-            $page->save();
+            // Smart fallback: check if any area slug matches lookupLoc or suffix
+            $matchedFallback = false;
+            foreach ($areas as $a) {
+                $aSlugLower = strtolower($a->slug);
+                $cleanLocSlug = str_replace(' ', '-', $lookupLoc);
+                if ($aSlugLower === $cleanLocSlug || str_ends_with($aSlugLower, '-' . $cleanLocSlug)) {
+                    $areaDistrictId = $a->district_id ?? null;
+                    $divisionId = null;
+                    if ($areaDistrictId && isset($districtById[$areaDistrictId])) {
+                        $divisionId = $districtById[$areaDistrictId]->division_id ?? null;
+                    }
+                    $page->area_id     = $a->id;
+                    $page->district_id = $areaDistrictId;
+                    $page->division_id = $divisionId;
+                    $page->save();
+                    $mappedLocation++;
+                    $matchedFallback = true;
+                    break;
+                }
+            }
+
+            if (!$matchedFallback) {
+                $page->save();
+            }
         }
 
         $this->info("Data Context mapped for {$mappedLocation} Locations and {$mappedSpecialty} Specialties.");
