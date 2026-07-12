@@ -8,11 +8,11 @@
         <p class="text-sm text-gray-500 mt-1">Manage dynamic, programmatic SEO landing pages.</p>
     </div>
     <div class="flex items-center gap-3 flex-wrap">
-        <form action="{{ route('admin.seo-landing-pages.sync') }}" method="POST" onsubmit="return confirm('Are you sure you want to synchronize all 882 programmatic SEO pages?');">
+        <form action="{{ route('admin.seo-landing-pages.sync') }}" method="POST" onsubmit="return confirm('Are you sure you want to synchronize and auto-map Data Context for all programmatic SEO pages?');">
             @csrf
             <button type="submit" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-all shadow-sm flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                Sync 882 SEO Pages
+                ⚡ Sync & Map All Data Context
             </button>
         </form>
         <a href="{{ route('admin.seo-landing-pages.create') }}" class="px-4 py-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-all shadow-sm flex items-center gap-2">

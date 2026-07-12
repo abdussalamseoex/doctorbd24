@@ -15,6 +15,9 @@ class SeoLandingPageController extends Controller
 {
     public function index()
     {
+        if (SeoLandingPage::whereNull('division_id')->whereNull('specialty_id')->exists()) {
+            \Illuminate\Support\Facades\Artisan::call('seo:generate-programmatic-pages');
+        }
         $pages = SeoLandingPage::with(['specialty', 'division', 'district', 'area'])->latest()->paginate(20);
         return view('admin.seo-landing-pages.index', compact('pages'));
     }
@@ -91,6 +94,10 @@ class SeoLandingPageController extends Controller
 
     public function edit(SeoLandingPage $seoLandingPage)
     {
+        if (empty($seoLandingPage->specialty_id) && empty($seoLandingPage->division_id) && empty($seoLandingPage->district_id) && empty($seoLandingPage->area_id)) {
+            \Illuminate\Support\Facades\Artisan::call('seo:generate-programmatic-pages');
+            $seoLandingPage->refresh();
+        }
         $specialties = Specialty::all();
         $divisions = Division::all();
         $districts = District::all();

@@ -164,9 +164,9 @@
 
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6"
              x-data="{
-                 division_id: '{{ old('division_id', $page->division_id ?? '') }}',
-                 district_id: '{{ old('district_id', $page->district_id ?? '') }}',
-                 area_id: '{{ old('area_id', $page->area_id ?? '') }}',
+                 division_id: String('{{ old('division_id', $page->division_id ?? '') }}'),
+                 district_id: String('{{ old('district_id', $page->district_id ?? '') }}'),
+                 area_id: String('{{ old('area_id', $page->area_id ?? '') }}'),
                  districts: @js($districts->map(fn($d) => ['id' => $d->id, 'division_id' => $d->division_id, 'name' => $getCleanName($d->name)])->values()),
                  areas: @js($areas->map(fn($a) => ['id' => $a->id, 'district_id' => $a->district_id, 'name' => $getCleanName($a->name)])->values()),
                  get filteredDistricts() {
@@ -188,7 +188,14 @@
                          this.area_id = '';
                      }
                  }
-             }">
+             }"
+             x-init="
+                 $nextTick(() => {
+                     if (division_id) { $el.querySelector('select[name=\'division_id\']').value = division_id; }
+                     if (district_id) { $el.querySelector('select[name=\'district_id\']').value = district_id; }
+                     if (area_id) { $el.querySelector('select[name=\'area_id\']').value = area_id; }
+                 });
+             ">
             <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Data Context</h2>
             
             <div class="space-y-4">
@@ -217,7 +224,7 @@
                     <select name="division_id" x-model="division_id" @change="onDivisionChange()" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                         <option value="">Any Division</option>
                         @foreach($divisions as $division)
-                            <option value="{{ $division->id }}">{{ $getCleanName($division->name) }}</option>
+                            <option value="{{ $division->id }}" @selected(old('division_id', $page->division_id ?? '') == $division->id)>{{ $getCleanName($division->name) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -227,7 +234,7 @@
                     <select name="district_id" x-model="district_id" @change="onDistrictChange()" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                         <option value="">Any District</option>
                         <template x-for="item in filteredDistricts" :key="item.id">
-                            <option :value="item.id" x-text="item.name"></option>
+                            <option :value="item.id" :selected="String(item.id) === String(district_id)" x-text="item.name"></option>
                         </template>
                     </select>
                 </div>
@@ -237,7 +244,7 @@
                     <select name="area_id" x-model="area_id" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                         <option value="">Any Area</option>
                         <template x-for="item in filteredAreas" :key="item.id">
-                            <option :value="item.id" x-text="item.name"></option>
+                            <option :value="item.id" :selected="String(item.id) === String(area_id)" x-text="item.name"></option>
                         </template>
                     </select>
                 </div>
