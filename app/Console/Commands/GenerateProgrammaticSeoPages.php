@@ -61,6 +61,19 @@ class GenerateProgrammaticSeoPages extends Command
             $this->info("Deleted {$deletedZones} Zone pages and {$deletedHolders} placeholder specialty-care-unit pages.");
         }
 
+        // Step 1.5: Fix spelling discrepancies (migrate cumilla -> comilla to match official DB spelling)
+        $cumillaPages = SeoLandingPage::where('slug', 'like', '%cumilla%')->get();
+        foreach ($cumillaPages as $cPage) {
+            $newSlug = str_replace('cumilla', 'comilla', $cPage->slug);
+            if (!SeoLandingPage::where('slug', $newSlug)->exists()) {
+                $cPage->slug = $newSlug;
+                $cPage->keyword = str_replace('Cumilla', 'Comilla', $cPage->keyword);
+                $cPage->save();
+            } else {
+                $cPage->delete();
+            }
+        }
+
         // Step 2: Remove any slugs NOT in the manifest (cleanup orphaned pages)
         $validSlugs = array_column($slugManifest, 'slug');
         $deletedOrphans = SeoLandingPage::whereNotIn('slug', $validSlugs)->delete();
