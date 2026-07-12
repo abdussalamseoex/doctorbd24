@@ -248,12 +248,13 @@ class AIGeneratorController extends Controller
         }
 
         // Capture section before overriding $type for SEO Landing Pages
+        // Capture section before overriding $type for SEO Landing Pages
         $sectionDesc = 'General Content';
         $label = strtolower($context['field_label'] ?? '');
         if ($type === 'seo_page_content_top' || str_contains($label, 'top') || str_contains($label, 'intro')) {
-            $sectionDesc = 'Top Introduction Content (Hook the reader, introduce the topic)';
+            $sectionDesc = 'TOP SECTION (Above Directory Listings): Write a compelling, authoritative 300-400 word introduction & overview hooking Bangladeshi healthcare seekers. Explain key symptoms, when to seek care, and why choosing the right specialist matters. MUST embed 2-3 natural internal HTML links (e.g. <a href="/doctors" class="text-indigo-600 hover:underline">Doctor Directory</a>, <a href="/hospitals" class="text-indigo-600 hover:underline">Hospitals & Diagnostic Centers</a>).';
         } elseif ($type === 'seo_page_content_bottom' || str_contains($label, 'bottom') || str_contains($label, 'conclusion') || str_contains($label, 'faq')) {
-            $sectionDesc = 'Bottom Conclusion & FAQ Information (Summarize, answer questions)';
+            $sectionDesc = 'BOTTOM SECTION (Below Directory Listings): Write an in-depth 600-800 word comprehensive Patient Guide, Diagnostic & Treatment Overview, Costs/Booking Advice, and 3-4 highly searched FAQs with clear H2/H3 headings. MUST embed 3-4 internal HTML links to relevant directory pages (/doctors, /hospitals, /chambers, /contact-us) styled cleanly.';
         }
 
         // Ensure inline generateAiContent calls correctly map back to the unified type
@@ -301,6 +302,13 @@ class AIGeneratorController extends Controller
             
             if (!empty($lpContextParams)) {
                 $baseText .= "\n\nPlease heavily focus and optimize for the following localized context parameters:\n- " . implode("\n- ", $lpContextParams);
+            }
+
+            $targetLang = strtolower($context['language'] ?? 'English');
+            if ($targetLang === 'bengali' || $targetLang === 'bn' || $targetLang === 'bangla') {
+                $baseText .= "\n\nCRITICAL BANGLADESH SEARCH INTENT RULE: Write in authentic, natural Bangladeshi Bengali as searched on Google by people in Bangladesh. DO NOT write robotic word-for-word translation from English. Use natural terminology that Bangladeshi healthcare seekers use (mixing clear Bengali with familiar medical terms like কার্ডিওলজিস্ট, ইসিজি, ইকোকার্ডিওগ্রাম, চেম্বার, অ্যাপয়েন্টমেন্ট). MUST include HTML internal links to /doctors, /hospitals, /chambers styled with class=\"text-indigo-600 hover:underline\".";
+            } else {
+                $baseText .= "\n\nCRITICAL SEARCH INTENT RULE: Write in authoritative, highly informative English tailored for healthcare seekers in Bangladesh. MUST include HTML internal links to /doctors, /hospitals, /chambers styled with class=\"text-indigo-600 hover:underline\".";
             }
         }
 

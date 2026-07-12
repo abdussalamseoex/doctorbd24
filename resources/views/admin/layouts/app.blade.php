@@ -113,7 +113,7 @@
                     if (isset($item['role'])) {
                         $show = auth()->user()->hasRole($item['role']);
                     } else if (isset($item['permission'])) {
-                        $show = auth()->user()->hasPermissionTo($item['permission']) || auth()->user()->hasRole('admin');
+                        $show = auth()->user()->hasRole('admin') || auth()->user()->hasPermissionTo($item['permission']);
                     } else {
                         $show = true;
                     }
