@@ -125,9 +125,41 @@ class GenerateProgrammaticSeoPages extends Command
 
         $this->info("SUCCESS: {$count} Phase 1 Programmatic SEO Landing Pages synchronized!");
 
-        // Step 3: Auto-map Data Context (area_id, district_id, division_id) from live DB
+        // Step 3: Auto-map Data Context (specialty_id, area_id, district_id, division_id) from live DB
         $this->info("Auto-mapping Data Context from live database...");
-        $mapped = 0;
+        $mappedLocation = 0;
+        $mappedSpecialty = 0;
+
+        // Load specialties
+        $specialties = \DB::table('specialties')->select('id', 'name', 'slug')->get();
+        $specialtyMap = [];
+        $pluralToSlugMap = [
+            'cardiologists' => 'cardiology',
+            'gynecologists' => 'gynaecology',
+            'neurologists' => 'neurology',
+            'pediatricians' => 'childpaediatrics',
+            'orthopedic-surgeons' => 'orthopaedic-surgery',
+            'pulmonologists' => 'chest-medicine',
+            'rheumatologists' => 'rheumatology-medicine',
+            'hematologists' => 'haematology',
+            'physiotherapists' => 'physical-medicine',
+            'sexologists' => 'skindermatology',
+            'fertility-specialists' => 'infertility-gynae',
+            'liver-specialists' => 'liver-medicine',
+            'kidney-specialists' => 'nephrologykidney-medicine',
+            'colorectal-surgeons' => 'colorectal-surgery',
+            'thoracic-surgeons' => 'chest-medicine',
+            'vascular-surgeons' => 'vascular-surgery',
+            'pediatric-surgeons' => 'paediatric-surgery',
+            'neonatologists' => 'neonatal',
+            'allergists-immunologists' => 'medicine',
+            'medicine-specialists' => 'medicine',
+            'oncologists' => 'oncologycancer',
+        ];
+
+        foreach ($specialties as $s) {
+            $specialtyMap[strtolower($s->slug)] = $s->id;
+        }
 
         // Load all areas, districts, divisions — names are stored as JSON {"en":"...","bn":"..."}
         $areas     = \DB::table('areas')->select('id', 'name', 'district_id')->get();
@@ -162,14 +194,39 @@ class GenerateProgrammaticSeoPages extends Command
         foreach ($allPages as $page) {
             $slug = $page->slug;
             $locationName = null;
+            $specialtyName = null;
 
             if (str_starts_with($slug, 'doctors-in-')) {
                 $locationName = str_replace('-', ' ', substr($slug, 11));
             } elseif (str_starts_with($slug, 'hospitals-in-')) {
                 $locationName = str_replace('-', ' ', substr($slug, 13));
+            } else {
+                // E.g. cardiologists-in-dhaka or gynecologists
+                if (str_contains($slug, '-in-')) {
+                    $parts = explode('-in-', $slug);
+                    $specialtyName = $parts[0];
+                    $locationName = str_replace('-', ' ', $parts[1]);
+                } else {
+                    $specialtyName = $slug;
+                }
             }
 
-            if (!$locationName) continue;
+            $pageUpdated = false;
+
+            // Map Specialty
+            if ($specialtyName) {
+                $lookupSlug = $pluralToSlugMap[$specialtyName] ?? $specialtyName;
+                if (isset($specialtyMap[$lookupSlug])) {
+                    $page->specialty_id = $specialtyMap[$lookupSlug];
+                    $pageUpdated = true;
+                    $mappedSpecialty++;
+                }
+            }
+
+            if (!$locationName) {
+                if ($pageUpdated) $page->save();
+                continue;
+            }
 
             $locationLower = strtolower($locationName);
 
@@ -186,7 +243,7 @@ class GenerateProgrammaticSeoPages extends Command
                 $page->district_id = $areaDistrictId;
                 $page->division_id = $divisionId;
                 $page->save();
-                $mapped++;
+                $mappedLocation++;
                 continue;
             }
 
@@ -197,7 +254,7 @@ class GenerateProgrammaticSeoPages extends Command
                 $page->division_id = $district->division_id ?? null;
                 $page->area_id     = null;
                 $page->save();
-                $mapped++;
+                $mappedLocation++;
                 continue;
             }
 
@@ -208,11 +265,14 @@ class GenerateProgrammaticSeoPages extends Command
                 $page->district_id = null;
                 $page->area_id     = null;
                 $page->save();
-                $mapped++;
+                $mappedLocation++;
+            } else {
+                // If it didn't match location, but matched specialty, save it
+                if ($pageUpdated) $page->save();
             }
         }
 
-        $this->info("Data Context mapped for {$mapped} pages.");
+        $this->info("Data Context mapped for {$mappedLocation} Locations and {$mappedSpecialty} Specialties.");
         return 0;
     }
 
