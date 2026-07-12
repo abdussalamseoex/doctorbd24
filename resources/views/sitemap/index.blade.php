@@ -16,4 +16,8 @@
         <loc>{{ url('/sitemap/blog.xml') }}</loc>
         <lastmod>{{ now()->toAtomString() }}</lastmod>
     </sitemap>
+    <sitemap>
+        <loc>{{ url('/sitemap/seo-pages.xml') }}</loc>
+        <lastmod>{{ now()->toAtomString() }}</lastmod>
+    </sitemap>
 </sitemapindex>

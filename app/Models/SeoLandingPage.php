@@ -12,7 +12,7 @@ class SeoLandingPage extends Model
 {
     use HasFactory, Publishable, HasTranslations;
 
-    public $translatable = ['title', 'content_top', 'content_bottom'];
+    public $translatable = ['title', 'meta_title', 'meta_description', 'content_top', 'content_bottom'];
 
     protected $fillable = [
         'status', 'published_at',

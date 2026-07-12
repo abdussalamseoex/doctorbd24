@@ -28,7 +28,9 @@ class AIGeneratorController extends Controller
         $modelOverride = $request->input('model_override');
 
         try {
-            if ($modelOverride === 'gemini') {
+            if ($modelOverride === 'anthropic' || (str_starts_with((string)$modelOverride, 'claude'))) {
+                $content = $this->callAnthropic($prompt, str_starts_with((string)$modelOverride, 'claude') ? $modelOverride : null);
+            } elseif ($modelOverride === 'gemini') {
                 $content = $this->callGemini($prompt);
             } elseif ($modelOverride === 'custom') {
                 $content = $this->callOpenAI($prompt, 'custom_openai');
@@ -36,7 +38,9 @@ class AIGeneratorController extends Controller
                 $content = $this->callOpenAI($prompt, 'openai', $modelOverride);
             } else {
                 // Fallback to default configured
-                if ($provider === 'openai' || $provider === 'custom_openai') {
+                if ($provider === 'anthropic') {
+                    $content = $this->callAnthropic($prompt);
+                } elseif ($provider === 'openai' || $provider === 'custom_openai') {
                     $content = $this->callOpenAI($prompt, $provider);
                 } else {
                     $content = $this->callGemini($prompt);
@@ -110,7 +114,9 @@ class AIGeneratorController extends Controller
         $provider = Setting::get('ai_provider', 'openai');
 
         try {
-            if ($provider === 'openai' || $provider === 'custom_openai') {
+            if ($provider === 'anthropic') {
+                $content = $this->callAnthropic($promptText);
+            } elseif ($provider === 'openai' || $provider === 'custom_openai') {
                 $content = $this->callOpenAI($promptText, $provider);
             } else {
                 $content = $this->callGemini($promptText);
@@ -457,5 +463,42 @@ class AIGeneratorController extends Controller
 
         $data = $response->json();
         return trim($data['candidates'][0]['content']['parts'][0]['text'] ?? '');
+    }
+
+    private function callAnthropic($prompt, $forceModel = null)
+    {
+        $apiKey = Setting::get('anthropic_api_key');
+        if (!$apiKey) {
+            throw new \Exception("Anthropic Claude API key is missing. Please configure it in the AI Settings.");
+        }
+
+        $modelName = $forceModel ?: Setting::get('anthropic_model', 'claude-3-5-sonnet-20241022');
+
+        $request = Http::withHeaders([
+            'x-api-key' => $apiKey,
+            'anthropic-version' => '2023-06-01',
+            'content-type' => 'application/json',
+        ])->timeout(60);
+
+        if (app()->isLocal()) {
+            $request = $request->withoutVerifying();
+        }
+
+        $response = $request->post('https://api.anthropic.com/v1/messages', [
+            'model' => $modelName,
+            'max_tokens' => 4096,
+            'temperature' => 0.7,
+            'system' => 'You are an expert medical copywriter and SEO specialist.',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ]
+        ]);
+
+        if ($response->failed()) {
+            throw new \Exception("Anthropic API error: " . $response->body());
+        }
+
+        $data = $response->json();
+        return trim($data['content'][0]['text'] ?? '');
     }
 }

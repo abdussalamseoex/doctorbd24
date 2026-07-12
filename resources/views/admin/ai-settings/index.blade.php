@@ -24,18 +24,22 @@
             <div class="grid grid-cols-1 gap-6">
                 <div>
                     <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider block mb-3">Active AI Provider</label>
-                    <div class="flex gap-4">
+                    <div class="flex flex-wrap gap-4">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="radio" name="ai_provider" value="openai" class="text-sky-500 focus:ring-sky-500" {{ ($settings['ai_provider'] ?? 'openai') == 'openai' ? 'checked' : '' }}>
                             <span class="text-sm font-medium text-gray-800 dark:text-gray-200">OpenAI (ChatGPT)</span>
                         </label>
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="ai_provider" value="custom_openai" class="text-purple-500 focus:ring-purple-500" {{ ($settings['ai_provider'] ?? '') == 'custom_openai' ? 'checked' : '' }}>
-                            <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Custom API (OpenRouter / DeepSeek)</span>
+                            <input type="radio" name="ai_provider" value="anthropic" class="text-violet-500 focus:ring-violet-500" {{ ($settings['ai_provider'] ?? '') == 'anthropic' ? 'checked' : '' }}>
+                            <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Anthropic (Claude AI)</span>
                         </label>
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="radio" name="ai_provider" value="gemini" class="text-emerald-500 focus:ring-emerald-500" {{ ($settings['ai_provider'] ?? '') == 'gemini' ? 'checked' : '' }}>
                             <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Google Cloud (Gemini)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="ai_provider" value="custom_openai" class="text-purple-500 focus:ring-purple-500" {{ ($settings['ai_provider'] ?? '') == 'custom_openai' ? 'checked' : '' }}>
+                            <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Custom API (OpenRouter / DeepSeek)</span>
                         </label>
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Select which AI engine should be used across the dashboard to generate automatic descriptions and SEO metadata.</p>
@@ -80,6 +84,21 @@
                     <input type="password" name="gemini_api_key" value="{{ old('gemini_api_key', $settings['gemini_api_key'] ?? '') }}" 
                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 transition-all">
                 </div>
+
+                <div id="anthropic_credentials_section" class="hidden transition-opacity duration-300 space-y-4">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Anthropic Claude API Key (sk-ant-...)</label>
+                        <input type="password" name="anthropic_api_key" value="{{ old('anthropic_api_key', $settings['anthropic_api_key'] ?? '') }}" placeholder="Enter Anthropic API Key here..."
+                               class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Claude Model</label>
+                        <select name="anthropic_model" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
+                            <option value="claude-3-5-sonnet-20241022" {{ ($settings['anthropic_model'] ?? '') == 'claude-3-5-sonnet-20241022' ? 'selected' : '' }}>Claude 3.5 Sonnet (Best Quality)</option>
+                            <option value="claude-3-haiku-20240307" {{ ($settings['anthropic_model'] ?? '') == 'claude-3-haiku-20240307' ? 'selected' : '' }}>Claude 3 Haiku (Fast & Budget-Friendly)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -96,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const radios = document.querySelectorAll('input[name="ai_provider"]');
     const openaiSection = document.getElementById('openai_credentials_section');
     const geminiSection = document.getElementById('gemini_credentials_section');
+    const anthropicSection = document.getElementById('anthropic_credentials_section');
     const customFields = document.getElementById('custom_openai_fields');
     const openaiKeyLabel = document.getElementById('openai_key_label');
     const customHint = document.getElementById('custom_openai_hint');
@@ -109,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide all first
         openaiSection.classList.add('hidden');
         geminiSection.classList.add('hidden');
+        anthropicSection.classList.add('hidden');
         customFields.classList.remove('grid');
         customFields.classList.add('hidden');
         customHint.classList.add('hidden');
@@ -124,6 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
             customHint.classList.remove('hidden');
         } else if (selected === 'gemini') {
             geminiSection.classList.remove('hidden');
+        } else if (selected === 'anthropic') {
+            anthropicSection.classList.remove('hidden');
         }
     }
 

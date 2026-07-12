@@ -17,6 +17,7 @@ class PageController extends Controller
             
         if ($seoPage) {
             \SEO::setTitle($seoPage->meta_title ?: $seoPage->title);
+            \SEO::setCanonical(url()->current());
             if ($seoPage->meta_description) {
                 \SEO::setDescription($seoPage->meta_description);
             }

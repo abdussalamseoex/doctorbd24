@@ -1,8 +1,23 @@
 @php
     $page = $page ?? null;
 @endphp
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6" x-data="{ activeTab: 'en' }">
     <div class="lg:col-span-2 space-y-6">
+        <!-- Language Tab Buttons -->
+        <div class="flex gap-2 bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+            <button type="button" @click="activeTab = 'en'" 
+                    :class="activeTab === 'en' ? 'bg-violet-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                    class="px-5 py-2 rounded-xl text-sm font-bold transition-all focus:outline-none">
+                English [EN]
+            </button>
+            <button type="button" @click="activeTab = 'bn'" 
+                    :class="activeTab === 'bn' ? 'bg-emerald-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'" 
+                    class="px-5 py-2 rounded-xl text-sm font-bold transition-all focus:outline-none flex items-center gap-2">
+                বাংলা [BN]
+                <span class="text-[10px] bg-emerald-700/20 px-1.5 py-0.5 rounded text-white" x-show="activeTab === 'bn'">বাংলা পেজ</span>
+            </button>
+        </div>
+
         <!-- Main Content Box -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Page Information</h2>
@@ -11,12 +26,6 @@
                 <div>
                     <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Target Keyword *</label>
                     <input type="text" name="keyword" required value="{{ old('keyword', $page->keyword ?? '') }}" placeholder="e.g. Best Cardiologists in Dhaka"
-                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
-                </div>
-                
-                <div>
-                    <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Page Title (H1) *</label>
-                    <input type="text" name="title" required value="{{ old('title', $page->title ?? '') }}" placeholder="Top 10 Heart Specialists in Dhaka"
                            class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                 </div>
 
@@ -29,24 +38,62 @@
                     </div>
                 </div>
 
-                <div>
-                    <div class="flex justify-between items-center mb-1.5">
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Top Content (Intro)</label>
-                        <button type="button" onclick="generateAiContent('seo_page_content_top', 'tinymce:content_top', this)" class="text-[10px] bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-violet-200 transition-colors z-50 relative">
-                            ✨ Auto Generate
-                        </button>
+                <!-- ENGLISH CONTENT FIELDS -->
+                <div x-show="activeTab === 'en'" class="space-y-4">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Page Title (H1) [English] *</label>
+                        <input type="text" name="title[en]" value="{{ old('title.en', isset($page) ? $page->getTranslation('title', 'en', false) : '') }}" placeholder="Top 10 Heart Specialists in Dhaka"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                     </div>
-                    <textarea name="content_top" id="content_top" rows="6" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">{{ old('content_top', $page->content_top ?? '') }}</textarea>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Top Content (Intro) [English]</label>
+                            <button type="button" onclick="generateAiContent('seo_page_content_top', 'textarea[name=\'content_top[en]\']', this)" class="text-[10px] bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-violet-200 transition-colors z-50 relative">
+                                ✨ Auto Generate (EN)
+                            </button>
+                        </div>
+                        <textarea name="content_top[en]" id="content_top_en" rows="6" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">{{ old('content_top.en', isset($page) ? $page->getTranslation('content_top', 'en', false) : '') }}</textarea>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Bottom Content (Conclusion/FAQs) [English]</label>
+                            <button type="button" onclick="generateAiContent('seo_page_content_bottom', 'textarea[name=\'content_bottom[en]\']', this)" class="text-[10px] bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-violet-200 transition-colors z-50 relative">
+                                ✨ Auto Generate (EN)
+                            </button>
+                        </div>
+                        <textarea name="content_bottom[en]" id="content_bottom_en" rows="6" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">{{ old('content_bottom.en', isset($page) ? $page->getTranslation('content_bottom', 'en', false) : '') }}</textarea>
+                    </div>
                 </div>
 
-                <div>
-                    <div class="flex justify-between items-center mb-1.5">
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Bottom Content (Conclusion/FAQs textual)</label>
-                        <button type="button" onclick="generateAiContent('seo_page_content_bottom', 'tinymce:content_bottom', this)" class="text-[10px] bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-violet-200 transition-colors z-50 relative">
-                            ✨ Auto Generate
-                        </button>
+                <!-- BENGALI CONTENT FIELDS -->
+                <div x-show="activeTab === 'bn'" class="space-y-4" x-cloak>
+                    <div>
+                        <label class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block mb-1.5">শিরোনাম (H1) [বাংলা]</label>
+                        <input type="text" name="title[bn]" value="{{ old('title.bn', isset($page) ? $page->getTranslation('title', 'bn', false) : '') }}" placeholder="উত্তরায় সেরা হৃদরোগ বিশেষজ্ঞ ডাক্তার"
+                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">
                     </div>
-                    <textarea name="content_bottom" id="content_bottom" rows="6" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">{{ old('content_bottom', $page->content_bottom ?? '') }}</textarea>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block">উপরের বিবরণ (ভূমিকা) [বাংলা]</label>
+                            <button type="button" onclick="generateAiContent('seo_page_content_top', 'textarea[name=\'content_top[bn]\']', this, 'bn')" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors z-50 relative">
+                                ✨ বাংলায় জেনারেট করুন (AI)
+                            </button>
+                        </div>
+                        <textarea name="content_top[bn]" id="content_top_bn" rows="6" placeholder="এই এলাকার চিকিৎসাসেবা ও সিরিয়াল নেওয়ার নিয়ম..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">{{ old('content_top.bn', isset($page) ? $page->getTranslation('content_top', 'bn', false) : '') }}</textarea>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block">নিচের বিবরণ (প্রশ্ন ও উত্তর) [বাংলা]</label>
+                            <button type="button" onclick="generateAiContent('seo_page_content_bottom', 'textarea[name=\'content_bottom[bn]\']', this, 'bn')" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors z-50 relative">
+                                ✨ বাংলায় জেনারেট করুন (AI)
+                            </button>
+                        </div>
+                        <textarea name="content_bottom[bn]" id="content_bottom_bn" rows="6" placeholder="এই এলাকার ডাক্তারদের সিরিয়াল নেওয়ার সাধারণ প্রশ্নের উত্তর..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">{{ old('content_bottom.bn', isset($page) ? $page->getTranslation('content_bottom', 'bn', false) : '') }}</textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,21 +101,40 @@
         <!-- SEO Meta Box -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Search Engine Meta</h2>
-            <div class="space-y-4">
+            
+            <div x-show="activeTab === 'en'" class="space-y-4">
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Meta Title</label>
-                        <button type="button" onclick="generateAiContent('seo_title', 'input[name=\'meta_title\']', this)" class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-blue-200 transition-colors">✨ Auto Generate</button>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Meta Title [English]</label>
+                        <button type="button" onclick="generateAiContent('seo_title', 'input[name=\'meta_title[en]\']', this)" class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-blue-200 transition-colors">✨ Auto Generate (EN)</button>
                     </div>
-                    <input type="text" name="meta_title" value="{{ old('meta_title', $page->meta_title ?? '') }}" maxlength="60"
+                    <input type="text" name="meta_title[en]" value="{{ old('meta_title.en', isset($page) ? $page->getTranslation('meta_title', 'en', false) : '') }}" maxlength="60"
                            class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
-                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Meta Description</label>
-                        <button type="button" onclick="generateAiContent('seo_desc', 'textarea[name=\'meta_description\']', this)" class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-blue-200 transition-colors">✨ Auto Generate</button>
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block">Meta Description [English]</label>
+                        <button type="button" onclick="generateAiContent('seo_desc', 'textarea[name=\'meta_description[en]\']', this)" class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-blue-200 transition-colors">✨ Auto Generate (EN)</button>
                     </div>
-                    <textarea name="meta_description" rows="3" maxlength="160" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">{{ old('meta_description', $page->meta_description ?? '') }}</textarea>
+                    <textarea name="meta_description[en]" rows="3" maxlength="160" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">{{ old('meta_description.en', isset($page) ? $page->getTranslation('meta_description', 'en', false) : '') }}</textarea>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'bn'" class="space-y-4" x-cloak>
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block">মেটা টাইটেল [বাংলা]</label>
+                        <button type="button" onclick="generateAiContent('seo_title', 'input[name=\'meta_title[bn]\']', this, 'bn')" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors">✨ বাংলায় মেটা টাইটেল (AI)</button>
+                    </div>
+                    <input type="text" name="meta_title[bn]" value="{{ old('meta_title.bn', isset($page) ? $page->getTranslation('meta_title', 'bn', false) : '') }}" maxlength="60" placeholder="উত্তরায় সেরা হৃদরোগ বিশেষজ্ঞ ডাক্তার"
+                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block">মেটা বিবরণ [বাংলা]</label>
+                        <button type="button" onclick="generateAiContent('seo_desc', 'textarea[name=\'meta_description[bn]\']', this, 'bn')" class="text-[10px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 hover:bg-emerald-200 transition-colors">✨ বাংলায় মেটা বিবরণ (AI)</button>
+                    </div>
+                    <textarea name="meta_description[bn]" rows="3" maxlength="160" placeholder="উত্তরা এলাকার ভেরিফাইড বিশেষজ্ঞ ডাক্তারদের চেম্বার ও সিরিয়াল নম্বর..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">{{ old('meta_description.bn', isset($page) ? $page->getTranslation('meta_description', 'bn', false) : '') }}</textarea>
                 </div>
             </div>
         </div>

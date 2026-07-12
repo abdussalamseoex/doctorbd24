@@ -122,6 +122,7 @@ Route::get('/sitemap/doctors.xml', [\App\Http\Controllers\SitemapController::cla
 Route::get('/sitemap/hospitals.xml', [\App\Http\Controllers\SitemapController::class, 'hospitals']);
 Route::get('/sitemap/ambulances.xml', [\App\Http\Controllers\SitemapController::class, 'ambulances']);
 Route::get('/sitemap/blog.xml', [\App\Http\Controllers\SitemapController::class, 'blog']);
+Route::get('/sitemap/seo-pages.xml', [\App\Http\Controllers\SitemapController::class, 'seoPages']);
 
 Route::get('/robots.txt', function () {
     $default = "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /login\nDisallow: /register\n\nSitemap: " . url('/sitemap.xml') . "\n";

@@ -43,4 +43,11 @@ class SitemapController extends Controller
         $content = view('sitemap.blog', compact('posts'))->render();
         return response($content, 200)->header('Content-Type', 'application/xml');
     }
+
+    public function seoPages(): Response
+    {
+        $pages = \App\Models\SeoLandingPage::published()->select('id', 'slug', 'title', 'content_top', 'updated_at')->get();
+        $content = view('sitemap.seo-pages', compact('pages'))->render();
+        return response($content, 200)->header('Content-Type', 'application/xml');
+    }
 }
