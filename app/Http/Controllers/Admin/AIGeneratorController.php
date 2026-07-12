@@ -306,9 +306,9 @@ class AIGeneratorController extends Controller
 
             $targetLang = strtolower($context['language'] ?? 'English');
             if ($targetLang === 'bengali' || $targetLang === 'bn' || $targetLang === 'bangla') {
-                $baseText .= "\n\nCRITICAL BANGLADESH SEARCH INTENT RULE: Write in authentic, natural Bangladeshi Bengali as searched on Google by people in Bangladesh. DO NOT write robotic word-for-word translation from English. Use natural terminology that Bangladeshi healthcare seekers use (mixing clear Bengali with familiar medical terms like কার্ডিওলজিস্ট, ইসিজি, ইকোকার্ডিওগ্রাম, চেম্বার, অ্যাপয়েন্টমেন্ট). MUST include HTML internal links to /doctors, /hospitals, /chambers styled with class=\"text-indigo-600 hover:underline\".";
+                $baseText .= "\n\nCRITICAL BANGLADESHI BENGALI WRITING RULE: Write in 100% authentic, natural Bangladeshi Bengali journalism and medical writing style. STRICTLY PROHIBITED: Do NOT use robotic or literal English translations (NEVER write awkward phrases like 'যোগাযোগ এর পাতা'—use natural expressions like 'যোগাযোগ করুন', 'সিরিয়াল ও অ্যাপয়েন্টমেন্ট বুকিং', 'চেম্বার ও ভিজিট'). Keep familiar medical terms in natural Bengali script as Bangladeshi healthcare seekers expect (যেমন: কার্ডিওলজিস্ট, চেম্বার, ইসিজি, ইকোকার্ডিওগ্রাম, হাসপাতাল, ডায়াগনস্টিক সেন্টার).\n\nSTRICT OFFICIAL SITEMAP INTERNAL LINKING RULE: When adding internal links, you MUST ONLY use these verified official DoctorBD24 URLs: <a href=\"/doctors\" class=\"text-indigo-600 hover:underline font-medium\">বিশেষজ্ঞ ডাক্তার তালিকা</a>, <a href=\"/hospitals\" class=\"text-indigo-600 hover:underline font-medium\">হাসপাতাল ও ডায়াগনস্টিক সেন্টার</a>, <a href=\"/ambulances\" class=\"text-indigo-600 hover:underline font-medium\">অ্যাম্বুলেন্স সার্ভিস</a>, or <a href=\"/contact-us\" class=\"text-indigo-600 hover:underline font-medium\">যোগাযোগ ও সহায়তা</a>. DO NOT invent fake URLs.";
             } else {
-                $baseText .= "\n\nCRITICAL SEARCH INTENT RULE: Write in authoritative, highly informative English tailored for healthcare seekers in Bangladesh. MUST include HTML internal links to /doctors, /hospitals, /chambers styled with class=\"text-indigo-600 hover:underline\".";
+                $baseText .= "\n\nCRITICAL ENGLISH WRITING RULE: Write in clear, authoritative medical healthcare English tailored for patients in Bangladesh.\n\nSTRICT OFFICIAL SITEMAP INTERNAL LINKING RULE: When adding internal links, you MUST ONLY use these verified official DoctorBD24 URLs: <a href=\"/doctors\" class=\"text-indigo-600 hover:underline font-medium\">Doctor Directory</a>, <a href=\"/hospitals\" class=\"text-indigo-600 hover:underline font-medium\">Hospitals & Diagnostics</a>, <a href=\"/ambulances\" class=\"text-indigo-600 hover:underline font-medium\">Ambulance Services</a>, or <a href=\"/contact-us\" class=\"text-indigo-600 hover:underline font-medium\">Contact Us</a>. DO NOT invent fake URLs.";
             }
         }
 
@@ -480,7 +480,14 @@ class AIGeneratorController extends Controller
             throw new \Exception("Anthropic Claude API key is missing. Please configure it in the AI Settings.");
         }
 
-        $modelName = $forceModel ?: Setting::get('anthropic_model', 'claude-sonnet-5');
+        $modelSetting = $forceModel ?: Setting::get('anthropic_model', 'claude-sonnet-5');
+        if ($modelSetting === 'claude-haiku-4-5-20251001' || $modelSetting === 'claude-haiku-budget' || str_contains($modelSetting, 'haiku')) {
+            $modelName = 'claude-3-haiku-20240307'; // 12x cheaper (~$0.01 per full page)
+        } elseif ($modelSetting === 'claude-sonnet-4-6') {
+            $modelName = 'claude-3-sonnet-20240229';
+        } else {
+            $modelName = 'claude-3-5-sonnet-20241022'; // Default Sonnet 3.5
+        }
 
         $request = Http::withHeaders([
             'x-api-key' => $apiKey,
