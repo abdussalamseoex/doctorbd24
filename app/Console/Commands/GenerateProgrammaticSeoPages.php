@@ -201,6 +201,8 @@ class GenerateProgrammaticSeoPages extends Command
             'sadar barishal'    => 'barishal sadar',
             'sadar-cumilla'     => 'comilla sadar',
             'sadar cumilla'     => 'comilla sadar',
+            'sadar-comilla'     => 'comilla sadar',
+            'sadar comilla'     => 'comilla sadar',
             'sadar-coxs-bazar'  => "cox's bazar sadar",
             'sadar coxs bazar'  => "cox's bazar sadar",
             'cantonment'        => 'dhaka cantonment',
@@ -296,12 +298,26 @@ class GenerateProgrammaticSeoPages extends Command
         $divisionMap  = [];
         $districtById = [];
 
+        $spellingSynonyms = [
+            'chattogram' => 'chittagong', 'chittagong' => 'chattogram',
+            'cumilla' => 'comilla', 'comilla' => 'cumilla',
+            'jashore' => 'jessore', 'jessore' => 'jashore',
+            'jhalokati' => 'jhalokathi', 'jhalokathi' => 'jhalokati',
+            'khagrachari' => 'khagrachhari', 'khagrachhari' => 'khagrachari',
+            'barisal' => 'barishal', 'barishal' => 'barisal',
+            'bogra' => 'bogura', 'bogura' => 'bogra',
+            'coxs-bazar' => 'coxs bazar', 'coxs bazar' => 'coxs-bazar',
+        ];
+
         foreach ($areas as $a) {
             $decoded = json_decode($a->name, true);
             $enName  = strtolower(trim($decoded['en'] ?? $a->name));
             $areaMap[$enName] = $a;
             $areaMap[str_replace(' ', '-', $enName)] = $a;
             $areaMap[str_replace('-', ' ', $enName)] = $a;
+            if (isset($spellingSynonyms[$enName])) {
+                $areaMap[$spellingSynonyms[$enName]] = $a;
+            }
             if ($a->slug) {
                 $slugLower = strtolower($a->slug);
                 $areaMap[$slugLower] = $a;
@@ -309,6 +325,9 @@ class GenerateProgrammaticSeoPages extends Command
                 $lastSlug = end($parts);
                 if (!isset($areaMap[$lastSlug])) {
                     $areaMap[$lastSlug] = $a;
+                }
+                if (isset($spellingSynonyms[$lastSlug])) {
+                    $areaMap[$spellingSynonyms[$lastSlug]] = $a;
                 }
             }
         }
@@ -318,6 +337,9 @@ class GenerateProgrammaticSeoPages extends Command
             $districtMap[$enName] = $d;
             $districtMap[str_replace(' ', '-', $enName)] = $d;
             $districtMap[str_replace('-', ' ', $enName)] = $d;
+            if (isset($spellingSynonyms[$enName])) {
+                $districtMap[$spellingSynonyms[$enName]] = $d;
+            }
             if ($d->slug) {
                 $districtMap[strtolower($d->slug)] = $d;
             }
@@ -329,6 +351,9 @@ class GenerateProgrammaticSeoPages extends Command
             $divisionMap[$enName] = $dv;
             $divisionMap[str_replace(' ', '-', $enName)] = $dv;
             $divisionMap[str_replace('-', ' ', $enName)] = $dv;
+            if (isset($spellingSynonyms[$enName])) {
+                $divisionMap[$spellingSynonyms[$enName]] = $dv;
+            }
             if ($dv->slug) {
                 $divisionMap[strtolower($dv->slug)] = $dv;
             }
