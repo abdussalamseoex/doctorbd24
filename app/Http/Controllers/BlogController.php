@@ -23,7 +23,15 @@ class BlogController extends Controller
         if ($categorySlug) {
             $cat = BlogCategory::where('slug', $categorySlug)->first();
             if ($cat) {
-                $catName = $cat->getTranslation('name', app()->getLocale()) ?: $cat->name;
+                $rawName = $cat->name;
+                if (method_exists($cat, 'getTranslation')) {
+                    $catName = $cat->getTranslation('name', app()->getLocale()) ?: $rawName;
+                } elseif (is_string($rawName) && str_starts_with(trim($rawName), '{')) {
+                    $decoded = json_decode($rawName, true);
+                    $catName = $decoded[app()->getLocale()] ?? $decoded['bn'] ?? $decoded['en'] ?? $rawName;
+                } else {
+                    $catName = $rawName;
+                }
                 $title = "{$catName} ডক্টর ব্লগ";
                 $desc = "{$catName} সম্পর্কে আমাদের ডাক্তারদের দেওয়া পরামর্শ এবং আর্টিকেলগুলো পড়ুন।";
             }

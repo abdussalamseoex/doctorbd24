@@ -51,7 +51,12 @@ class GenerateProgrammaticSeoPages extends Command
             'Kaliakair' => 'কালিয়াকৈর', 'Kapasia' => 'কাপাসিয়া', 'Sripur' => 'শ্রীপুর',
             'Sadar Narayanganj' => 'নারায়ণগঞ্জ সদর', 'Fatullah' => 'ফতুল্লা', 'Siddhirganj' => 'সিদ্ধিরগঞ্জ',
             'Rupganj' => 'রূপগঞ্জ', 'Sonargaon' => 'সোনারগাঁও', 'Bandar Narayanganj' => 'বন্দর নারায়ণগঞ্জ',
-            'Sadar Coxs Bazar' => 'কক্সবাজার সদর', 'Ramu' => 'রামু', 'Ukhia' => 'উখিয়া'
+            'Sadar Coxs Bazar' => 'কক্সবাজার সদর', 'Ramu' => 'রামু', 'Ukhia' => 'উখিয়া',
+            'Comilla' => 'কুমিল্লা', 'Cumilla' => 'কুমিল্লা', 'Sadar Comilla' => 'কুমিল্লা সদর', 'Comilla Sadar' => 'কুমিল্লা সদর', 'Cumilla Sadar' => 'কুমিল্লা সদর',
+            'Narayanganj' => 'নারায়ণগঞ্জ', 'Narayanganj Sadar' => 'নারায়ণগঞ্জ সদর', 'Bandar' => 'বন্দর',
+            'Coxs Bazar' => 'কক্সবাজার', 'Coxs Bazar Sadar' => 'কক্সবাজার সদর', 'Gazipur' => 'গাজীপুর', 'Gazipur Sadar' => 'গাজীপুর সদর',
+            'Sylhet Sadar' => 'সিলেট সদর', 'Khulna Sadar' => 'খুলনা সদর', 'Rajshahi Sadar' => 'রাজশাহী সদর', 'Rangpur Sadar' => 'রংপুর সদর',
+            'Barishal Sadar' => 'বরিশাল সদর', 'Jashore' => 'যশোর', 'Jessore' => 'যশোর', 'Bogura' => 'বগুড়া', 'Bogra' => 'বগুড়া', 'Barisal' => 'বরিশাল'
         ];
 
         // Step 1: Delete Zone pages and placeholder specialty-care-unit pages that have no SEO value
@@ -63,15 +68,10 @@ class GenerateProgrammaticSeoPages extends Command
 
         // Step 1.5: Fix spelling discrepancies (migrate cumilla -> comilla to match official DB spelling)
         $cumillaPages = SeoLandingPage::where('slug', 'like', '%cumilla%')->get();
-        foreach ($cumillaPages as $cPage) {
-            $newSlug = str_replace('cumilla', 'comilla', $cPage->slug);
-            if (!SeoLandingPage::where('slug', $newSlug)->exists()) {
-                $cPage->slug = $newSlug;
-                $cPage->keyword = str_replace('Cumilla', 'Comilla', $cPage->keyword);
-                $cPage->save();
-            } else {
-                $cPage->delete();
-            }
+        foreach ($cumillaPages as $cp) {
+            $newSlug = str_replace('cumilla', 'comilla', $cp->slug);
+            $cp->slug = $newSlug;
+            $cp->save();
         }
 
         // Step 2: Remove any slugs NOT in the manifest (cleanup orphaned pages)
@@ -87,14 +87,11 @@ class GenerateProgrammaticSeoPages extends Command
             $slug = $manifest['slug'];
             $type = $manifest['type'] ?? (str_starts_with($slug, 'hospitals-in-') ? 'hospital' : 'doctor');
             $keyword = $manifest['keyword'] ?? '';
-            $title = $manifest['title'] ?? ['en' => $slug, 'bn' => $slug];
-            $metaTitle = $manifest['meta_title'] ?? $title;
-            $metaDescription = $manifest['meta_description'] ?? ['en' => '', 'bn' => ''];
 
             // Build content based on slug prefix
             if (str_starts_with($slug, 'doctors-in-')) {
                 $locEn = ucwords(str_replace('-', ' ', substr($slug, 11)));
-                $locBn = $bnLocMap[$locEn] ?? (preg_match('/^Zone (\d+)$/i', $locEn, $m) ? 'জোন ' . str_replace(['0','1','2','3','4','5','6','7','8','9'], ['০','১','২','৩','৪','৫','৬','৭','৮','৯'], $m[1]) : $locEn);
+                $locBn = $bnLocMap[$locEn] ?? $this->resolveBanglaLocationName($locEn, $bnLocMap);
                 $locBnPossessive = $this->toBanglaPossessive($locBn);
                 $keywordEn = "Doctors in {$locEn}";
                 $keywordBn = "{$locBnPossessive} সেরা বিশেষজ্ঞ ডাক্তার তালিকা";
@@ -104,7 +101,7 @@ class GenerateProgrammaticSeoPages extends Command
 
             } elseif (str_starts_with($slug, 'hospitals-in-')) {
                 $locEn = ucwords(str_replace('-', ' ', substr($slug, 13)));
-                $locBn = $bnLocMap[$locEn] ?? (preg_match('/^Zone (\d+)$/i', $locEn, $m) ? 'জোন ' . str_replace(['0','1','2','3','4','5','6','7','8','9'], ['০','১','২','৩','৪','৫','৬','৭','৮','৯'], $m[1]) : $locEn);
+                $locBn = $bnLocMap[$locEn] ?? $this->resolveBanglaLocationName($locEn, $bnLocMap);
                 $locBnPossessive = $this->toBanglaPossessive($locBn);
                 $keywordEn = "Hospitals in {$locEn}";
                 $keywordBn = "{$locBnPossessive} হাসপাতাল তালিকা";
@@ -114,11 +111,28 @@ class GenerateProgrammaticSeoPages extends Command
 
             } else {
                 $locEn = ucwords(str_replace('-', ' ', $slug));
+                $locBnPossessive = "বাংলাদেশের";
                 $keywordEn = "Best {$locEn} in Bangladesh";
                 $keywordBn = "বাংলাদেশে সেরা চিকিৎসক ডিরেক্টরি";
                 $contentTop    = ['en' => $this->buildEEATTopEnExact("Bangladesh", $keywordEn), 'bn' => $this->buildEEATTopBnExact("বাংলাদেশ", "বাংলাদেশের", $keywordBn)];
                 $contentBottom = ['en' => $this->buildEEATBottomEnExact("Bangladesh", $keywordEn), 'bn' => $this->buildEEATBottomBnExact("বাংলাদেশ", "বাংলাদেশের", $keywordBn)];
             }
+
+            $rawTitleEn = is_array($manifest['title'] ?? null) ? ($manifest['title']['en'] ?? $manifest['title']) : ($manifest['title'] ?? "Best Doctors in {$locEn} - Specialist Chamber & Appointment");
+            $rawTitleBn = is_array($manifest['title'] ?? null) ? ($manifest['title']['bn'] ?? null) : null;
+            if (!$rawTitleBn) {
+                if ($type === 'doctor') {
+                    $rawTitleBn = "{$locBnPossessive} সেরা বিশেষজ্ঞ ডাক্তার তালিকা - চেম্বার ও সিরিয়াল";
+                } elseif ($type === 'hospital') {
+                    $rawTitleBn = "{$locBnPossessive} সেরা হাসপাতাল ও ডায়াগনস্টিক সেন্টার তালিকা";
+                } else {
+                    $rawTitleBn = "{$locBnPossessive} সেরা স্বাস্থ্যসেবা ডিরেক্টরি";
+                }
+            }
+
+            $title = ['en' => $rawTitleEn, 'bn' => $rawTitleBn];
+            $metaTitle = $title;
+            $metaDescription = $manifest['meta_description'] ?? ['en' => '', 'bn' => ''];
 
             SeoLandingPage::updateOrCreate(
                 ['slug' => $slug],
@@ -526,6 +540,41 @@ class GenerateProgrammaticSeoPages extends Command
                 }
             }
         }
+    }
+
+    protected function resolveBanglaLocationName($locEn, $bnLocMap)
+    {
+        if (isset($bnLocMap[$locEn])) {
+            return $bnLocMap[$locEn];
+        }
+        foreach ($bnLocMap as $k => $v) {
+            if (strcasecmp($k, $locEn) === 0) {
+                return $v;
+            }
+        }
+        if (preg_match('/^Zone (\d+)$/i', $locEn, $m)) {
+            return 'জোন ' . str_replace(['0','1','2','3','4','5','6','7','8','9'], ['০','১','২','৩','৪','৫','৬','৭','৮','৯'], $m[1]);
+        }
+        if (preg_match('/^(Sadar\s+)(.+)$/i', $locEn, $m)) {
+            $subBn = $bnLocMap[trim($m[2])] ?? trim($m[2]);
+            return $subBn . ' সদর';
+        }
+        if (preg_match('/^(.+)(\s+Sadar)$/i', $locEn, $m)) {
+            $subBn = $bnLocMap[trim($m[1])] ?? trim($m[1]);
+            return $subBn . ' সদর';
+        }
+        // DB fallback lookup
+        $dbArea = \DB::table('areas')->where('slug', 'like', '%' . strtolower(str_replace(' ', '-', $locEn)) . '%')->first();
+        if ($dbArea) {
+            $dec = json_decode($dbArea->name, true);
+            if (!empty($dec['bn'])) return trim($dec['bn']);
+        }
+        $dbDist = \DB::table('districts')->where('slug', 'like', '%' . strtolower(str_replace(' ', '-', $locEn)) . '%')->first();
+        if ($dbDist) {
+            $dec = json_decode($dbDist->name, true);
+            if (!empty($dec['bn'])) return trim($dec['bn']);
+        }
+        return $locEn;
     }
 
     protected function toBanglaPossessive($bnWord)
