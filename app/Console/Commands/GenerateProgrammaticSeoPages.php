@@ -894,13 +894,24 @@ HTML;
         return <<<HTML
 <div class="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
     <p class="text-base sm:text-lg">
-        Finding an experienced and verified <strong>{$specEn}</strong> is crucial for accurate diagnosis and effective long-term treatment. DoctorBD24 provides a comprehensive directory of highly qualified specialists practicing across private chambers and modern clinics in <strong>{$locEn}</strong>, complete with direct appointment numbers and visiting schedules.
+        Finding an experienced and verified <strong>{$specEn}</strong> is crucial for accurate diagnosis and effective long-term clinical management. DoctorBD24 provides an authoritative and structured medical directory compiling leading practitioners across private chambers, specialized clinics, and diagnostic centers in <strong>{$locEn}</strong>, complete with direct serial phone numbers and visiting schedules.
     </p>
+
     <h2 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
-        Directory of Verified {$specEn} in {$locEn}
+        Complete Medical Directory Guide to Verified {$specEn} in {$locEn}
     </h2>
     <p class="text-sm sm:text-base">
-        When browsing our specialist directory, you can review each physician's academic credentials (MBBS, FCPS, MD, MS), hospital affiliations, consultation fees, and chamber timings. Whether you require initial evaluation or second opinions, our verified listings empower you to book serial appointments with confidence.
+        Navigating specialist appointments can be challenging when visiting hours, consultation fees, or doctor credentials are not transparently published. Our directory solves this challenge by organizing verified profiles of senior consultants practicing across premier medical institutions. Whether you require prompt consultation or second surgical opinions, exploring our portal ensures accurate scheduling data and verified contact lines.
+    </p>
+    <p class="text-sm sm:text-base">
+        Every profile listed under <strong>{$specEn}</strong> details essential clinical context, including academic qualifications (MBBS, FCPS, MD, MS, MRCP), hospital affiliations, standard visiting fees, and direct reception serial numbers. Patients can also explore our complete <a href="/doctors" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">National Doctor Directory</a>, compare diagnostic facilities via our <a href="/hospitals" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Hospital Directory</a>, or browse specialized healthcare articles in our <a href="/blog" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Medical Blog</a>.
+    </p>
+
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white pt-2">
+        Why Consult a Specialized Consultant Early?
+    </h3>
+    <p class="text-sm sm:text-base">
+        Early evaluation by a qualified specialist prevents disease progression and minimizes long-term complications. By connecting patients directly with recognized medical authorities, DoctorBD24 eliminates intermediary delays and empowers families to make informed healthcare decisions across <strong>{$locEn}</strong>.
     </p>
 </div>
 HTML;
@@ -918,7 +929,17 @@ HTML;
         {$locBnPossessive} সেরা {$specBn} ও চেম্বার সিরিয়াল বুকিং নির্দেশিকা
     </h2>
     <p class="text-sm sm:text-base">
-        আমাদের পোর্টালে তালিকাভুক্ত প্রতিটি <strong>{$specBn}</strong> প্রোফাইলে চিকিৎসকের শিক্ষাগত যোগ্যতা (যেমন: এমবিবিএস, এফসিপিএস, এমডি, এমএস), বর্তমান হাসপাতাল বা প্রতিষ্ঠানের পদবী, চেম্বারের সঠিক ঠিকানা, ভিজিট ফি এবং সরাসরি সিরিয়াল বুকিংয়ের হালনাগাদ ফোন নম্বর দেওয়া থাকে। কোনো ভুল বা পুরোনো তথ্য ছাড়াই আপনি সহজেই আপনার কাঙ্ক্ষিত চিকিৎসকের সিরিয়াল বুক করতে পারবেন।
+        ডাক্তারের চেম্বার সময়সূচি বা ভিজিট ফি জানা না থাকলে রোগীদের দীর্ঘক্ষণ অপেক্ষা করতে হতে পারে। আমাদের ডিরেক্টরিতে <strong>{$specBn}</strong> বিভাগে নিয়মিত রোগী দেখা চিকিৎসকদের বিস্তারিত তথ্য একত্রিত করা হয়েছে। আপনি যদি আপনার পরিবারের জন্য অভিজ্ঞ চিকিৎসকের সন্ধান করেন, আমাদের পোর্টাল থেকে সহজেই চেম্বারের সময়সূচি ও সিরিয়াল নম্বর জেনে নিতে পারবেন।
+    </p>
+    <p class="text-sm sm:text-base">
+        আমাদের ডিরেক্টরিতে তালিকাভুক্ত প্রতিটি প্রোফালে চিকিৎসকের শিক্ষাগত যোগ্যতা (এমবিবিএস, এফসিপিএস, এমডি, এমএস), কর্মস্থল, ভিজিট ফি এবং চেম্বারের সরাসরি ফোন নম্বর দেওয়া থাকে। রোগীরা চাইলে আমাদের <a href="/bn/doctors" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">জাতীয় ডাক্তার তালিকা</a>, বেসরকারি চিকিৎসা প্রতিষ্ঠানের জন্য <a href="/bn/hospitals" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">হাসপাতাল ডিরেক্টরি</a> অথবা স্বাস্থ্য সচেতনতামূলক আর্টিকেলের জন্য আমাদের <a href="/bn/blog" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">মেডিকেল ব্লগ</a> ভিজিট করতে পারেন।
+    </p>
+
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white pt-2">
+        বিএমডিসি স্বীকৃত চিকিৎসক ও প্রাথমিক পরামর্শের গুরুত্ব
+    </h3>
+    <p class="text-sm sm:text-base">
+        নিরাপদ ও সঠিক চিকিৎসার প্রধান শর্ত হলো যাচাইকৃত চিকিৎসক নির্বাচন করা। আমাদের ডিরেক্টরিতে তালিকাভুক্ত প্রতিটি প্রোফাইল বিএমডিসি (BMDC) রেজিস্ট্রেশন ও পেশাগত যোগ্যতার ভিত্তিতে উপস্থাপন করা হয়। রোগের প্রাথমিক পর্যায়েই একজন অভিজ্ঞ <strong>{$specBn}</strong>-এর পরামর্শ নিলে জটিলতা ও চিকিৎসার খরচ উভয়ই অনেকাংশে হ্রাস পায়।
     </p>
 </div>
 HTML;
@@ -929,11 +950,62 @@ HTML;
         return <<<HTML
 <div class="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed pt-6 border-t border-gray-200 dark:border-gray-700">
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        Complete Guide to Consulting a {$specEn} in {$locEn}
+        Comprehensive Clinical Guide: Preparing for Your {$specEn} Consultation
     </h2>
     <p class="text-sm sm:text-base">
-        Specialist consultations yield the best clinical outcomes when patients arrive organized. We recommend bringing your past prescriptions, medical history, and recent pathology reports to your appointment so the <strong>{$specEn}</strong> can make a rapid and informed assessment.
+        A successful consultation with a <strong>{$specEn}</strong> requires structured preparation. Physicians evaluate complex symptomatology by combining detailed patient clinical history with targeted physical examinations and diagnostic tests. Arriving prepared allows your consultant to make accurate clinical assessments without unnecessary diagnostic delays.
     </p>
+
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
+        1. Essential Diagnostic Reports & Document Checklist
+    </h3>
+    <p class="text-sm sm:text-base">
+        Before visiting a specialist chamber in <strong>{$locEn}</strong>, organize your medical records in chronological order. Bring all previous discharge notes, operative summaries, and prescription histories. Relevant pathology tests—such as complete blood counts, metabolic profiles, imaging scans (X-ray, Ultrasonography, CT, MRI), or specialized biopsies—should be carried in their original film or digital formats.
+    </p>
+
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
+        2. Understanding Consultation Fees & Serial Etiquette
+    </h3>
+    <p class="text-sm sm:text-base">
+        Consultation fees for a senior <strong>{$specEn}</strong> typically vary depending on academic qualification (Professor, Associate Professor, or Senior Consultant) and clinical experience. When calling the clinic reception desk listed in our directory, always confirm the first-visit consultation charge and follow-up report review policies. We advise arriving at the waiting room 20 to 30 minutes prior to your scheduled serial number.
+    </p>
+
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
+        3. Emergency Medical Navigation & Hospital Support
+    </h3>
+    <p class="text-sm sm:text-base">
+        Private specialist chambers operate exclusively for scheduled outpatient consultations and follow-up reviews. If a patient encounters acute life-threatening emergencies—such as acute chest distress, respiratory collapse, severe hemorrhage, or neurological trauma—immediate transfer to a 24-hour emergency hospital is vital. Families can explore our <a href="/hospitals" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Verified Hospital Directory</a> or contact immediate transport via our <a href="/ambulances" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">24/7 Ambulance Service Directory</a>.
+    </p>
+
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white pt-4">
+        Frequently Asked Questions (FAQ) About {$specEn}
+    </h2>
+    <div class="space-y-4 pt-2">
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">How do I book a serial appointment with a {$specEn}?</h4>
+            <p class="text-gray-600 dark:text-gray-400">You can call the verified chamber reception phone number provided on each doctor profile listed on DoctorBD24 to reserve your appointment serial.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">What should I bring to my first specialist consultation?</h4>
+            <p class="text-gray-600 dark:text-gray-400">Always bring your chronological prescription history, previous diagnostic reports, active medication lists, and valid identification.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">Are all specialists listed on DoctorBD24 verified by BMDC?</h4>
+            <p class="text-gray-600 dark:text-gray-400">Yes, every practitioner featured in our directory holds recognized postgraduate qualifications registered with the Bangladesh Medical & Dental Council (BMDC).</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">What is the standard consultation fee for a {$specEn}?</h4>
+            <p class="text-gray-600 dark:text-gray-400">Consultation fees generally range between BDT 800 and BDT 2,000 depending on physician seniority and institutional rank.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">Is follow-up report review free of charge?</h4>
+            <p class="text-gray-600 dark:text-gray-400">Many chambers offer discounted or complimentary report review sessions within a specific window (usually 7 to 14 days after the initial visit).</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">Can I consult a {$specEn} for pediatric or elderly family members?</h4>
+            <p class="text-gray-600 dark:text-gray-400">Yes, our directory includes sub-specialists experienced in treating pediatric, adult, and geriatric patient demographics.</p>
+        </div>
+    </div>
 </div>
 HTML;
     }
@@ -943,17 +1015,62 @@ HTML;
         return <<<HTML
 <div class="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed pt-6 border-t border-gray-200 dark:border-gray-700">
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        রোগীদের জন্য গাইড: কখন এবং কীভাবে একজন অভিজ্ঞ {$specBn} দেখাবেন?
+        রোগীদের জন্য পূর্ণাঙ্গ গাইড: একজন অভিজ্ঞ {$specBn} দেখানোর প্রস্তুতি ও নিয়মাবলী
     </h2>
     <p class="text-sm sm:text-base">
-        যেকোনো শারীরিক লক্ষণ বা প্রাথমিক টেস্টে জটিলতার ইঙ্গিত পেলে দেরি না করে একজন অভিজ্ঞ <strong>{$specBn}</strong>-এর পরামর্শ নেওয়া উচিত। চেম্বারে যাওয়ার পূর্বে আপনার আগের সব প্রেসক্রিপশন এবং ডায়াগনস্টিক রিপোর্ট গুছিয়ে সাথে রাখুন। এতে চিকিৎসক খুব দ্রুত ও সঠিকভাবে রোগ নির্ণয় করতে পারবেন।
+        সঠিক ও অভিজ্ঞ চিকিৎসক নির্বাচন এবং চেম্বারে যাওয়ার পূর্বে প্রয়োজনীয় প্রস্তুতি গ্রহণ করলে চিকিৎসার মান বহুগুণ বৃদ্ধি পায়। আপনারা যখন আমাদের ডিরেক্টরি থেকে <strong>{$specBn}</strong> অনুসন্ধান করেন, তখন শুধুমাত্র চেম্বারের দূরত্ব বিবেচনা না করে চিকিৎসকের বিশেষায়িত ক্ষেত্র, অভিজ্ঞতা এবং শিক্ষাগত যোগ্যতা যাচাই করে নেওয়া উচিত।
     </p>
+
     <h3 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
-        বিএমডিসি (BMDC) স্বীকৃত বিশেষজ্ঞ চিকিৎসক নির্বাচন
+        ১. প্রয়োজনীয় ডায়াগনস্টিক রিপোর্ট ও প্রেসক্রিপশন প্রস্তুতি
     </h3>
     <p class="text-sm sm:text-base">
-        DoctorBD24-এ তালিকাভুক্ত সকল <strong>{$specBn}</strong> বিএমডিসি (BMDC) স্বীকৃত এবং নিজ নিজ ক্ষেত্রে উচ্চতর ডিগ্রিধারী। চেম্বারে যাওয়ার পূর্বে অবশ্যই ফোন করে সিরিয়াল ও সময় নিশ্চিত করে নেওয়ার পরামর্শ দেওয়া হচ্ছে।
+        চেম্বারে যাওয়ার পূর্বে রোগীর অতীতের সকল প্রেসক্রিপশন, হাসপাতালের ছাড়পত্র এবং ডায়াগনস্টিক রিপোর্ট ক্রমানুসারে গুছিয়ে রাখুন। রক্ত পরীক্ষা, এক্স-রে, আল্ট্রাসাউন্ড বা এমআরআই রিপোর্ট সাথে থাকলে চিকিৎসক খুব দ্রুত ও সঠিকভাবে রোগের মূল কারণ নির্ণয় করতে সক্ষম হন।
     </p>
+
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
+        ২. ভিজিট ফি, সিরিয়াল বুকিং ও চেম্বার শৃঙ্খলা
+    </h3>
+    <p class="text-sm sm:text-base">
+        বেসরকারি চেম্বারগুলোতে চিকিৎসকের পদবী ও অভিজ্ঞতার ওপর ভিত্তি করে ভিজিট ফি নির্ধারিত হয়। আমাদের ডিরেক্টরিতে দেওয়া ফোন নম্বরে যোগাযোগ করে প্রথম ভিজিট ও রিপোর্ট দেখানোর ফি নিশ্চিত করে নিন। নির্ধারিত সিরিয়াল সময়ের অন্তত ২০-৩০ মিনিট পূর্বে চেম্বারে উপস্থিত থাকা বাঞ্ছনীয়।
+    </p>
+
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
+        ৩. জরুরি চিকিৎসা ও হাসপাতাল সহায়তা
+    </h3>
+    <p class="text-sm sm:text-base">
+        বিশেষজ্ঞ চিকিৎসকদের চেম্বার মূলত নিয়মিত ও নির্ধারিত রোগী দেখার জন্য পরিচালিত হয়। হঠাৎ তীব্র শ্বাসকষ্ট, বুকে ব্যথা বা বড় কোনো আঘাতের মতো জরুরি অবস্থায় রোগীকে কালক্ষেপণ না করে নিকটস্থ ২৪ ঘণ্টার জরুরি হাসপাতালে স্থানান্তর করা উচিত। প্রয়োজনে আমাদের <a href="/bn/hospitals" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">হাসপাতাল ডিরেক্টরি</a> অথবা <a href="/bn/ambulances" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">জরুরি অ্যাম্বুলেন্স ডিরেক্টরি</a> থেকে সাহায্য নিতে পারেন।
+    </p>
+
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white pt-4">
+        {$specBn} সম্পর্কিত সাধারণ জিজ্ঞাসা (FAQ)
+    </h2>
+    <div class="space-y-4 pt-2">
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">কীভাবে একজন অভিজ্ঞ {$specBn}-এর সিরিয়াল বুক করব?</h4>
+            <p class="text-gray-600 dark:text-gray-400">DoctorBD24 পোর্টালে তালিকাভুক্ত চিকিৎসকের প্রোফাইলে দেওয়া চেম্বারের সরাসরি রিসেপশন নম্বরে ফোন করে সহজেই সিরিয়াল বুক করা যায়।</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">প্রথম সাক্ষাতে ডাক্তারের কাছে কী কী কাগজপত্র নেওয়া প্রয়োজন?</h4>
+            <p class="text-gray-600 dark:text-gray-400">রোগীর পূর্ববর্তী সকল প্রেসক্রিপশন, প্যাথলজি বা ইমেজিং রিপোর্ট এবং চলমান ওষুধের তালিকা সাথে নেওয়া উচিত।</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">DoctorBD24-এর তালিকাভুক্ত চিকিৎসকরা কি বিএমডিসি স্বীকৃত?</h4>
+            <p class="text-gray-600 dark:text-gray-400">হ্যাঁ, আমাদের ডিরেক্টরিতে তালিকাভুক্ত প্রতিটি চিকিৎসক বাংলাদেশ মেডিকেল অ্যান্ড ডেন্টাল কাউন্সিল (BMDC) রেজিস্ট্রেশনপ্রাপ্ত উচ্চতর ডিগ্রিধারী।</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">একজন {$specBn}-এর ভিজিট ফি সাধারণত কত হয়?</h4>
+            <p class="text-gray-600 dark:text-gray-400">চিকিৎসকের অভিজ্ঞতা ও পদবীর ওপর ভিত্তি করে ভিজিট ফি সাধারণত ৮০০ টাকা থেকে ২,০০০ টাকা পর্যন্ত হয়ে থাকে।</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">রিপোর্ট দেখানোর জন্য কি আলাদা ফি দিতে হয়?</h4>
+            <p class="text-gray-600 dark:text-gray-400">অধিকাংশ চেম্বারেই নির্দিষ্ট সময়ের মধ্যে (সাধারণত ৭-১৪ দিন) রিপোর্ট দেখাতে গেলে কোনো ফি নেওয়া হয় না বা ছাড় দেওয়া হয়।</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-gray-900 dark:text-white">শিশু ও বয়স্ক রোগীদের জন্য কি আলাদা পরামর্শ পাওয়া যাবে?</h4>
+            <p class="text-gray-600 dark:text-gray-400">হ্যাঁ, আমাদের তালিকায় শিশু, প্রাপ্তবয়স্ক এবং বয়োজ্যেষ্ঠ রোগীদের জন্য অভিজ্ঞ চিকিৎসকদের তথ্য আলাদাভাবে উল্লেখ থাকে।</p>
+        </div>
+    </div>
 </div>
 HTML;
     }
