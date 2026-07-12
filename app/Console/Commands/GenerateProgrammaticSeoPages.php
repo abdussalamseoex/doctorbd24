@@ -157,8 +157,8 @@ class GenerateProgrammaticSeoPages extends Command
             'oncologists' => 'oncologycancer',
             'geriatricians' => 'medicine',
             'palliative-care-specialists' => 'medicine',
-            'radiologists' => 'radiology-imaging',
-            'anesthesiologists' => 'anaesthesiology',
+            'radiologists' => 'sonologist',
+            'anesthesiologists' => 'pain-management',
         ];
 
         $locationAliases = [
@@ -205,6 +205,66 @@ class GenerateProgrammaticSeoPages extends Command
             'sabujbagh'         => 'sabujbag',
             'green-road'        => 'green road',
             'gec-circle'        => 'gec circle',
+        ];
+
+        $locationToDistrictSlug = [
+            'panthapath'       => 'dhaka',
+            'green-road'       => 'dhaka',
+            'green road'       => 'dhaka',
+            'ramna'            => 'dhaka',
+            'kafrul'           => 'dhaka',
+            'pallabi'          => 'dhaka',
+            'wari'             => 'dhaka',
+            'gendaria'         => 'dhaka',
+            'adabar'           => 'dhaka',
+            'adabor'           => 'dhaka',
+            'sabujbagh'        => 'dhaka',
+            'sabujbag'         => 'dhaka',
+            'cantonment'       => 'dhaka',
+            'airport'          => 'dhaka',
+            'khilkhet'         => 'dhaka',
+            'vatara'           => 'dhaka',
+            'dakshinkhan'      => 'dhaka',
+            'turag'            => 'dhaka',
+            'gec-circle'       => 'chittagong',
+            'gec circle'       => 'chittagong',
+            'chawkbazar'       => 'chittagong',
+            'bakalia'          => 'chittagong',
+            'khulshi'          => 'chittagong',
+            'kotwali-ctg'      => 'chittagong',
+            'hathazari'        => 'chittagong',
+            'raozan'           => 'chittagong',
+            'chandanbaish'     => 'bogura',
+            'sherpur-bogura'   => 'bogura',
+            'zindabazar'       => 'sylhet',
+            'subidbazar'       => 'sylhet',
+            'sadar-sylhet'     => 'sylhet',
+            'sadar sylhet'     => 'sylhet',
+            'sadar-khulna'     => 'khulna',
+            'sadar khulna'     => 'khulna',
+            'khalishpur'       => 'khulna',
+            'sonadanga'        => 'khulna',
+            'khan-jahan-ali'   => 'khulna',
+            'khan jahan ali'   => 'khulna',
+            'sadar-rajshahi'   => 'rajshahi',
+            'sadar rajshahi'   => 'rajshahi',
+            'boalia'           => 'rajshahi',
+            'motihar'          => 'rajshahi',
+            'rajpara'          => 'rajshahi',
+            'shah-makhdum'     => 'rajshahi',
+            'shah makhdum'     => 'rajshahi',
+            'sadar-rangpur'    => 'rangpur',
+            'sadar rangpur'    => 'rangpur',
+            'tajhat'           => 'rangpur',
+            'mahiganj'         => 'rangpur',
+            'sadar-barishal'   => 'barishal',
+            'sadar barishal'   => 'barishal',
+            'adarsha-sadar'    => 'comilla',
+            'adarsha sadar'    => 'comilla',
+            'sadar-south'      => 'comilla',
+            'sadar south'      => 'comilla',
+            'fatullah'         => 'narayanganj',
+            'siddhirganj'      => 'narayanganj',
         ];
 
         foreach ($specialties as $s) {
@@ -362,8 +422,18 @@ class GenerateProgrammaticSeoPages extends Command
                 }
             }
 
+            // Ultimate Fallback: Assign parent District & Division explicitly
             if (!$matchedFallback) {
-                $page->save();
+                $fallbackDistKey = $locationToDistrictSlug[$locationLower] ?? ($locationToDistrictSlug[$lookupLoc] ?? null);
+                if ($fallbackDistKey && isset($districtMap[$fallbackDistKey])) {
+                    $dRec = $districtMap[$fallbackDistKey];
+                    $page->district_id = $dRec->id;
+                    $page->division_id = $dRec->division_id ?? null;
+                    $page->save();
+                    $mappedLocation++;
+                } else {
+                    $page->save();
+                }
             }
         }
 
