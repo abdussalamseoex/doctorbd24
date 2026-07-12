@@ -164,4 +164,10 @@ class SeoLandingPageController extends Controller
         $seoLandingPage->delete();
         return redirect()->route('admin.seo-landing-pages.index')->with('success', 'SEO Page deleted successfully.');
     }
+
+    public function syncAll()
+    {
+        \Illuminate\Support\Facades\Artisan::call('seo:generate-programmatic-pages');
+        return redirect()->route('admin.seo-landing-pages.index')->with('success', 'All 882 Programmatic SEO Landing Pages synchronized successfully!');
+    }
 }

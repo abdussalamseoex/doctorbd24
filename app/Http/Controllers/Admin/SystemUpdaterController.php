@@ -184,6 +184,10 @@ class SystemUpdaterController extends Controller
             Artisan::call('migrate', ['--force' => true]);
             $outputLog .= Artisan::output() . "\n";
 
+            $outputLog .= "> Synchronizing Programmatic SEO Landing Pages (882 Pages)...\n";
+            Artisan::call('seo:generate-programmatic-pages');
+            $outputLog .= Artisan::output() . "\n";
+
             $outputLog .= "> Clearing Application Caches...\n";
             Artisan::call('optimize:clear');
             if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {

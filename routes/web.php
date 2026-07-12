@@ -257,6 +257,7 @@ Route::prefix('admin')
         Route::post('ai/save-prompts', [\App\Http\Controllers\Admin\AIGeneratorController::class, 'savePrompts'])->name('ai.save-prompts');
 
         // Programmatic SEO
+        Route::post('seo-landing-pages/sync-all', [\App\Http\Controllers\Admin\SeoLandingPageController::class, 'syncAll'])->name('seo-landing-pages.sync')->middleware('permission:manage settings');
         Route::resource('seo-landing-pages', \App\Http\Controllers\Admin\SeoLandingPageController::class)->middleware('permission:manage settings');
 
         // Activity Logs
