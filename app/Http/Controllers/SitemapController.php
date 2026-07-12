@@ -44,10 +44,19 @@ class SitemapController extends Controller
         return response($content, 200)->header('Content-Type', 'application/xml');
     }
 
-    public function seoPages(): Response
+    public function pagesEn(): Response
     {
-        $pages = \App\Models\SeoLandingPage::published()->select('id', 'slug', 'title', 'content_top', 'updated_at')->get();
-        $content = view('sitemap.seo-pages', compact('pages'))->render();
+        $seoPages = \App\Models\SeoLandingPage::published()->select('id', 'slug', 'title', 'content_top', 'updated_at')->get();
+        $staticPages = \App\Models\Page::published()->select('id', 'slug', 'title', 'updated_at')->get();
+        $content = view('sitemap.pages-en', compact('seoPages', 'staticPages'))->render();
+        return response($content, 200)->header('Content-Type', 'application/xml');
+    }
+
+    public function pagesBn(): Response
+    {
+        $seoPages = \App\Models\SeoLandingPage::published()->select('id', 'slug', 'title', 'content_top', 'updated_at')->get();
+        $staticPages = \App\Models\Page::published()->select('id', 'slug', 'title', 'updated_at')->get();
+        $content = view('sitemap.pages-bn', compact('seoPages', 'staticPages'))->render();
         return response($content, 200)->header('Content-Type', 'application/xml');
     }
 }
