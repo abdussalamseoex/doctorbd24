@@ -110,18 +110,40 @@ class GenerateProgrammaticSeoPages extends Command
                 $contentBottom = ['en' => $this->buildEEATBottomEnExact($locEn, $keywordEn), 'bn' => $this->buildEEATBottomBnExact($locBn, $locBnPossessive, $keywordBn)];
 
             } else {
-                $locEn = ucwords(str_replace('-', ' ', $slug));
+                // Specialty or Specialty-in-Location Page
+                $specSlug = $slug;
+                $locEn = "Bangladesh";
+                $locBn = "বাংলাদেশ";
                 $locBnPossessive = "বাংলাদেশের";
-                $keywordEn = "Best {$locEn} in Bangladesh";
-                $keywordBn = "বাংলাদেশে সেরা চিকিৎসক ডিরেক্টরি";
-                $contentTop    = ['en' => $this->buildEEATTopEnExact("Bangladesh", $keywordEn), 'bn' => $this->buildEEATTopBnExact("বাংলাদেশ", "বাংলাদেশের", $keywordBn)];
-                $contentBottom = ['en' => $this->buildEEATBottomEnExact("Bangladesh", $keywordEn), 'bn' => $this->buildEEATBottomBnExact("বাংলাদেশ", "বাংলাদেশের", $keywordBn)];
+
+                if (str_contains($slug, '-in-')) {
+                    $parts = explode('-in-', $slug, 2);
+                    $specSlug = $parts[0];
+                    $locSlug = $parts[1];
+                    $locEn = ucwords(str_replace('-', ' ', $locSlug));
+                    $locBn = $bnLocMap[$locEn] ?? $this->resolveBanglaLocationName($locEn, $bnLocMap);
+                    $locBnPossessive = $this->toBanglaPossessive($locBn);
+                }
+
+                $specInfo = $this->getSpecialtyInfo($specSlug);
+                $specEn = $specInfo['en'];
+                $specBn = $specInfo['bn'];
+                $descBn = $specInfo['desc_bn'];
+
+                $keywordEn = "Best {$specEn} in {$locEn}";
+                $keywordBn = "{$locBnPossessive} সেরা {$specBn}";
+                $type = 'doctor';
+
+                $contentTop    = ['en' => $this->buildSpecialtyTopEn($specEn, $locEn), 'bn' => $this->buildSpecialtyTopBn($specBn, $descBn, $locBn, $locBnPossessive)];
+                $contentBottom = ['en' => $this->buildSpecialtyBottomEn($specEn, $locEn), 'bn' => $this->buildSpecialtyBottomBn($specBn, $locBn, $locBnPossessive)];
             }
 
             $rawTitleEn = is_array($manifest['title'] ?? null) ? ($manifest['title']['en'] ?? $manifest['title']) : ($manifest['title'] ?? "Best Doctors in {$locEn} - Specialist Chamber & Appointment");
             $rawTitleBn = is_array($manifest['title'] ?? null) ? ($manifest['title']['bn'] ?? null) : null;
             if (!$rawTitleBn) {
-                if ($type === 'doctor') {
+                if (isset($specBn)) {
+                    $rawTitleBn = "{$locBnPossessive} সেরা {$specBn} তালিকা - চেম্বার ও সিরিয়াল";
+                } elseif ($type === 'doctor') {
                     $rawTitleBn = "{$locBnPossessive} সেরা বিশেষজ্ঞ ডাক্তার তালিকা - চেম্বার ও সিরিয়াল";
                 } elseif ($type === 'hospital') {
                     $rawTitleBn = "{$locBnPossessive} সেরা হাসপাতাল ও ডায়াগনস্টিক সেন্টার তালিকা";
@@ -816,6 +838,122 @@ HTML;
             <p class="text-gray-600 dark:text-gray-400">নিজ এলাকায় বা <strong>{$locBnPossessive} চেম্বারে</strong> ডাক্তার দেখালে রোগীর যাতায়াত কষ্ট কমে যায় এবং পরবর্তী ফলোআপ ও পরামর্শের জন্য সহজেই চিকিৎসকের সাথে যোগাযোগ রাখা সম্ভব হয়।</p>
         </div>
     </div>
+</div>
+HTML;
+    }
+
+    protected function getSpecialtyInfo($slug)
+    {
+        $map = [
+            'cardiologists' => ['en' => 'Cardiologists & Heart Specialists', 'bn' => 'হৃদরোগ ও কার্ডিওলজি বিশেষজ্ঞ', 'desc_bn' => 'বুকের ব্যথা, হার্ট অ্যাটাক, উচ্চ রক্তচাপ বা হার্ট ব্লকের মতো জটিল সমস্যায় অভিজ্ঞ কার্ডিওলজিস্ট ও হার্ট স্পেশালিস্টদের পরামর্শ ও চেম্বার সিরিয়াল।'],
+            'gynecologists' => ['en' => 'Gynecologists & Obstetricians', 'bn' => 'গাইনি ও প্রসূতি রোগ বিশেষজ্ঞ', 'desc_bn' => 'গর্ভাবস্থায় যত্ন, প্রসূতি সেবা, অনিয়মিত মাসিক এবং নারীদের জটিল সমস্যা সমাধানে দেশের শীর্ষ গাইনি ও প্রসূতি বিশেষজ্ঞদের চেম্বার ও সিরিয়াল।'],
+            'pediatricians' => ['en' => 'Pediatric & Child Specialists', 'bn' => 'শিশু ও নবজাতক রোগ বিশেষজ্ঞ', 'desc_bn' => 'শিশুদের জ্বর, নিউমোনিয়া, অপুষ্টি, বৃদ্ধিজনিত সমস্যা বা নবজাতকের যেকোনো জটিলতায় অভিজ্ঞ শিশু বিশেষজ্ঞদের সিরিয়াল।'],
+            'neurologists' => ['en' => 'Neurologists & Brain Specialists', 'bn' => 'স্নায়ুরোগ ও নিউরোলজি বিশেষজ্ঞ', 'desc_bn' => 'মাথাব্যথা, মাইগ্রেন, স্ট্রোক, মৃগী রোগ, প্যারালাইসিস ও স্নায়বিক সমস্যায় দেশের শীর্ষ নিউরোলজিস্টদের চেম্বার ও সিরিয়াল।'],
+            'medicine-specialists' => ['en' => 'Internal Medicine Specialists', 'bn' => 'ইন্টারনাল মেডিসিন বিশেষজ্ঞ', 'desc_bn' => 'জ্বর, ডায়াবেটিস, উচ্চ রক্তচাপ এবং শরীরের যেকোনো জটিল বা অস্পষ্ট শারীরিক সমস্যায় মেডিসিন বিশেষজ্ঞদের চেম্বার ও সিরিয়াল।'],
+            'orthopedic-surgeons' => ['en' => 'Orthopedic & Bone Specialists', 'bn' => 'হাড়, জোড়া ও বাতব্যথা (অর্থোপেডিক) বিশেষজ্ঞ', 'desc_bn' => 'হাড় ভাঙা, জয়েন্ট পেইন, মেরুদণ্ডের ব্যথা বা আর্থ্রাইটিস সমস্যায় অভিজ্ঞ অর্থোপেডিক সার্জনদের চেম্বার ও সিরিয়াল।'],
+            'dermatologists' => ['en' => 'Dermatologists & Skin Specialists', 'bn' => 'চর্ম, যৌন ও অ্যালার্জি রোগ বিশেষজ্ঞ', 'desc_bn' => 'ত্বকের দাগ, চুল পড়া, অ্যালার্জি, একজিমা এবং যেকোনো চর্ম ও যৌন সমস্যার চিকিৎসায় অভিজ্ঞ ডার্মাটোলজিস্টদের সিরিয়াল।'],
+            'ent-specialists' => ['en' => 'ENT (Ear, Nose & Throat) Specialists', 'bn' => 'নাক, কান ও গলা (ইএনটি) বিশেষজ্ঞ', 'desc_bn' => 'কানে কম শোনা, সাইনাস, টনসিল বা গলার যেকোনো সমস্যায় নাক-কান-গলা বিশেষজ্ঞদের চেম্বার ও সিরিয়াল।'],
+            'urologists' => ['en' => 'Urology Specialists', 'bn' => 'কিডনি, মূত্রনালী ও ইউরোলজি বিশেষজ্ঞ', 'desc_bn' => 'মূত্রনালীর ইনফেকশন, প্রস্টেট সমস্যা বা কিডনির পাথরে অভিজ্ঞ ইউরোলজিস্টদের চেম্বার ও সিরিয়াল।'],
+            'nephrologists' => ['en' => 'Nephrologists & Kidney Specialists', 'bn' => 'কিডনি রোগ (নেফ্রোলজি) বিশেষজ্ঞ', 'desc_bn' => 'কিডনি বিকল, ডায়ালাইসিস এবং জটিল কিডনি সমস্যায় দেশের শীর্ষ নেফ্রোলজিস্টদের চেম্বার ও সিরিয়াল।'],
+            'gastroenterologists' => ['en' => 'Gastroenterologists & Liver Specialists', 'bn' => 'পেট, লিভার ও পরিপাকতন্ত্র (গ্যাস্ট্রোএন্টারোলজি) বিশেষজ্ঞ', 'desc_bn' => 'গ্যাস্ট্রিক, আলসার, লিভার বা পরিপাকতন্ত্রের যেকোনো জটিল সমস্যায় অভিজ্ঞ গ্যাস্ট্রোএন্টারোলজিস্টদের সিরিয়াল।'],
+            'psychiatrists' => ['en' => 'Psychiatrists & Mental Health Specialists', 'bn' => 'মানসিক রোগ ও মনোরোগ (সাইকিয়াট্রি) বিশেষজ্ঞ', 'desc_bn' => 'ডিপ্রেশন, উদ্বেগ, ওসিডি বা মানসিক স্বাস্থ্যের যেকোনো সমস্যায় অভিজ্ঞ মনোরোগ বিশেষজ্ঞদের চেম্বার ও সিরিয়াল।'],
+            'oncologists' => ['en' => 'Cancer Specialists (Oncology)', 'bn' => 'ক্যান্সার ও টিউমার (অনকোলজি) বিশেষজ্ঞ', 'desc_bn' => 'ক্যান্সার নির্ণয়, কেমোথেরাপি এবং রেডিওথেরাপিতে অভিজ্ঞ ক্যান্সার বিশেষজ্ঞদের চেম্বার ও সিরিয়াল।'],
+            'endocrinologists' => ['en' => 'Endocrinology & Diabetes Specialists', 'bn' => 'ডায়াবেটিস ও হরমোন রোগ (এন্ডোক্রাইনোলজি) বিশেষজ্ঞ', 'desc_bn' => 'ডায়াবেটিস, থাইরয়েড ও হরমোনজনিত যেকোনো জটিলতায় অভিজ্ঞ এন্ডোক্রাইনোলজিস্টদের চেম্বার ও সিরিয়াল।'],
+            'pulmonologists' => ['en' => 'Pulmonology & Chest Specialists', 'bn' => 'বক্ষব্যাধি, হাঁপানি ও ফুসফুস বিশেষজ্ঞ', 'desc_bn' => 'হাঁপানি, শ্বাসকষ্ট, নিউমোনিয়া বা ফুসফুসের যেকোনো রোগে অভিজ্ঞ বক্ষব্যাধি বিশেষজ্ঞদের চেম্বার ও সিরিয়াল।'],
+            'ophthalmologists' => ['en' => 'Eye Specialists & Surgeons', 'bn' => 'চক্ষু রোগ বিশেষজ্ঞ ও সার্জন', 'desc_bn' => 'চোখে ঝাপসা দেখা, ছানি পড়া বা যেকোনো চোখের সমস্যায় দেশের শীর্ষ চক্ষু বিশেষজ্ঞদের চেম্বার ও সিরিয়াল।'],
+            'dentists' => ['en' => 'Dental Surgeons & Specialists', 'bn' => 'দন্ত রোগ বিশেষজ্ঞ ও ডেন্টাল সার্জন', 'desc_bn' => 'দাঁতের ব্যথা, রুট ক্যানেল বা ডেন্টাল ইমপ্ল্যান্টে অভিজ্ঞ ডেন্টিস্ট ও ডেন্টাল সার্জনদের চেম্বার ও সিরিয়াল।'],
+            'general-surgeons' => ['en' => 'General Surgeons', 'bn' => 'জেনারেল ও ল্যাপারোস্কোপিক সার্জন', 'desc_bn' => 'অ্যাপেন্ডিসাইটিস, গলব্লাডার পাথর, হার্নিয়া ও যেকোনো অস্ত্রোপচারে অভিজ্ঞ সার্জনদের চেম্বার ও সিরিয়াল।'],
+            'neurosurgeons' => ['en' => 'Neurosurgeons', 'bn' => 'মস্তিষ্ক ও মেরুদণ্ড সার্জন (নিউরসার্জন)', 'desc_bn' => 'ব্রেন টিউমার, স্পাইনাল কর্ড ইনজুরি ও মেরুদণ্ডের অস্ত্রোপচারে অভিজ্ঞ নিউরোসার্জনদের সিরিয়াল।'],
+            'plastic-surgeons' => ['en' => 'Plastic & Cosmetic Surgeons', 'bn' => 'প্লাস্টিক ও কসমেটিক সার্জন', 'desc_bn' => 'পোড়া ঘা, কসমেটিক সার্জারি ও পুনর্গঠনমূলক অস্ত্রোপচারে অভিজ্ঞ প্লাস্টিক সার্জনদের চেম্বার ও সিরিয়াল।'],
+            'rheumatologists' => ['en' => 'Rheumatology Specialists', 'bn' => 'বাত রোগ ও রিউমাটোলজি বিশেষজ্ঞ', 'desc_bn' => 'রিউমাটয়েড আর্থ্রাইটিস, লুপাস বা যেকোনো জটিল বাতের ব্যথায় অভিজ্ঞ রিউমাটোলজিস্টদের সিরিয়াল।'],
+            'hematologists' => ['en' => 'Hematologists', 'bn' => 'রক্তরোগ (হেমাটোলজি) বিশেষজ্ঞ', 'desc_bn' => 'রক্তশূন্যতা, থ্যালাসেমিয়া বা রক্তের যেকোনো জটিল রোগে অভিজ্ঞ হেমাটোলজিস্টদের চেম্বার ও সিরিয়াল।'],
+            'pain-medicine-specialists' => ['en' => 'Pain Medicine Specialists', 'bn' => 'পেইন মেডিসিন ও দীর্ঘস্থায়ী ব্যথা বিশেষজ্ঞ', 'desc_bn' => 'দীর্ঘস্থায়ী কোমর ব্যথা, ঘাড় ব্যথা ও নার্ভের ব্যথায় অভিজ্ঞ পেইন ম্যানেজমেন্ট বিশেষজ্ঞদের সিরিয়াল।'],
+            'physiotherapists' => ['en' => 'Physiotherapists & Rehab Specialists', 'bn' => 'ফিজিওথেরাপি ও রিহ্যাবিলিটেশন বিশেষজ্ঞ', 'desc_bn' => 'প্যারালাইসিস বা আঘাত পরবর্তী পুনর্বাসন ও ফিজিওথেরাপির জন্য অভিজ্ঞ বিশেষজ্ঞদের সিরিয়াল।'],
+            'nutritionists-dietitians' => ['en' => 'Nutritionists & Dietitians', 'bn' => 'পুষ্টিবিদ ও ডায়েট বিশেষজ্ঞ', 'desc_bn' => 'ওজন নিয়ন্ত্রণ, ডায়াবেটিস ডায়েট ও সঠিক পুষ্টি পরিকল্পনার জন্য অভিজ্ঞ পুষ্টিবিদদের পরামর্শ।'],
+            'sexologists' => ['en' => 'Sexologists', 'bn' => 'যৌন স্বাস্থ্য ও সেক্সোলজি বিশেষজ্ঞ', 'desc_bn' => 'যৌন স্বাস্থ্য সমস্যা ও দাম্পত্য জীবনের যেকোনো জটিলতায় অভিজ্ঞ সেক্সোলজিস্টদের পরামর্শ।'],
+            'fertility-specialists' => ['en' => 'Infertility & IVF Specialists', 'bn' => 'বন্ধ্যাত্ব ও আইভিএফ (IVF) বিশেষজ্ঞ', 'desc_bn' => 'সন্তানহীনতা বা বন্ধ্যাত্ব সমস্যায় অভিজ্ঞ ও সফল ফার্টিলিটি ও আইভিএফ বিশেষজ্ঞদের চেম্বার সিরিয়াল।'],
+            'liver-specialists' => ['en' => 'Hepatologists & Liver Specialists', 'bn' => 'লিভার ও হেপাটাইটিস রোগ বিশেষজ্ঞ', 'desc_bn' => 'জন্ডিস, হেপাটাইটিস, ফ্যাটি লিভার বা লিভার সিরোসিসে অভিজ্ঞ হেপাটোলজিস্টদের সিরিয়াল।'],
+            'kidney-specialists' => ['en' => 'Kidney Specialists', 'bn' => 'কিডনি রোগ বিশেষজ্ঞ', 'desc_bn' => 'কিডনি রোগ ও ডায়ালাইসিস ব্যবস্থাপনায় অভিজ্ঞ কিডনি স্পেশালিস্টদের চেম্বার সিরিয়াল।'],
+            'colorectal-surgeons' => ['en' => 'Colorectal Surgeons', 'bn' => 'পাইলস, ফিস্টুলা ও কোলোরেক্টাল সার্জন', 'desc_bn' => 'পাইলস, ফিশার, ফিস্টুলা ও মলদ্বারের যেকোনো সমস্যায় অভিজ্ঞ কোলোরেক্টাল সার্জনদের সিরিয়াল।']
+        ];
+
+        if (isset($map[$slug])) {
+            return $map[$slug];
+        }
+
+        $fallbackEn = ucwords(str_replace('-', ' ', $slug));
+        return [
+            'en' => $fallbackEn,
+            'bn' => $fallbackEn . ' বিশেষজ্ঞ',
+            'desc_bn' => "{$fallbackEn} সম্পর্কিত যেকোনো জটিল শারীরিক সমস্যায় দেশের অভিজ্ঞ ও শীর্ষ চিকিৎসকদের চেম্বার ও সিরিয়াল তথ্য।"
+        ];
+    }
+
+    protected function buildSpecialtyTopEn($specEn, $locEn)
+    {
+        return <<<HTML
+<div class="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+    <p class="text-base sm:text-lg">
+        Finding an experienced and verified <strong>{$specEn}</strong> is crucial for accurate diagnosis and effective long-term treatment. DoctorBD24 provides a comprehensive directory of highly qualified specialists practicing across private chambers and modern clinics in <strong>{$locEn}</strong>, complete with direct appointment numbers and visiting schedules.
+    </p>
+    <h2 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
+        Directory of Verified {$specEn} in {$locEn}
+    </h2>
+    <p class="text-sm sm:text-base">
+        When browsing our specialist directory, you can review each physician's academic credentials (MBBS, FCPS, MD, MS), hospital affiliations, consultation fees, and chamber timings. Whether you require initial evaluation or second opinions, our verified listings empower you to book serial appointments with confidence.
+    </p>
+</div>
+HTML;
+    }
+
+    protected function buildSpecialtyTopBn($specBn, $descBn, $locBn, $locBnPossessive)
+    {
+        return <<<HTML
+<div class="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+    <p class="text-base sm:text-lg">
+        শরীরের যেকোনো জটিল বা দীর্ঘস্থায়ী অসুস্থতায় সঠিক রোগের জন্য উপযুক্ত বিশেষজ্ঞ চিকিৎসক নির্বাচন করা অত্যন্ত গুরুত্বপূর্ণ। DoctorBD24-এর এই বিশেষ ডিরেক্টরিতে আপনাদের জন্য একত্রিত করা হয়েছে দেশের শীর্ষ ও যাচাইকৃত <strong>{$specBn}</strong>-দের তালিকা ও চেম্বার সিরিয়াল তথ্য। {$descBn}
+    </p>
+
+    <h2 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
+        {$locBnPossessive} সেরা {$specBn} ও চেম্বার সিরিয়াল বুকিং নির্দেশিকা
+    </h2>
+    <p class="text-sm sm:text-base">
+        আমাদের পোর্টালে তালিকাভুক্ত প্রতিটি <strong>{$specBn}</strong> প্রোফাইলে চিকিৎসকের শিক্ষাগত যোগ্যতা (যেমন: এমবিবিএস, এফসিপিএস, এমডি, এমএস), বর্তমান হাসপাতাল বা প্রতিষ্ঠানের পদবী, চেম্বারের সঠিক ঠিকানা, ভিজিট ফি এবং সরাসরি সিরিয়াল বুকিংয়ের হালনাগাদ ফোন নম্বর দেওয়া থাকে। কোনো ভুল বা পুরোনো তথ্য ছাড়াই আপনি সহজেই আপনার কাঙ্ক্ষিত চিকিৎসকের সিরিয়াল বুক করতে পারবেন।
+    </p>
+</div>
+HTML;
+    }
+
+    protected function buildSpecialtyBottomEn($specEn, $locEn)
+    {
+        return <<<HTML
+<div class="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed pt-6 border-t border-gray-200 dark:border-gray-700">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+        Complete Guide to Consulting a {$specEn} in {$locEn}
+    </h2>
+    <p class="text-sm sm:text-base">
+        Specialist consultations yield the best clinical outcomes when patients arrive organized. We recommend bringing your past prescriptions, medical history, and recent pathology reports to your appointment so the <strong>{$specEn}</strong> can make a rapid and informed assessment.
+    </p>
+</div>
+HTML;
+    }
+
+    protected function buildSpecialtyBottomBn($specBn, $locBn, $locBnPossessive)
+    {
+        return <<<HTML
+<div class="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed pt-6 border-t border-gray-200 dark:border-gray-700">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+        রোগীদের জন্য গাইড: কখন এবং কীভাবে একজন অভিজ্ঞ {$specBn} দেখাবেন?
+    </h2>
+    <p class="text-sm sm:text-base">
+        যেকোনো শারীরিক লক্ষণ বা প্রাথমিক টেস্টে জটিলতার ইঙ্গিত পেলে দেরি না করে একজন অভিজ্ঞ <strong>{$specBn}</strong>-এর পরামর্শ নেওয়া উচিত। চেম্বারে যাওয়ার পূর্বে আপনার আগের সব প্রেসক্রিপশন এবং ডায়াগনস্টিক রিপোর্ট গুছিয়ে সাথে রাখুন। এতে চিকিৎসক খুব দ্রুত ও সঠিকভাবে রোগ নির্ণয় করতে পারবেন।
+    </p>
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white pt-2">
+        বিএমডিসি (BMDC) স্বীকৃত বিশেষজ্ঞ চিকিৎসক নির্বাচন
+    </h3>
+    <p class="text-sm sm:text-base">
+        DoctorBD24-এ তালিকাভুক্ত সকল <strong>{$specBn}</strong> বিএমডিসি (BMDC) স্বীকৃত এবং নিজ নিজ ক্ষেত্রে উচ্চতর ডিগ্রিধারী। চেম্বারে যাওয়ার পূর্বে অবশ্যই ফোন করে সিরিয়াল ও সময় নিশ্চিত করে নেওয়ার পরামর্শ দেওয়া হচ্ছে।
+    </p>
 </div>
 HTML;
     }
