@@ -155,6 +155,21 @@ class GenerateProgrammaticSeoPages extends Command
             'allergists-immunologists' => 'medicine',
             'medicine-specialists' => 'medicine',
             'oncologists' => 'oncologycancer',
+            'geriatricians' => 'medicine',
+            'palliative-care-specialists' => 'medicine',
+            'radiologists' => 'radiology-imaging',
+            'anesthesiologists' => 'anaesthesiology',
+        ];
+
+        $locationAliases = [
+            'chattogram' => 'chittagong',
+            'cumilla'    => 'comilla',
+            'jashore'    => 'jessore',
+            'jhalokati'  => 'jhalokathi',
+            'khagrachari'=> 'khagrachhari',
+            'barisal'    => 'barishal',
+            'bogra'      => 'bogura',
+            'coxs-bazar' => 'coxs bazar',
         ];
 
         foreach ($specialties as $s) {
@@ -170,7 +185,7 @@ class GenerateProgrammaticSeoPages extends Command
         $areaMap      = [];
         $districtMap  = [];
         $divisionMap  = [];
-        $districtById = []; // id → district record (for area→division resolution)
+        $districtById = [];
 
         foreach ($areas as $a) {
             $decoded = json_decode($a->name, true);
@@ -198,10 +213,12 @@ class GenerateProgrammaticSeoPages extends Command
 
             if (str_starts_with($slug, 'doctors-in-')) {
                 $locationName = str_replace('-', ' ', substr($slug, 11));
+                $page->type = 'doctor';
             } elseif (str_starts_with($slug, 'hospitals-in-')) {
                 $locationName = str_replace('-', ' ', substr($slug, 13));
+                $page->type = 'hospital';
             } else {
-                // E.g. cardiologists-in-dhaka or gynecologists
+                $page->type = 'doctor';
                 if (str_contains($slug, '-in-')) {
                     $parts = explode('-in-', $slug);
                     $specialtyName = $parts[0];
@@ -211,30 +228,51 @@ class GenerateProgrammaticSeoPages extends Command
                 }
             }
 
-            $pageUpdated = false;
+            $pageUpdated = true; // Always save type update
 
             // Map Specialty
             if ($specialtyName) {
-                $lookupSlug = $pluralToSlugMap[$specialtyName] ?? $specialtyName;
-                if (isset($specialtyMap[$lookupSlug])) {
-                    $page->specialty_id = $specialtyMap[$lookupSlug];
-                    $pageUpdated = true;
+                $lookupSpecialty = $pluralToSlugMap[$specialtyName] ?? $specialtyName;
+                if (isset($specialtyMap[$lookupSpecialty])) {
+                    $page->specialty_id = $specialtyMap[$lookupSpecialty];
                     $mappedSpecialty++;
                 }
             }
 
             if (!$locationName) {
-                if ($pageUpdated) $page->save();
+                $page->save();
                 continue;
             }
 
             $locationLower = strtolower($locationName);
+            $lookupLoc = $locationAliases[$locationLower] ?? $locationLower;
 
-            // Try area match first
-            if (isset($areaMap[$locationLower])) {
-                $area = $areaMap[$locationLower];
+            // Try DISTRICT match first (e.g. Dhaka, Chattogram/Chittagong, Sylhet, Rajshahi, Khulna, etc.)
+            if (isset($districtMap[$lookupLoc])) {
+                $district = $districtMap[$lookupLoc];
+                $page->district_id = $district->id;
+                $page->division_id = $district->division_id ?? null;
+                $page->area_id     = null;
+                $page->save();
+                $mappedLocation++;
+                continue;
+            }
+
+            // Try DIVISION match second
+            if (isset($divisionMap[$lookupLoc])) {
+                $division = $divisionMap[$lookupLoc];
+                $page->division_id = $division->id;
+                $page->district_id = null;
+                $page->area_id     = null;
+                $page->save();
+                $mappedLocation++;
+                continue;
+            }
+
+            // Try AREA match third (e.g. Dhanmondi, Mirpur, Uttara, Gulshan, Banani, etc.)
+            if (isset($areaMap[$lookupLoc])) {
+                $area = $areaMap[$lookupLoc];
                 $areaDistrictId = $area->district_id ?? null;
-                // Resolve division via districtById map (O(1) lookup)
                 $divisionId = null;
                 if ($areaDistrictId && isset($districtById[$areaDistrictId])) {
                     $divisionId = $districtById[$areaDistrictId]->division_id ?? null;
@@ -247,29 +285,7 @@ class GenerateProgrammaticSeoPages extends Command
                 continue;
             }
 
-            // Try district match
-            if (isset($districtMap[$locationLower])) {
-                $district = $districtMap[$locationLower];
-                $page->district_id = $district->id;
-                $page->division_id = $district->division_id ?? null;
-                $page->area_id     = null;
-                $page->save();
-                $mappedLocation++;
-                continue;
-            }
-
-            // Try division match
-            if (isset($divisionMap[$locationLower])) {
-                $division = $divisionMap[$locationLower];
-                $page->division_id = $division->id;
-                $page->district_id = null;
-                $page->area_id     = null;
-                $page->save();
-                $mappedLocation++;
-            } else {
-                // If it didn't match location, but matched specialty, save it
-                if ($pageUpdated) $page->save();
-            }
+            $page->save();
         }
 
         $this->info("Data Context mapped for {$mappedLocation} Locations and {$mappedSpecialty} Specialties.");

@@ -153,7 +153,42 @@
 
     <!-- Sidebar Rules -->
     <div class="space-y-6">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        @php
+            $getCleanName = function($name) {
+                if (is_array($name)) return $name['en'] ?? ($name['bn'] ?? '');
+                $decoded = json_decode($name, true);
+                if (is_array($decoded)) return $decoded['en'] ?? ($decoded['bn'] ?? $name);
+                return $name;
+            };
+        @endphp
+
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6"
+             x-data="{
+                 division_id: '{{ old('division_id', $page->division_id ?? '') }}',
+                 district_id: '{{ old('district_id', $page->district_id ?? '') }}',
+                 area_id: '{{ old('area_id', $page->area_id ?? '') }}',
+                 districts: @js($districts->map(fn($d) => ['id' => $d->id, 'division_id' => $d->division_id, 'name' => $getCleanName($d->name)])->values()),
+                 areas: @js($areas->map(fn($a) => ['id' => $a->id, 'district_id' => $a->district_id, 'name' => $getCleanName($a->name)])->values()),
+                 get filteredDistricts() {
+                     if (!this.division_id) return this.districts;
+                     return this.districts.filter(d => String(d.division_id) === String(this.division_id));
+                 },
+                 get filteredAreas() {
+                     if (!this.district_id) return this.areas;
+                     return this.areas.filter(a => String(a.district_id) === String(this.district_id));
+                 },
+                 onDivisionChange() {
+                     if (this.district_id && !this.filteredDistricts.some(d => String(d.id) === String(this.district_id))) {
+                         this.district_id = '';
+                         this.area_id = '';
+                     }
+                 },
+                 onDistrictChange() {
+                     if (this.area_id && !this.filteredAreas.some(a => String(a.id) === String(this.area_id))) {
+                         this.area_id = '';
+                     }
+                 }
+             }">
             <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Data Context</h2>
             
             <div class="space-y-4">
@@ -172,38 +207,38 @@
                     <select name="specialty_id" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                         <option value="">Any Specialty</option>
                         @foreach($specialties as $specialty)
-                            <option value="{{ $specialty->id }}" @selected(old('specialty_id', $page->specialty_id ?? '') == $specialty->id)>{{ $specialty->name }}</option>
+                            <option value="{{ $specialty->id }}" @selected(old('specialty_id', $page->specialty_id ?? '') == $specialty->id)>{{ $getCleanName($specialty->name) }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div>
                     <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Filter by Division</label>
-                    <select name="division_id" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
+                    <select name="division_id" x-model="division_id" @change="onDivisionChange()" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                         <option value="">Any Division</option>
                         @foreach($divisions as $division)
-                            <option value="{{ $division->id }}" @selected(old('division_id', $page->division_id ?? '') == $division->id)>{{ $division->name }}</option>
+                            <option value="{{ $division->id }}">{{ $getCleanName($division->name) }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div>
                     <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Filter by District</label>
-                    <select name="district_id" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
+                    <select name="district_id" x-model="district_id" @change="onDistrictChange()" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                         <option value="">Any District</option>
-                        @foreach($districts as $district)
-                            <option value="{{ $district->id }}" @selected(old('district_id', $page->district_id ?? '') == $district->id)>{{ $district->name }}</option>
-                        @endforeach
+                        <template x-for="item in filteredDistricts" :key="item.id">
+                            <option :value="item.id" x-text="item.name"></option>
+                        </template>
                     </select>
                 </div>
 
                 <div>
                     <label class="text-xs font-semibold text-gray-600 dark:text-gray-300 block mb-1.5">Filter by Area/Thana</label>
-                    <select name="area_id" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
+                    <select name="area_id" x-model="area_id" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 focus:bg-white dark:bg-gray-700/50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300">
                         <option value="">Any Area</option>
-                        @foreach($areas as $area)
-                            <option value="{{ $area->id }}" @selected(old('area_id', $page->area_id ?? '') == $area->id)>{{ $area->name }}</option>
-                        @endforeach
+                        <template x-for="item in filteredAreas" :key="item.id">
+                            <option :value="item.id" x-text="item.name"></option>
+                        </template>
                     </select>
                 </div>
                 
