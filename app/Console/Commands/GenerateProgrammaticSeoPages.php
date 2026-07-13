@@ -110,6 +110,9 @@ class GenerateProgrammaticSeoPages extends Command
         $count = 0;
 
         foreach ($slugManifest as $manifest) {
+            // CRITICAL FIX: Unset variables from previous iterations to prevent leakage!
+            unset($specEn, $specBn, $descBn, $locEn, $locBn, $locBnPossessive, $rawTitleBn, $rawTitleEn);
+
             $slug = $manifest['slug'];
             $type = $manifest['type'] ?? (str_starts_with($slug, 'hospitals-in-') ? 'hospital' : 'doctor');
             $keyword = $manifest['keyword'] ?? '';
