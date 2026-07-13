@@ -13,12 +13,24 @@ use Illuminate\Support\Str;
 
 class SeoLandingPageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (SeoLandingPage::whereNull('division_id')->whereNull('specialty_id')->exists()) {
             \Illuminate\Support\Facades\Artisan::call('seo:generate-programmatic-pages');
         }
-        $pages = SeoLandingPage::with(['specialty', 'division', 'district', 'area'])->latest()->paginate(20);
+
+        $query = SeoLandingPage::with(['specialty', 'division', 'district', 'area']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('slug', 'like', "%{$search}%")
+                  ->orWhere('title', 'like', "%{$search}%")
+                  ->orWhere('keyword', 'like', "%{$search}%");
+        }
+
+        $perPage = $request->input('per_page', 20);
+        $pages = $query->latest()->paginate($perPage)->withQueryString();
+
         return view('admin.seo-landing-pages.index', compact('pages'));
     }
 

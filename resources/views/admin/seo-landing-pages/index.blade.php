@@ -22,6 +22,42 @@
     </div>
 </div>
 
+<!-- Filter & Search Bar -->
+<div class="mb-6 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row gap-4 justify-between items-center">
+    <form action="{{ route('admin.seo-landing-pages.index') }}" method="GET" class="w-full flex flex-col sm:flex-row gap-4 items-center">
+        <!-- Search Input -->
+        <div class="relative w-full sm:max-w-md">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by slug, title, or keyword..." class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-600 rounded-xl leading-5 bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 sm:text-sm transition-colors">
+        </div>
+        
+        <!-- Per Page Dropdown -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <label for="per_page" class="text-sm text-gray-500 whitespace-nowrap">Show:</label>
+            <select name="per_page" id="per_page" onchange="this.form.submit()" class="block w-full sm:w-auto pl-3 pr-8 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors">
+                <option value="20" {{ request('per_page', 20) == 20 ? 'selected' : '' }}>20</option>
+                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
+                <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+            </select>
+        </div>
+
+        <!-- Submit Button for Mobile / Non-JS -->
+        <button type="submit" class="hidden sm:block px-4 py-2 bg-violet-500 text-white text-sm font-semibold rounded-xl hover:bg-violet-600 transition-colors shadow-sm">
+            Search
+        </button>
+        
+        @if(request('search') || request('per_page'))
+            <a href="{{ route('admin.seo-landing-pages.index') }}" class="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                Clear
+            </a>
+        @endif
+    </form>
+</div>
+
 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
