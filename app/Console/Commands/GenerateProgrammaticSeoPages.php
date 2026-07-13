@@ -7,20 +7,45 @@ use Illuminate\Console\Command;
 
 class GenerateProgrammaticSeoPages extends Command
 {
-    protected $signature = 'seo:generate-programmatic-pages';
-    protected $description = 'Generate or update all 882 Phase 1 Programmatic SEO Landing Pages with 1100+ words E-E-A-T content, internal links, and clean Bangla transliteration';
+    protected $signature = 'seo:generate-programmatic-pages {--tier1 : Generate 8 Division Pages} {--tier2 : Generate 64 District Pages} {--tier3 : Generate 624 Area Pages}';
+    protected $description = 'Generate or update Programmatic SEO Landing Pages dynamically from the database with 1200+ words E-E-A-T content';
 
     public function handle()
     {
-        $this->info("Starting generation/updating of 882 Programmatic SEO Landing Pages...");
+        $this->info("Starting generation/updating of Programmatic SEO Landing Pages...");
 
-        // Load slug manifest from JSON (committed to repo alongside seeder)
-        $slugFile = database_path('seeders/seo_page_slugs.json');
-        if (!file_exists($slugFile)) {
-            $this->error("Slug manifest not found: {$slugFile}");
-            return 1;
+        $slugManifest = [];
+
+        if ($this->option('tier1') || $this->option('tier2') || $this->option('tier3')) {
+            if ($this->option('tier1')) {
+                $divs = \Illuminate\Support\Facades\DB::table('divisions')->get();
+                foreach ($divs as $div) {
+                    $slugManifest[] = ['slug' => 'doctors-in-' . $div->slug, 'type' => 'doctor'];
+                }
+                $this->info("Loaded " . count($slugManifest) . " Division Location Pages (Tier 1) from DB.");
+            }
+            if ($this->option('tier2')) {
+                $dists = \Illuminate\Support\Facades\DB::table('districts')->get();
+                foreach ($dists as $dist) {
+                    $slugManifest[] = ['slug' => 'doctors-in-' . $dist->slug, 'type' => 'doctor'];
+                }
+                $this->info("Loaded " . count($dists) . " District Location Pages (Tier 2) from DB.");
+            }
+            if ($this->option('tier3')) {
+                $areas = \Illuminate\Support\Facades\DB::table('areas')->get();
+                foreach ($areas as $area) {
+                    $slugManifest[] = ['slug' => 'doctors-in-' . $area->slug, 'type' => 'doctor'];
+                }
+                $this->info("Loaded " . count($areas) . " Area Location Pages (Tier 3) from DB.");
+            }
+        } else {
+            // Fallback to JSON if no flags provided
+            $slugFile = database_path('seeders/seo_page_slugs.json');
+            if (file_exists($slugFile)) {
+                $slugManifest = json_decode(file_get_contents($slugFile), true);
+                $this->info("Loaded " . count($slugManifest) . " pages from JSON manifest.");
+            }
         }
-        $slugManifest = json_decode(file_get_contents($slugFile), true);
 
         $bnLocMap = [
             'Mirpur' => 'মিরপুর', 'Dhanmondi' => 'ধানমন্ডি', 'Uttara' => 'উত্তরা', 'Gulshan' => 'গুলশান',
@@ -75,11 +100,12 @@ class GenerateProgrammaticSeoPages extends Command
         }
 
         // Step 2: Remove any slugs NOT in the manifest (cleanup orphaned pages)
-        $validSlugs = array_column($slugManifest, 'slug');
-        $deletedOrphans = SeoLandingPage::whereNotIn('slug', $validSlugs)->delete();
-        if ($deletedOrphans > 0) {
-            $this->info("Deleted {$deletedOrphans} orphaned pages not in manifest.");
-        }
+        // Disabled during phased tier execution to prevent deleting other valid pages!
+        // $validSlugs = array_column($slugManifest, 'slug');
+        // $deletedOrphans = SeoLandingPage::whereNotIn('slug', $validSlugs)->delete();
+        // if ($deletedOrphans > 0) {
+        //     $this->info("Deleted {$deletedOrphans} orphaned pages not in manifest.");
+        // }
 
         $count = 0;
 
