@@ -16,7 +16,7 @@ class ImportProgrammaticSeoPages extends Command
         ini_set('memory_limit', '-1');
         
         $this->info("Drafting all existing programmatic SEO pages...");
-        SeoLandingPage::query()->update(['status' => 'draft', 'is_active' => 0]);
+        SeoLandingPage::query()->update(['status' => 'draft']);
         
         $zipPath = base_path('programmatic_seo_export.zip');
         $jsonlPath = base_path('programmatic_seo_export.jsonl');
@@ -53,12 +53,13 @@ class ImportProgrammaticSeoPages extends Command
             $data = json_decode($line, true);
             if (!$data) continue;
             
+            unset($data['is_active']); // remove to avoid unknown column error
             $data['created_at'] = now();
             $data['updated_at'] = now();
             $chunk[] = $data;
             
             if (count($chunk) >= 500) {
-                SeoLandingPage::upsert($chunk, ['slug'], ['type', 'specialty_id', 'division_id', 'district_id', 'area_id', 'keyword', 'title', 'meta_title', 'meta_description', 'content_top', 'content_bottom', 'faq_schema', 'is_active', 'status', 'updated_at']);
+                SeoLandingPage::upsert($chunk, ['slug'], ['type', 'specialty_id', 'division_id', 'district_id', 'area_id', 'keyword', 'title', 'meta_title', 'meta_description', 'content_top', 'content_bottom', 'faq_schema', 'status', 'updated_at']);
                 $totalImported += count($chunk);
                 $this->info("Imported $totalImported pages...");
                 $chunk = [];
@@ -66,7 +67,7 @@ class ImportProgrammaticSeoPages extends Command
         }
         
         if (count($chunk) > 0) {
-            SeoLandingPage::upsert($chunk, ['slug'], ['type', 'specialty_id', 'division_id', 'district_id', 'area_id', 'keyword', 'title', 'meta_title', 'meta_description', 'content_top', 'content_bottom', 'faq_schema', 'is_active', 'status', 'updated_at']);
+            SeoLandingPage::upsert($chunk, ['slug'], ['type', 'specialty_id', 'division_id', 'district_id', 'area_id', 'keyword', 'title', 'meta_title', 'meta_description', 'content_top', 'content_bottom', 'faq_schema', 'status', 'updated_at']);
             $totalImported += count($chunk);
             $this->info("Imported $totalImported pages...");
         }
