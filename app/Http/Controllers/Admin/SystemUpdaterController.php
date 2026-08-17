@@ -209,8 +209,8 @@ class SystemUpdaterController extends Controller
             $outputLog .= "--------------------------\n✅ System Update Completed Successfully!";
             return response()->json(['success' => true, 'output' => $outputLog]);
 
-        } catch (Exception $e) {
-            $outputLog .= "❌ ERROR: " . $e->getMessage() . "\n";
+        } catch (\Throwable $e) {
+            $outputLog .= "❌ ERROR: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine() . "\n";
             // Clean up zip if failed
             if (isset($zipPath) && file_exists($zipPath)) {
                 unlink($zipPath);
