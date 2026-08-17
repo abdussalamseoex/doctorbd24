@@ -15,9 +15,6 @@ class SeoLandingPageController extends Controller
 {
     public function index(Request $request)
     {
-        if (SeoLandingPage::whereNull('division_id')->whereNull('specialty_id')->exists()) {
-            \Illuminate\Support\Facades\Artisan::call('seo:generate-programmatic-pages');
-        }
 
         $query = SeoLandingPage::with(['specialty', 'division', 'district', 'area']);
 
@@ -106,10 +103,6 @@ class SeoLandingPageController extends Controller
 
     public function edit(SeoLandingPage $seoLandingPage)
     {
-        if (empty($seoLandingPage->specialty_id) && empty($seoLandingPage->division_id) && empty($seoLandingPage->district_id) && empty($seoLandingPage->area_id)) {
-            \Illuminate\Support\Facades\Artisan::call('seo:generate-programmatic-pages');
-            $seoLandingPage->refresh();
-        }
         $specialties = Specialty::all();
         $divisions = Division::all();
         $districts = District::all();
@@ -186,7 +179,7 @@ class SeoLandingPageController extends Controller
 
     public function syncAll()
     {
-        \Illuminate\Support\Facades\Artisan::call('seo:generate-programmatic-pages');
-        return redirect()->route('admin.seo-landing-pages.index')->with('success', 'All 882 Programmatic SEO Landing Pages synchronized successfully!');
+        \Illuminate\Support\Facades\Artisan::call('seo:import-excel-pages');
+        return redirect()->route('admin.seo-landing-pages.index')->with('success', 'All 40,000+ Programmatic SEO Landing Pages synchronized successfully!');
     }
 }
