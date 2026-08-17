@@ -184,8 +184,8 @@ class SystemUpdaterController extends Controller
             Artisan::call('migrate', ['--force' => true]);
             $outputLog .= Artisan::output() . "\n";
 
-            $outputLog .= "> Synchronizing Programmatic SEO Landing Pages (882 Pages)...\n";
-            Artisan::call('seo:generate-programmatic-pages');
+            $outputLog .= "> Importing Programmatic SEO Pages from Excel (40,000+ Pages)...\n";
+            Artisan::call('seo:import-excel-pages');
             $outputLog .= Artisan::output() . "\n";
 
             $outputLog .= "> Clearing Application Caches...\n";

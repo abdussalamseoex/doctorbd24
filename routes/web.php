@@ -21,19 +21,6 @@ Route::name('api.')->prefix('api')->group(function () {
     Route::get('/areas/{area}', [\App\Http\Controllers\Api\LocationController::class, 'show'])->name('areas.show');
 });
 
-// ── Temporary Route for Import (No Terminal Access) ────────────────────
-Route::get('/run-seo-import-secret', function () {
-    ignore_user_abort(true);
-    set_time_limit(0);
-    ini_set('memory_limit', '-1');
-    try {
-        \Illuminate\Support\Facades\Artisan::call('seo:import-excel-pages');
-        return "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
-    } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
-    }
-});
-
 // ── Language Switcher ──────────────────────────────────────────
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'bn'])) {
