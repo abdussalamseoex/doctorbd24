@@ -29,10 +29,10 @@
         <div class="my-6">
             @if($seoPage->type === 'doctor')
                 <livewire:doctor-list 
-                    :specialty="$seoPage->specialty->slug ?? ''" 
-                    :division="$seoPage->division->slug ?? ''" 
-                    :district="$seoPage->district->slug ?? ''" 
-                    :area="$seoPage->area->slug ?? ''" 
+                    :specialty="$seoPage->specialty?->slug ?? ''" 
+                    :division="$seoPage->division?->slug ?? ''" 
+                    :district="$seoPage->district?->slug ?? ''" 
+                    :area="$seoPage->area?->slug ?? ''" 
                     :hideFilters="true"
                     :seoTitle="$seoPage->title"
                     :seoTopContent="$seoPage->content_top"
@@ -40,9 +40,9 @@
                 />
             @elseif($seoPage->type === 'hospital')
                 <livewire:hospital-list 
-                    :division="$seoPage->division->slug ?? ''" 
-                    :district="$seoPage->district->slug ?? ''" 
-                    :area="$seoPage->area->slug ?? ''" 
+                    :division="$seoPage->division?->slug ?? ''" 
+                    :district="$seoPage->district?->slug ?? ''" 
+                    :area="$seoPage->area?->slug ?? ''" 
                     :hideFilters="true"
                     :seoTitle="$seoPage->title"
                     :seoTopContent="$seoPage->content_top"
@@ -50,9 +50,9 @@
                 />
             @elseif($seoPage->type === 'ambulance')
                 <livewire:ambulance-list 
-                    :division="$seoPage->division->slug ?? ''" 
-                    :district="$seoPage->district->slug ?? ''" 
-                    :area="$seoPage->area->slug ?? ''" 
+                    :division="$seoPage->division?->slug ?? ''" 
+                    :district="$seoPage->district?->slug ?? ''" 
+                    :area="$seoPage->area?->slug ?? ''" 
                     :hideFilters="true"
                     :seoTitle="$seoPage->title"
                     :seoTopContent="$seoPage->content_top"
@@ -67,23 +67,26 @@
 <!-- Inject JSON-LD Schema if Present -->
 @if(!empty($seoPage->faq_schema))
     @push('scripts')
+    @php
+        $mainEntity = [];
+        foreach($seoPage->faq_schema as $faq) {
+            $mainEntity[] = [
+                '@type' => 'Question',
+                'name' => $faq['question'] ?? '',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $faq['answer'] ?? ''
+                ]
+            ];
+        }
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $mainEntity
+        ];
+    @endphp
     <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-            @foreach($seoPage->faq_schema as $index => $faq)
-            {
-                "@type": "Question",
-                "name": "{!! addslashes($faq['question'] ?? '') !!}",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "{!! addslashes($faq['answer'] ?? '') !!}"
-                }
-            }{{ !$loop->last ? ',' : '' }}
-            @endforeach
-        ]
-    }
+    {!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @endpush
 @endif

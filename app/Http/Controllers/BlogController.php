@@ -106,15 +106,30 @@ class BlogController extends Controller
         return view('blog.index', compact('posts', 'categories'));
     }
 
-    public function show(string $slug)
+    public function show(string $slug, Request $request)
     {
-        $post = BlogPost::published()->where('slug', $slug)->with('category', 'author')->firstOrFail();
-        $post->incrementViewCount();
+        $isAdmin = auth()->check() && (
+            (method_exists(auth()->user(), 'hasRole') && auth()->user()->hasRole('admin')) ||
+            (auth()->user()->is_admin ?? false)
+        );
+
+        $isPreview = $request->query('preview') === 'admin' && $isAdmin;
+
+        if ($isAdmin || $isPreview) {
+            $post = BlogPost::where('slug', $slug)->with('category', 'author')->firstOrFail();
+        } else {
+            $post = BlogPost::published()->where('slug', $slug)->with('category', 'author')->firstOrFail();
+        }
+
+        // Only increment view count for real public visits (not admin previews)
+        if ($post->is_live && !$isPreview) {
+            $post->incrementViewCount();
+        }
 
         $hasBn = !empty($post->getTranslation('title', 'bn', false));
         \Illuminate\Support\Facades\View::share('has_bn_translation', $hasBn);
         
-        if (app()->getLocale() === 'bn' && !$hasBn) {
+        if ((app()->getLocale() === 'bn' && !$hasBn) || !$post->is_live) {
             \Illuminate\Support\Facades\View::share('noindex_page', true);
         }
 

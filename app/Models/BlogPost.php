@@ -40,11 +40,43 @@ class BlogPost extends Model
 
     /**
      * Virtual accessor: $post->published
-     * Returns true if published_at is set and in the past.
+     * Returns true if post is live.
      */
     public function getPublishedAttribute(): bool
     {
-        return $this->published_at !== null && $this->published_at->isPast();
+        return $this->is_live;
+    }
+
+    /**
+     * Determine if this post is currently published and live on frontend.
+     */
+    public function getIsLiveAttribute(): bool
+    {
+        if ($this->status === 'published') {
+            return $this->published_at ? $this->published_at->isPast() : true;
+        }
+
+        if ($this->status === 'scheduled') {
+            return $this->published_at ? $this->published_at->isPast() : false;
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if this post is currently scheduled for future release.
+     */
+    public function getIsScheduledAttribute(): bool
+    {
+        if ($this->status === 'scheduled') {
+            return $this->published_at ? $this->published_at->isFuture() : true;
+        }
+
+        if ($this->status === 'published' && $this->published_at && $this->published_at->isFuture()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function category(): BelongsTo
@@ -57,9 +89,49 @@ class BlogPost extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Scope for live published posts on the frontend.
+     */
     public function scopePublished($query)
     {
-        return $query->whereNotNull('published_at')->where('published_at', '<=', now());
+        return $query->where(function ($q) {
+            $q->where('status', 'published')
+              ->where(function ($sub) {
+                  $sub->whereNull('published_at')
+                      ->orWhere('published_at', '<=', now());
+              });
+        })->orWhere(function ($q) {
+            $q->where('status', 'scheduled')
+              ->whereNotNull('published_at')
+              ->where('published_at', '<=', now());
+        });
+    }
+
+    /**
+     * Scope for scheduled posts.
+     */
+    public function scopeScheduled($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('status', 'scheduled')
+              ->whereNotNull('published_at')
+              ->where('published_at', '>', now());
+        })->orWhere(function ($q) {
+            $q->where('status', 'published')
+              ->whereNotNull('published_at')
+              ->where('published_at', '>', now());
+        });
+    }
+
+    /**
+     * Scope for draft posts.
+     */
+    public function scopeDrafted($query)
+    {
+        return $query->where('status', 'draft')
+                     ->orWhere(function ($q) {
+                         $q->whereNull('status');
+                     });
     }
 
     public function incrementViewCount(): void

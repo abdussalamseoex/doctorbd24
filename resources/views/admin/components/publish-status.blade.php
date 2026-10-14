@@ -14,29 +14,39 @@
         <div>
             <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-2">Status</label>
             <select name="status" x-model="currentStatus" class="w-full rounded-xl border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-800 dark:text-gray-200">
-                <option value="draft">Draft</option>
-                <option value="scheduled">Scheduled</option>
-                <option value="published">Published</option>
+                <option value="draft">Draft (খসড়া - পাঠকদের কাছে অপ্রকাশিত)</option>
+                <option value="scheduled">Scheduled (ভবিষ্যতের নির্দিষ্ট তারিখে পোস্ট হবে)</option>
+                <option value="published">Published (সরাসরি ওয়েবসাইটে লাইভ)</option>
             </select>
         </div>
 
-        <div x-show="currentStatus === 'scheduled'" style="display: none;">
-            <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-2">Publish Date & Time</label>
+        <div x-show="currentStatus === 'scheduled'" style="display: none;" class="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-xl space-y-2">
+            <label class="text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Publish Date & Time (শিডিউল তারিখ ও সময়) *
+            </label>
             <input type="datetime-local" 
                    name="published_at" 
-                   class="w-full rounded-xl border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-800 dark:text-gray-200" 
+                   class="w-full rounded-xl border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all text-gray-800 dark:text-gray-200" 
                    value="{{ old('published_at', $formattedPublishedAt) }}">
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Select a future date & time.</p>
+            <p class="text-xs text-amber-700 dark:text-amber-400">এই নির্ধারিত সময় পার হওয়ার সাথে সাথেই পোস্টটি সাধারণ পাঠকদের জন্য লাইভ হয়ে যাবে।</p>
         </div>
 
-        <div x-show="currentStatus === 'published'" class="p-3 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm rounded-xl flex items-center gap-2" style="display: none;">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-            Item will be instantly live.
+        <div x-show="currentStatus === 'published'" class="p-3 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm rounded-xl space-y-1.5" style="display: none;">
+            <div class="flex items-center gap-2 font-medium">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>পোস্টটি বর্তমানে ওয়েবসাইটে লাইভ থাকবে।</span>
+            </div>
+            @if($publishedAt)
+            <div class="text-xs text-green-700 dark:text-green-300">
+                প্রকাশিত সময়: <b>{{ \Carbon\Carbon::parse($publishedAt)->format('d M, Y h:i A') }}</b>
+            </div>
+            @endif
         </div>
 
         <div x-show="currentStatus === 'draft'" class="p-3 bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400 text-sm rounded-xl flex items-center gap-2" style="display: none;">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-            Saved as draft (hidden).
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+            <span>খসড়া হিসেবে সংরক্ষিত থাকবে (সাধারণ পাঠকদের কাছে দৃশ্যমান হবে না)।</span>
         </div>
     </div>
 </div>

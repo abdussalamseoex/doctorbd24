@@ -25,7 +25,7 @@
                         <h2 class="font-bold text-gray-800 dark:text-gray-100 group-hover:text-violet-600 transition-colors mt-1 text-sm line-clamp-2">{{ $post->title }}</h2>
                         @if($post->excerpt)<p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">{{ $post->excerpt }}</p>@endif
                         <div class="flex items-center justify-between mt-3 text-xs text-gray-400">
-                            <span>{{ $post->published_at->format('d M, Y') }}</span>
+                            <span>{{ $post->published_at ? $post->published_at->format('d M, Y') : $post->created_at->format('d M, Y') }}</span>
                             <span class="text-violet-500 font-medium group-hover:underline">{{ __('Read More') }} →</span>
                         </div>
                     </div>

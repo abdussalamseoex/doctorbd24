@@ -15,12 +15,45 @@ class AdminBlogController extends Controller
     protected $model = \App\Models\BlogPost::class;
     public function index(Request $request)
     {
-        $query = BlogPost::with('category', 'author')->latest();
+        $baseQuery = BlogPost::query();
         if (!auth()->user()->hasRole('admin')) {
-            $query->where('user_id', auth()->id());
+            $baseQuery->where('user_id', auth()->id());
         }
-        $posts = $query->paginate(20);
-        return view('admin.blog.index', compact('posts'));
+
+        $counts = [
+            'all'       => (clone $baseQuery)->count(),
+            'published' => (clone $baseQuery)->published()->count(),
+            'scheduled' => (clone $baseQuery)->scheduled()->count(),
+            'draft'     => (clone $baseQuery)->drafted()->count(),
+        ];
+
+        $query = (clone $baseQuery)->with('category', 'author');
+
+        $status = $request->query('status', 'all');
+        if ($status === 'published') {
+            $query->published();
+        } elseif ($status === 'scheduled') {
+            $query->scheduled();
+        } elseif ($status === 'draft') {
+            $query->drafted();
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->query('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%");
+            });
+        }
+
+        $perPage = (int) $request->input('per_page', 20);
+        if (!in_array($perPage, [10, 20, 50, 100])) {
+            $perPage = 20;
+        }
+
+        $posts = $query->latest('id')->paginate($perPage)->withQueryString();
+
+        return view('admin.blog.index', compact('posts', 'counts', 'status'));
     }
 
     public function create()
@@ -37,7 +70,7 @@ class AdminBlogController extends Controller
             'body'             => ['required','string'],
             'excerpt'          => ['nullable','string','max:500'],
             'blog_category_id' => ['nullable','exists:blog_categories,id'],
-            'published'        => ['boolean'],
+            'status'           => ['required','in:draft,scheduled,published'],
             'published_at'     => ['nullable','date'],
             'image'            => ['nullable','image','mimes:jpeg,png,webp','max:2048'],
         ]);
@@ -45,36 +78,25 @@ class AdminBlogController extends Controller
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['title']);
         }
-        $validated['user_id']     = auth()->id();
-        $validated['published']   = $request->boolean('published');
-        $validated['published_at'] = $validated['published'] ? ($validated['published_at'] ?? now()) : null;
+        $validated['user_id'] = auth()->id();
         
         if ($request->hasFile('image')) {
             $validated['image'] = \App\Services\ImageOptimizerService::storeAndOptimize($request->file('image'), 'blog', 1200);
         }
 
-
-        $validated['status'] = $request->input('status', 'draft');
-
-
-        if ($validated['status'] === 'published') {
-
-
-            $validated['published_at'] = now();
-
-
-        } elseif ($validated['status'] === 'scheduled') {
-
-
-            $validated['published_at'] = $request->input('published_at');
-
-
+        $status = $validated['status'];
+        if ($status === 'published') {
+            $validated['published_at'] = !empty($validated['published_at'])
+                ? \Carbon\Carbon::parse($validated['published_at'])
+                : now();
+        } elseif ($status === 'scheduled') {
+            if (empty($validated['published_at'])) {
+                return redirect()->back()->withInput()->withErrors(['published_at' => 'Please select a date and time for scheduling.']);
+            }
+            $validated['published_at'] = \Carbon\Carbon::parse($validated['published_at']);
         } else {
-
-
+            $validated['status'] = 'draft';
             $validated['published_at'] = null;
-
-
         }
 
         $post = BlogPost::create($validated);
@@ -86,7 +108,7 @@ class AdminBlogController extends Controller
             }
             $post->updateSeo($seoData);
         }
-        return redirect()->route('admin.blog-posts.index')->with('success', 'Blog post created.');
+        return redirect()->route('admin.blog-posts.index')->with('success', 'Blog post created successfully.');
     }
 
     public function edit(BlogPost $blogPost)
@@ -110,12 +132,10 @@ class AdminBlogController extends Controller
             'body'             => ['required','string'],
             'excerpt'          => ['nullable','string','max:500'],
             'blog_category_id' => ['nullable','exists:blog_categories,id'],
-            'published'        => ['boolean'],
+            'status'           => ['required','in:draft,scheduled,published'],
             'published_at'     => ['nullable','date'],
             'image'            => ['nullable','image','mimes:jpeg,png,webp','max:2048'],
         ]);
-        $validated['published']    = $request->boolean('published');
-        $validated['published_at'] = $validated['published'] ? ($validated['published_at'] ?? $blogPost->published_at ?? now()) : null;
 
         if (empty($request->slug)) {
             if (empty($blogPost->slug)) {
@@ -133,28 +153,23 @@ class AdminBlogController extends Controller
             $validated['image'] = null;
         }
 
-
-        $validated['status'] = $request->input('status', 'draft');
-
-
-        if ($validated['status'] === 'published') {
-
-
-            $validated['published_at'] = now();
-
-
-        } elseif ($validated['status'] === 'scheduled') {
-
-
-            $validated['published_at'] = $request->input('published_at');
-
-
+        $status = $validated['status'];
+        if ($status === 'published') {
+            if (!empty($validated['published_at'])) {
+                $validated['published_at'] = \Carbon\Carbon::parse($validated['published_at']);
+            } elseif ($blogPost->published_at) {
+                $validated['published_at'] = $blogPost->published_at;
+            } else {
+                $validated['published_at'] = now();
+            }
+        } elseif ($status === 'scheduled') {
+            if (empty($validated['published_at'])) {
+                return redirect()->back()->withInput()->withErrors(['published_at' => 'Please select a date and time for scheduling.']);
+            }
+            $validated['published_at'] = \Carbon\Carbon::parse($validated['published_at']);
         } else {
-
-
+            $validated['status'] = 'draft';
             $validated['published_at'] = null;
-
-
         }
 
         $blogPost->update($validated);
@@ -169,8 +184,10 @@ class AdminBlogController extends Controller
             }
             $blogPost->updateSeo($seoData);
         }
-        return redirect()->route('admin.blog-posts.index')->with('success', 'Post updated.');
+        return redirect()->route('admin.blog-posts.index')->with('success', 'Post updated successfully.');
     }
+
+
 
     public function destroy(BlogPost $blogPost)
     {

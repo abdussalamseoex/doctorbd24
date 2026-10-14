@@ -137,10 +137,16 @@
         @include('admin.components.publish-status', ['status' => $blogPost->status ?? 'draft', 'publishedAt' => $blogPost->published_at ?? null])
             @include('admin.shared._seo_fields', ['model' => $blogPost ?? null])
 
-            <div class="flex gap-3 pt-2">
+            <div class="flex items-center gap-3 pt-2 flex-wrap">
                 <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-semibold hover:opacity-90 shadow transition-all">
                     {{ isset($blogPost) ? 'Update Post' : 'Create Post' }}
                 </button>
+                @if(isset($blogPost))
+                    <a href="{{ route('blog.show', ['slug' => $blogPost->slug, 'preview' => 'admin']) }}" target="_blank" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold shadow transition-all flex items-center gap-1.5" title="Review this post as it appears to readers">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        Review / Preview
+                    </a>
+                @endif
                 <a href="{{ route('admin.blog-posts.index') }}" class="px-6 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Cancel</a>
             </div>
         </form>
