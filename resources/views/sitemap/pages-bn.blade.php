@@ -4,7 +4,7 @@
     @php
         $enUrl = url('/' . $page->slug);
         $bnUrl = url('/bn/' . $page->slug);
-        $hasBn = !empty($page->getTranslation('title', 'bn', false)) || !empty($page->getTranslation('content_top', 'bn', false));
+        $hasBn = !empty($page->getTranslation('title', 'bn', false));
     @endphp
     @if($hasBn)
     <url>
