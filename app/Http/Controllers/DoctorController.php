@@ -73,57 +73,76 @@ class DoctorController extends Controller
 
         $doctor->incrementViewCount();
 
-        $hasBn = !empty($doctor->getTranslation('name', 'bn', false));
-        \Illuminate\Support\Facades\View::share('has_bn_translation', $hasBn);
+        $isBn = request()->routeIs('bn.*') || app()->getLocale() === 'bn';
+        $locale = $isBn ? 'bn' : 'en';
 
-        if (app()->getLocale() === 'bn' && !$hasBn) {
-            \Illuminate\Support\Facades\View::share('noindex_page', true);
-        }
+        $hasBn = !empty($doctor->getTranslation('name', 'bn', false)) || !empty($doctor->getTranslation('bio', 'bn', false));
+        \Illuminate\Support\Facades\View::share('has_bn_translation', true);
 
         // ── SEO for profile ──────────────────────────
-        $spNames = $doctor->specialties->map(fn($s) => $s->getTranslation('name', 'en'))->join(', ');
-        $primarySpecialty = $doctor->specialties->first() ? $doctor->specialties->first()->getTranslation('name', 'en') : 'Specialist';
+        $spNames = $doctor->specialties->map(fn($s) => $s->getTranslation('name', $locale) ?: $s->name)->filter()->join(', ');
+        $primarySpecialty = $doctor->specialties->first() ? ($doctor->specialties->first()->getTranslation('name', $locale) ?: $doctor->specialties->first()->name) : ($isBn ? 'বিশেষজ্ঞ' : 'Specialist');
         $primaryChamber = $doctor->chambers->sortByDesc('is_main')->first();
-        $locationName = $primaryChamber && $primaryChamber->area ? $primaryChamber->area->getTranslation('name', 'en') : ($primaryChamber && $primaryChamber->hospital ? $primaryChamber->hospital->name : 'Bangladesh');
         
-        if ($doctor->designation) {
-            $title = "{$doctor->name} — {$doctor->designation} in {$locationName}";
+        $locationName = '';
+        if ($primaryChamber && $primaryChamber->area) {
+            $locationName = $primaryChamber->area->getTranslation('name', $locale) ?: $primaryChamber->area->name;
+        } elseif ($primaryChamber && $primaryChamber->hospital) {
+            $locationName = $primaryChamber->hospital->getTranslation('name', $locale) ?: $primaryChamber->hospital->name;
         } else {
-            $title = "{$doctor->name} — {$primarySpecialty} in {$locationName}";
+            $locationName = $isBn ? 'বাংলাদেশ' : 'Bangladesh';
         }
 
-        $desc = "{$doctor->name} is a {$doctor->designation}" .
-                ($spNames ? " specializing in {$spNames}" : '') .
-                ". {$doctor->experience_years} years of experience. Find chamber locations, visiting hours & contact.";
+        $doctorName = $doctor->getTranslation('name', $locale) ?: $doctor->name;
+        $doctorDesignation = $doctor->getTranslation('designation', $locale) ?: $doctor->designation;
+
+        if ($isBn) {
+            if ($doctorDesignation) {
+                $title = "{$doctorName} — {$doctorDesignation}, {$locationName}";
+            } else {
+                $title = "{$doctorName} — {$primarySpecialty}, {$locationName}";
+            }
+            $desc = "{$doctorName}" . ($doctorDesignation ? " — {$doctorDesignation}" : '') .
+                    ($spNames ? " ({$spNames})" : '') .
+                    "। চেম্বারের ঠিকানা, সিরিয়াল ও অ্যাপয়েন্টমেন্টের সময়সূচি জানুন।";
+        } else {
+            if ($doctorDesignation) {
+                $title = "{$doctorName} — {$doctorDesignation} in {$locationName}";
+            } else {
+                $title = "{$doctorName} — {$primarySpecialty} in {$locationName}";
+            }
+            $desc = "{$doctorName} is a {$doctorDesignation}" .
+                    ($spNames ? " specializing in {$spNames}" : '') .
+                    ". {$doctor->experience_years} years of experience. Find chamber locations, visiting hours & contact.";
+        }
 
         $seo = $doctor->seoMeta;
-        if ($seo && $seo->title) {
-            $title = $seo->title;
+        if ($seo) {
+            $seoTitle = $seo->getTranslation('title', $locale, false) ?: $seo->title;
+            $seoDesc = $seo->getTranslation('description', $locale, false) ?: $seo->description;
+            if ($seoTitle) $title = $seoTitle;
+            else $title = "$title | DoctorBD24";
+            if ($seoDesc) $desc = $seoDesc;
         } else {
             $title = "$title | DoctorBD24";
         }
 
-        if ($seo && $seo->description) {
-            $desc = $seo->description;
-        }
-        
         if ($tab === 'videos') {
-            $title = "Videos of {$doctor->name} | DoctorBD24";
-            SEOTools::setCanonical(url()->current());
+            $title = ($isBn ? "ভিডিও: " : "Videos of ") . "{$doctorName} | DoctorBD24";
         } elseif ($tab === 'blog') {
-            $title = "Blog by {$doctor->name} | DoctorBD24";
-            SEOTools::setCanonical(url()->current());
-        } else {
-            SEOTools::setCanonical(url()->current());
+            $title = ($isBn ? "ব্লগ: " : "Blog by ") . "{$doctorName} | DoctorBD24";
         }
+        SEOTools::setCanonical(url()->current());
 
         SEOTools::setTitle($title, false);
         SEOTools::setDescription(\Illuminate\Support\Str::limit($desc, 160));
         if ($seo && $seo->keywords) {
-            SEOTools::metatags()->addKeyword(explode(',', $seo->keywords));
+            $seoKeywords = $seo->getTranslation('keywords', $locale, false) ?: $seo->keywords;
+            if ($seoKeywords) {
+                SEOTools::metatags()->addKeyword(explode(',', $seoKeywords));
+            }
         }
 
-        $isBn = request()->routeIs('bn.*');
         $baseUrl = $isBn ? url('/bn') : url('/');
 
         OpenGraph::setUrl(url()->current());
@@ -133,7 +152,7 @@ class DoctorController extends Controller
         if ($ogImage) OpenGraph::addImage($ogImage);
 
         JsonLdMulti::setType('Physician');
-        JsonLdMulti::setTitle($doctor->name); // Using explicit doctor name instead of SEO Title
+        JsonLdMulti::setTitle($doctorName);
         JsonLdMulti::setDescription($desc);
         JsonLdMulti::addValue('url', url()->current());
         
@@ -197,19 +216,19 @@ class DoctorController extends Controller
             [
                 '@type' => 'ListItem',
                 'position' => 1,
-                'name' => 'Home',
+                'name' => $isBn ? 'হোম' : 'Home',
                 'item' => $baseUrl
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 2,
-                'name' => 'Doctors',
+                'name' => $isBn ? 'ডাক্তারগণ' : 'Doctors',
                 'item' => $baseUrl . '/doctors'
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 3,
-                'name' => $doctor->name,
+                'name' => $doctorName,
                 'item' => url()->current()
             ]
         ]);

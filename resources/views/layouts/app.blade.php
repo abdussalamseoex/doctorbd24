@@ -42,9 +42,8 @@
     @endphp
     @if($currentRouteName)
     <link rel="alternate" hreflang="en" href="{{ $enUrl }}" />
-    @if(!isset($has_bn_translation) || $has_bn_translation !== false)
-    <link rel="alternate" hreflang="bn-BD" href="{{ $bnUrl }}" />
-    @endif
+    <link rel="alternate" hreflang="bn" href="{{ $bnUrl }}" />
+    <link rel="alternate" hreflang="x-default" href="{{ $enUrl }}" />
     @endif
     <meta name="theme-color" content="#0A2540">
     <meta property="og:site_name" content="{{ setting('site_name', 'DoctorBD24') }}">
@@ -135,11 +134,7 @@
 
                     {{-- Language switcher --}}
                     @if(app()->getLocale() === 'en')
-                        @if(isset($has_bn_translation) && $has_bn_translation === false)
-                            <button onclick="window.dispatchEvent(new CustomEvent('toast', { detail: { message: 'এই পেইজের বাংলা তথ্য এখনো যুক্ত করা হয়নি', type: 'warning' } }))" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">বাংলা</button>
-                        @else
-                            <a href="{{ $bnUrl ?? url('/bn') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">বাংলা</a>
-                        @endif
+                        <a href="{{ $bnUrl ?? url('/bn') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">বাংলা</a>
                     @else
                         <a href="{{ $enUrl ?? url('/') }}" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-500 hover:border-sky-400 transition-colors text-gray-200">EN</a>
                     @endif
