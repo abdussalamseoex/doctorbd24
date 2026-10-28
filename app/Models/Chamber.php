@@ -36,4 +36,20 @@ class Chamber extends Model
     {
         return $this->belongsTo(Area::class);
     }
+
+    public function district()
+    {
+        return $this->hasOneThrough(District::class, Area::class, 'id', 'id', 'area_id', 'district_id');
+    }
+
+    public function getDistrictModel()
+    {
+        if ($this->area && $this->area->district) {
+            return $this->area->district;
+        }
+        if ($this->hospital && $this->hospital->district) {
+            return $this->hospital->district;
+        }
+        return null;
+    }
 }

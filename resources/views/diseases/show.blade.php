@@ -327,10 +327,11 @@
                                 @endif
                                 @php
                                     $chamber = $doc->chambers->first();
+                                    $districtModel = $chamber ? ($chamber->area?->district ?? $chamber->hospital?->district) : null;
                                 @endphp
-                                @if($chamber && $chamber->district)
+                                @if($districtModel)
                                     <p class="text-[10px] text-gray-400 truncate">
-                                        📍 {{ $chamber->district->getTranslation('name', $locale) }}
+                                        📍 {{ $districtModel->getTranslation('name', $locale) }}
                                     </p>
                                 @endif
                             </div>
