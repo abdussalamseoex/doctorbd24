@@ -325,9 +325,12 @@
                                         {{ $doc->specialties->first()->getTranslation('name', $locale) }}
                                     </p>
                                 @endif
-                                @if($doc->district)
+                                @php
+                                    $chamber = $doc->chambers->first();
+                                @endphp
+                                @if($chamber && $chamber->district)
                                     <p class="text-[10px] text-gray-400 truncate">
-                                        📍 {{ $doc->district->getTranslation('name', $locale) }}
+                                        📍 {{ $chamber->district->getTranslation('name', $locale) }}
                                     </p>
                                 @endif
                             </div>

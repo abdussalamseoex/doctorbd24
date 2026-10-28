@@ -27,6 +27,6 @@ class BodyPart extends Model
 
     public function symptoms(): HasMany
     {
-        return $this->hasMany(Symptom::class)->orderBy('order_index', 'asc');
+        return $this->hasMany(Symptom::class);
     }
 }

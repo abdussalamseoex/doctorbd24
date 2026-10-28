@@ -98,6 +98,6 @@ class Disease extends Model
             ->whereHas('specialties', function ($q) use ($specialtyIds) {
                 $q->whereIn('specialties.id', $specialtyIds);
             })
-            ->with(['specialties', 'district', 'area', 'chambers']);
+            ->with(['specialties', 'chambers']);
     }
 }
