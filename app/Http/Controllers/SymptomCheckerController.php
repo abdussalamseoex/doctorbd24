@@ -150,13 +150,13 @@ class SymptomCheckerController extends Controller
                     $q->whereIn('specialties.id', $specialtyIds);
                 }
             })
-            ->with(['specialties', 'chambers.area.district', 'chambers.hospital.district'])
+            ->with(['specialties', 'chambers.area.district'])
             ->take(4)
             ->get()
             ->map(function ($doc) {
                 $locale = app()->getLocale();
                 $chamber = $doc->chambers->first();
-                $districtModel = $chamber ? ($chamber->area?->district ?? $chamber->hospital?->district) : null;
+                $districtModel = $chamber ? ($chamber->area?->district ?? $chamber->hospital?->area?->district) : null;
                 $districtName = $districtModel ? $districtModel->getTranslation('name', $locale) : '';
                 return [
                     'name'       => $doc->getTranslation('name', $locale),

@@ -59,6 +59,11 @@ class Hospital extends Model
         return $this->belongsTo(Area::class);
     }
 
+    public function district()
+    {
+        return $this->hasOneThrough(District::class, Area::class, 'id', 'id', 'area_id', 'district_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
