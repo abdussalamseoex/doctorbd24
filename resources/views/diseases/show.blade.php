@@ -37,6 +37,49 @@
       }{{ $loop->last ? '' : ',' }}
     @endforeach
   ],
+  @php
+    $riskItems = [];
+    if (!empty($disease->getTranslation('risk_factors', $locale))) {
+        preg_match_all('/<li>(.*?)<\/li>/s', $disease->getTranslation('risk_factors', $locale), $rmatches);
+        $riskItems = !empty($rmatches[1]) ? array_map('strip_tags', $rmatches[1]) : [strip_tags($disease->getTranslation('risk_factors', $locale))];
+    }
+    $riskItems = array_values(array_filter(array_map('trim', $riskItems)));
+  @endphp
+  @if(count($riskItems) > 0)
+  "riskFactor": [
+    @foreach($riskItems as $ri)
+      {
+        "@type": "MedicalRiskFactor",
+        "name": "{{ addslashes(trim(preg_replace('/\s+/', ' ', $ri))) }}"
+      }{{ $loop->last ? '' : ',' }}
+    @endforeach
+  ],
+  @endif
+  @if(count($tests) > 0)
+  "typicalTest": [
+    @foreach($tests as $t)
+      {
+        "@type": "MedicalTest",
+        "name": "{{ addslashes($t['name']) }}"
+      }{{ $loop->last ? '' : ',' }}
+    @endforeach
+  ],
+  @endif
+  @php
+    $compItems = [];
+    if (!empty($disease->getTranslation('complications', $locale))) {
+        preg_match_all('/<li>(.*?)<\/li>/s', $disease->getTranslation('complications', $locale), $cmatches);
+        $compItems = !empty($cmatches[1]) ? array_map('strip_tags', $cmatches[1]) : [strip_tags($disease->getTranslation('complications', $locale))];
+    }
+    $compItems = array_values(array_filter(array_map('trim', $compItems)));
+  @endphp
+  @if(count($compItems) > 0)
+  "possibleComplication": [
+    @foreach($compItems as $ci)
+      "{{ addslashes(trim(preg_replace('/\s+/', ' ', $ci))) }}"{{ $loop->last ? '' : ',' }}
+    @endforeach
+  ],
+  @endif
   "possibleTreatment": [
     @if(count($treatments) > 0)
       @foreach($treatments as $t)
@@ -60,6 +103,8 @@
       }
     @endif
   ],
+  "datePublished": "{{ $disease->published_at ? $disease->published_at->toIso8601String() : ($disease->created_at ? $disease->created_at->toIso8601String() : now()->toIso8601String()) }}",
+  "dateModified": "{{ $disease->updated_at ? $disease->updated_at->toIso8601String() : ($disease->last_reviewed_at ? $disease->last_reviewed_at->toIso8601String() : now()->toIso8601String()) }}",
   "url": "{{ url()->current() }}"
 }
 </script>
@@ -160,6 +205,7 @@
     $procedures = $disease->getLocalizedProcedures($locale);
     $faqs = $disease->getLocalizedFaqs($locale);
     $bodyImages = $disease->getLocalizedBodyImages($locale);
+    $secCount = 1;
 @endphp
 
 <div class="bg-gray-50 dark:bg-gray-950 min-h-screen py-8">
@@ -349,7 +395,7 @@
                     <a href="#diagnosis" class="px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-sky-50 hover:text-sky-600 dark:hover:text-sky-400 font-medium transition-colors whitespace-nowrap">{{ $isBn ? 'রোগ নির্ণয়' : 'Diagnosis' }}</a>
                 @endif
 
-                @if(!empty($disease->getTranslation('treatment_overview', $locale)) || count($treatments) > 0 || count($medicines) > 0)
+                @if(!empty($disease->getTranslation('treatment_overview', $locale)) || count($treatments) > 0 || count($medicines) > 0 || !empty($disease->getTranslation('diagnosis_treatment', $locale)))
                     <a href="#treatments" class="px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-sky-50 hover:text-sky-600 dark:hover:text-sky-400 font-medium transition-colors whitespace-nowrap">{{ $isBn ? 'চিকিৎসা ও ওষুধ' : 'Treatments & Drugs' }}</a>
                 @endif
 
@@ -391,11 +437,11 @@
                 </div>
                 @endif
 
-                {{-- 1. OVERVIEW --}}
+                {{-- SECTION 1: OVERVIEW --}}
                 @if(!empty($disease->getTranslation('overview', $locale)))
                 <section id="overview" class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700/80 scroll-mt-24">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm font-bold">1</span>
+                        <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm font-bold">{{ $secCount++ }}</span>
                         {{ $isBn ? 'ওভারভিউ / রোগ পরিচিতি' : 'Overview' }}
                     </h2>
                     <div class="prose prose-sky dark:prose-invert max-w-none text-gray-700 dark:text-gray-200 leading-relaxed text-sm sm:text-base">
@@ -404,11 +450,11 @@
                 </section>
                 @endif
 
-                {{-- 2. SYMPTOMS & SIGNS --}}
+                {{-- SECTION 2: SYMPTOMS & SIGNS --}}
                 @if(!empty($disease->getTranslation('symptoms_summary', $locale)) || $disease->symptoms->count() > 0 || !empty($disease->getTranslation('symptoms_detailed', $locale)))
                 <section id="symptoms" class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700/80 scroll-mt-24 space-y-5">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm font-bold">2</span>
+                        <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm font-bold">{{ $secCount++ }}</span>
                         {{ $isBn ? 'লক্ষণ ও উপসর্গসমূহ (Symptoms & Signs)' : 'Symptoms & Signs' }}
                     </h2>
 
@@ -473,11 +519,11 @@
                 </section>
                 @endif
 
-                {{-- 3. CAUSES & TRIGGERS --}}
+                {{-- SECTION 3: CAUSES & TRIGGERS --}}
                 @if(!empty($disease->getTranslation('causes', $locale)))
                 <section id="causes" class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700/80 scroll-mt-24">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm font-bold">3</span>
+                        <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm font-bold">{{ $secCount++ }}</span>
                         {{ $isBn ? 'রোগের কারণসমূহ ও উদ্দীপক (Causes & Triggers)' : 'Causes & Triggers' }}
                     </h2>
                     <div class="prose prose-sky dark:prose-invert max-w-none text-gray-700 dark:text-gray-200 leading-relaxed text-sm sm:text-base">
@@ -486,7 +532,7 @@
                 </section>
                 @endif
 
-                {{-- 4. RISK FACTORS & COMPLICATIONS --}}
+                {{-- RISK FACTORS & COMPLICATIONS --}}
                 @if(!empty($disease->getTranslation('risk_factors', $locale)) || !empty($disease->getTranslation('complications', $locale)))
                 <div id="risks-complications" class="grid grid-cols-1 md:grid-cols-2 gap-6 scroll-mt-24">
                     @if(!empty($disease->getTranslation('risk_factors', $locale)))
@@ -515,11 +561,11 @@
                 </div>
                 @endif
 
-                {{-- 5. PREVENTION --}}
+                {{-- SECTION: PREVENTION --}}
                 @if(!empty($disease->getTranslation('prevention', $locale)))
                 <section id="prevention" class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700/80 scroll-mt-24">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm font-bold">4</span>
+                        <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm font-bold">{{ $secCount++ }}</span>
                         {{ $isBn ? 'প্রতিরোধ ও সতর্কতা (Prevention)' : 'Prevention' }}
                     </h2>
                     <div class="prose prose-emerald dark:prose-invert max-w-none text-gray-700 dark:text-gray-200 leading-relaxed text-sm sm:text-base">
@@ -528,7 +574,7 @@
                 </section>
                 @endif
 
-                {{-- 6. WHEN TO SEE A DOCTOR --}}
+                {{-- WHEN TO SEE A DOCTOR --}}
                 @if(!empty($disease->getTranslation('when_to_see_doctor', $locale)))
                 <section class="bg-amber-50/60 dark:bg-amber-950/20 rounded-3xl p-6 sm:p-8 border border-amber-200 dark:border-amber-900/40">
                     <h2 class="text-lg sm:text-xl font-bold text-amber-800 dark:text-amber-300 mb-3 flex items-center gap-2">
@@ -541,11 +587,11 @@
                 </section>
                 @endif
 
-                {{-- 7. DIAGNOSIS & TESTS --}}
+                {{-- SECTION: DIAGNOSIS & TESTS --}}
                 @if(!empty($disease->getTranslation('diagnosis_overview', $locale)) || count($tests) > 0)
                 <section id="diagnosis" class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700/80 scroll-mt-24 space-y-5">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm font-bold">5</span>
+                        <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-sm font-bold">{{ $secCount++ }}</span>
                         {{ $isBn ? 'রোগ নির্ণয় ও পরীক্ষাসমূহ (Diagnosis & Tests)' : 'Diagnosis & Tests' }}
                     </h2>
 
@@ -579,11 +625,11 @@
                 </section>
                 @endif
 
-                {{-- 8. TREATMENTS, MEDICINES & PROCEDURES --}}
+                {{-- SECTION: TREATMENTS, MEDICINES & PROCEDURES --}}
                 @if(!empty($disease->getTranslation('treatment_overview', $locale)) || count($treatments) > 0 || count($medicines) > 0 || count($procedures) > 0 || !empty($disease->getTranslation('clinical_trials', $locale)) || !empty($disease->getTranslation('diagnosis_treatment', $locale)))
                 <section id="treatments" class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700/80 scroll-mt-24 space-y-6">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm font-bold">6</span>
+                        <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm font-bold">{{ $secCount++ }}</span>
                         {{ $isBn ? 'চিকিৎসা ও ওষুধ নির্দেশিকা (Treatments & Medications)' : 'Treatments & Medications' }}
                     </h2>
 
@@ -676,7 +722,7 @@
                 </section>
                 @endif
 
-                {{-- 9. LIFESTYLE & HOME REMEDIES --}}
+                {{-- LIFESTYLE & HOME REMEDIES --}}
                 @if(!empty($disease->getTranslation('lifestyle_home_remedies', $locale)) || !empty($disease->getTranslation('alternative_medicine', $locale)))
                 <div id="lifestyle" class="grid grid-cols-1 md:grid-cols-2 gap-6 scroll-mt-24">
                     @if(!empty($disease->getTranslation('lifestyle_home_remedies', $locale)))
@@ -705,7 +751,7 @@
                 </div>
                 @endif
 
-                {{-- 10. COPING & SUPPORT + PREPARING FOR APPOINTMENT --}}
+                {{-- COPING & SUPPORT + PREPARING FOR APPOINTMENT --}}
                 @if(!empty($disease->getTranslation('coping_support', $locale)) || !empty($disease->getTranslation('preparing_for_appointment', $locale)))
                 <div id="prep-appointment" class="grid grid-cols-1 md:grid-cols-2 gap-6 scroll-mt-24">
                     @if(!empty($disease->getTranslation('coping_support', $locale)))
@@ -734,7 +780,7 @@
                 </div>
                 @endif
 
-                {{-- 11. FREQUENTLY ASKED QUESTIONS (ACCORDION) --}}
+                {{-- FREQUENTLY ASKED QUESTIONS (ACCORDION) --}}
                 @if(count($faqs) > 0)
                 <section id="faqs" class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700/80 scroll-mt-24 space-y-4" x-data="{ openFaq: 0 }">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2.5">
@@ -758,7 +804,7 @@
                 </section>
                 @endif
 
-                {{-- 12. AUTHORITATIVE REFERENCES & CITATIONS --}}
+                {{-- AUTHORITATIVE REFERENCES & CITATIONS --}}
                 @if($disease->references->count() > 0)
                 <section class="bg-gray-100/70 dark:bg-gray-900/40 rounded-3xl p-6 border border-gray-200/60 dark:border-gray-800">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
@@ -787,13 +833,13 @@
                 </section>
                 @endif
 
-                {{-- 13. MEDICAL DISCLAIMER --}}
+                {{-- MEDICAL DISCLAIMER --}}
                 <div class="p-4 sm:p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
                     <strong class="font-bold block mb-1">📢 {{ $isBn ? 'মেডিকেল ডিসক্লেইমার / সতর্কবার্তা:' : 'Medical Disclaimer:' }}</strong>
                     @if(!empty($disease->getTranslation('disclaimer', $locale)))
                         {!! $disease->getTranslation('disclaimer', $locale) !!}
                     @else
-                        {{ $isBn ? 'DoctorBD24-এর এই তথ্যসমূহ সাধারণ সচেতনতা ও স্বাস্থ্য শিক্ষার উদ্দেশ্যে আন্তর্জাতিক মেয়ো ক্লিনিক ও ডব্লিউএইচও নির্দেশিকা অনুসরণে প্রস্তুত। এটি চিকিৎসকের সরাসরি প্রেসক্রিপশন বা বিকল্প নয়। যেকোনো স্বাস্থ্য সমস্যায় অবিলম্বে বিএমডিসি নিবন্ধিত চিকিৎসকের পরামর্শ নিন।' : 'This content is strictly for informational and educational purposes only based on international medical guidelines. It is not intended to substitute professional medical advice, diagnosis, or treatment. Always seek the advice of your qualified physician.' }}
+                        {{ $isBn ? 'DoctorBD24-এর এই তথ্যসমূহ সাধারণ সচেতনতা ও স্বাস্থ্য শিক্ষার উদ্দেশ্যে আন্তর্জাতিক মেয়ো ক্লিনিক ও ডব্লিউএইচও নির্দেশিকা অনুসরণে প্রস্তুত। এটি চিকিৎসকের সরাসরি প্রেসক্রিপশন বা বিকল্প নয়। যেকোনো স্বাস্থ্য সমস্যায় সর্বদা বিএমডিসি নিবন্ধিত চিকিৎসকের পরামর্শ নিন।' : 'This content is strictly for informational and educational purposes only based on international medical guidelines. It is not intended to substitute professional medical advice, diagnosis, or treatment. Always seek the advice of your qualified physician.' }}
                     @endif
                 </div>
             </div>

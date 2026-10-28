@@ -196,6 +196,10 @@ class AdminDiseaseController extends Controller
             $disease->updateSeo($seoData);
         }
 
+        if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+            \Spatie\ResponseCache\Facades\ResponseCache::clear();
+        }
+
         return redirect()->route('admin.diseases.index')->with('success', 'Disease guide created successfully.');
     }
 
@@ -333,12 +337,21 @@ class AdminDiseaseController extends Controller
             $disease->updateSeo($seoData);
         }
 
+        if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+            \Spatie\ResponseCache\Facades\ResponseCache::clear();
+        }
+
         return redirect()->route('admin.diseases.index')->with('success', 'Disease guide updated successfully.');
     }
 
     public function destroy(Disease $disease)
     {
         $disease->delete();
+
+        if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+            \Spatie\ResponseCache\Facades\ResponseCache::clear();
+        }
+
         return redirect()->route('admin.diseases.index')->with('success', 'Disease deleted successfully.');
     }
 
