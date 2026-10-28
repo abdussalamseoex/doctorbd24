@@ -818,6 +818,50 @@
                 <input type="text" name="related_conditions" value="{{ $relCond }}" placeholder="e.g. tension-headache, cluster-headache, sinusitis" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700">
             </div>
 
+            {{-- Related Hospitals Picker --}}
+            @php
+                $hospitalsList = $hospitals ?? \App\Models\Hospital::orderBy('name')->get();
+                $selectedHospitals = old('related_hospitals', isset($disease) && is_array($disease->related_hospitals) ? $disease->related_hospitals : []);
+            @endphp
+            <div class="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                        <span>🏥 Related Hospitals & Clinics (হাসপাতাল নির্বাচন করুন)</span>
+                    </label>
+                    <span class="text-[11px] text-gray-400">Select specialized centers treating this condition</span>
+                </div>
+                <div class="max-h-40 overflow-y-auto p-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    @foreach($hospitalsList as $h)
+                        <label class="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer hover:text-sky-600 p-1 rounded hover:bg-white dark:hover:bg-gray-700">
+                            <input type="checkbox" name="related_hospitals[]" value="{{ $h->id }}" @checked(in_array($h->id, $selectedHospitals)) class="rounded border-gray-300 text-sky-600 focus:ring-sky-400 w-3.5 h-3.5">
+                            <span class="truncate">{{ $h->getTranslation('name', 'en') }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Related Health Articles (Blog Posts) Picker --}}
+            @php
+                $articlesList = $articles ?? \App\Models\BlogPost::where('status', 'published')->orderBy('title')->get();
+                $selectedArticles = old('related_articles', isset($disease) && is_array($disease->related_articles) ? $disease->related_articles : []);
+            @endphp
+            <div class="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                        <span>📰 Related Health Articles & Guides (সম্পর্কিত ব্লগ আর্টিকেল নির্বাচন করুন)</span>
+                    </label>
+                    <span class="text-[11px] text-gray-400">Select published health articles related to this condition</span>
+                </div>
+                <div class="max-h-40 overflow-y-auto p-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @foreach($articlesList as $art)
+                        <label class="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer hover:text-sky-600 p-1 rounded hover:bg-white dark:hover:bg-gray-700">
+                            <input type="checkbox" name="related_articles[]" value="{{ $art->id }}" @checked(in_array($art->id, $selectedArticles)) class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-400 w-3.5 h-3.5">
+                            <span class="truncate">{{ $art->getTranslation('title', 'en') }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
             {{-- Disclaimer Override --}}
             <div class="pt-2 border-t border-gray-100 dark:border-gray-700 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

@@ -243,14 +243,18 @@ class MigraineBenchmarkDemoSeeder extends Seeder
 
         // Attach relevant symptoms for Symptom Checker
         $headacheSym = Symptom::where('slug', 'headache')->first();
-        $nauseaSym = Symptom::where('slug', 'nausea')->orWhere('slug', 'nausea-or-vomiting')->first();
+        $nauseaSym = Symptom::where('slug', 'nausea-vomiting')->first();
+        $dizzinessSym = Symptom::where('slug', 'dizziness-vertigo')->first();
 
         $symptomSync = [];
         if ($headacheSym) {
             $symptomSync[$headacheSym->id] = ['is_primary' => true, 'match_weight' => 10];
         }
         if ($nauseaSym) {
-            $symptomSync[$nauseaSym->id] = ['is_primary' => true, 'match_weight' => 8];
+            $symptomSync[$nauseaSym->id] = ['is_primary' => false, 'match_weight' => 7];
+        }
+        if ($dizzinessSym) {
+            $symptomSync[$dizzinessSym->id] = ['is_primary' => false, 'match_weight' => 6];
         }
 
         if (!empty($symptomSync)) {

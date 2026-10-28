@@ -8,6 +8,8 @@ use App\Models\Specialty;
 use App\Models\Symptom;
 use App\Models\BodyPart;
 use App\Models\Doctor;
+use App\Models\Hospital;
+use App\Models\BlogPost;
 use App\Models\DiseaseReference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -71,8 +73,10 @@ class AdminDiseaseController extends Controller
         $symptoms = Symptom::with('bodyPart')->orderBy('slug')->get();
         $bodySystems = BodyPart::orderBy('slug')->get();
         $doctors = Doctor::orderBy('slug')->get();
+        $hospitals = Hospital::orderBy('slug')->get();
+        $articles = BlogPost::where('status', 'published')->orderBy('slug')->get();
 
-        return view('admin.diseases.create', compact('specialties', 'symptoms', 'bodySystems', 'doctors'));
+        return view('admin.diseases.create', compact('specialties', 'symptoms', 'bodySystems', 'doctors', 'hospitals', 'articles'));
     }
 
     public function store(Request $request)
@@ -145,8 +149,8 @@ class AdminDiseaseController extends Controller
             'featured_image_caption'   => $request->input('featured_image_caption', []),
             'body_images'              => $request->input('body_images', []),
             'related_conditions'       => $this->parseCommaArray($request->input('related_conditions')),
-            'related_hospitals'        => $this->parseCommaArray($request->input('related_hospitals')),
-            'related_articles'         => $this->parseCommaArray($request->input('related_articles')),
+            'related_hospitals'        => array_values(array_filter(array_map('intval', (array) $request->input('related_hospitals', [])))),
+            'related_articles'         => array_values(array_filter(array_map('intval', (array) $request->input('related_articles', [])))),
             'disclaimer'               => $request->input('disclaimer', []),
             'is_featured'              => $request->boolean('is_featured'),
             'is_emergency'             => $request->boolean('is_emergency'),
@@ -210,8 +214,10 @@ class AdminDiseaseController extends Controller
         $symptoms = Symptom::with('bodyPart')->orderBy('slug')->get();
         $bodySystems = BodyPart::orderBy('slug')->get();
         $doctors = Doctor::orderBy('slug')->get();
+        $hospitals = Hospital::orderBy('slug')->get();
+        $articles = BlogPost::where('status', 'published')->orderBy('slug')->get();
 
-        return view('admin.diseases.edit', compact('disease', 'specialties', 'symptoms', 'bodySystems', 'doctors'));
+        return view('admin.diseases.edit', compact('disease', 'specialties', 'symptoms', 'bodySystems', 'doctors', 'hospitals', 'articles'));
     }
 
     public function update(Request $request, Disease $disease)
@@ -276,8 +282,8 @@ class AdminDiseaseController extends Controller
             'featured_image_caption'   => $request->input('featured_image_caption', []),
             'body_images'              => $request->input('body_images', []),
             'related_conditions'       => $this->parseCommaArray($request->input('related_conditions')),
-            'related_hospitals'        => $this->parseCommaArray($request->input('related_hospitals')),
-            'related_articles'         => $this->parseCommaArray($request->input('related_articles')),
+            'related_hospitals'        => array_values(array_filter(array_map('intval', (array) $request->input('related_hospitals', [])))),
+            'related_articles'         => array_values(array_filter(array_map('intval', (array) $request->input('related_articles', [])))),
             'disclaimer'               => $request->input('disclaimer', []),
             'is_featured'              => $request->boolean('is_featured'),
             'is_emergency'             => $request->boolean('is_emergency'),

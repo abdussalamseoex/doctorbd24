@@ -983,6 +983,45 @@
                 </div>
                 @endif
 
+                {{-- Related Hospitals & Specialized Centers --}}
+                @if(isset($relatedHospitals) && $relatedHospitals->count() > 0)
+                <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/80 space-y-3">
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <span>🏥 {{ $isBn ? 'বিশেষায়িত হাসপাতাল ও সেন্টার' : 'Specialized Hospitals & Centers' }}</span>
+                    </h3>
+                    <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @foreach($relatedHospitals as $hosp)
+                        <a href="{{ route('hospitals.show', $hosp->slug) }}" class="py-2.5 flex items-center justify-between text-xs text-gray-700 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400 group">
+                            <div>
+                                <span class="font-semibold block group-hover:translate-x-1 transition-transform">{{ $hosp->getTranslation('name', $locale) }}</span>
+                                @if($hosp->area)
+                                    <span class="text-[10px] text-gray-400">📍 {{ $hosp->area->getTranslation('name', $locale) }}</span>
+                                @endif
+                            </div>
+                            <span class="text-gray-400 text-xs">→</span>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                {{-- Related Health Articles & Blog Posts --}}
+                @if(isset($relatedArticles) && $relatedArticles->count() > 0)
+                <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/80 space-y-3">
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <span>📰 {{ $isBn ? 'সম্পর্কিত স্বাস্থ্য ব্লগ ও নির্দেশিকা' : 'Related Health Guides' }}</span>
+                    </h3>
+                    <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @foreach($relatedArticles as $art)
+                        <a href="{{ route('blog.show', $art->slug) }}" class="py-2.5 flex items-center justify-between text-xs text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 group">
+                            <span class="font-semibold block group-hover:translate-x-1 transition-transform truncate">{{ $art->getTranslation('title', $locale) }}</span>
+                            <span class="text-gray-400 text-xs flex-shrink-0 ml-2">→</span>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
             </div>
         </div>
     </div>

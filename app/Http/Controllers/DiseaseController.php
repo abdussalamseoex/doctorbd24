@@ -167,6 +167,24 @@ class DiseaseController extends Controller
             $relatedDiseases = $relatedConditionsList;
         }
 
-        return view('diseases.show', compact('disease', 'relevantDoctors', 'relatedDiseases'));
+        // Related Hospitals if assigned
+        $relatedHospitals = collect();
+        if (!empty($disease->related_hospitals) && is_array($disease->related_hospitals)) {
+            $relatedHospitals = \App\Models\Hospital::whereIn('id', $disease->related_hospitals)
+                ->where('status', 'published')
+                ->take(3)
+                ->get();
+        }
+
+        // Related Articles if assigned
+        $relatedArticles = collect();
+        if (!empty($disease->related_articles) && is_array($disease->related_articles)) {
+            $relatedArticles = \App\Models\BlogPost::whereIn('id', $disease->related_articles)
+                ->where('status', 'published')
+                ->take(3)
+                ->get();
+        }
+
+        return view('diseases.show', compact('disease', 'relevantDoctors', 'relatedDiseases', 'relatedHospitals', 'relatedArticles'));
     }
 }
