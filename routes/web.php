@@ -104,6 +104,12 @@ $publicRoutes = function () {
         Route::get('/ambulance/{slug}', [\App\Http\Controllers\AmbulanceController::class, 'resolve'])->name('ambulances.show');
         Route::get('/blog', [\App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
         Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+        
+        // Diseases & Conditions (Mayo Clinic Standard)
+        Route::get('/diseases-conditions', [\App\Http\Controllers\DiseaseController::class, 'index'])->name('diseases.index');
+        Route::get('/diseases-conditions/{slug}', [\App\Http\Controllers\DiseaseController::class, 'show'])->name('diseases.show');
+        Route::get('/symptom-checker', [\App\Http\Controllers\SymptomCheckerController::class, 'index'])->name('symptom-checker.index');
+        Route::post('/symptom-checker/check', [\App\Http\Controllers\SymptomCheckerController::class, 'check'])->name('symptom-checker.check');
     });
 
     Route::post('/doctors/{doctor}/claim', [\App\Http\Controllers\ClaimRequestController::class, 'store'])->name('doctors.claim')->middleware('auth');
@@ -122,6 +128,7 @@ Route::get('/sitemap/doctors.xml', [\App\Http\Controllers\SitemapController::cla
 Route::get('/sitemap/hospitals.xml', [\App\Http\Controllers\SitemapController::class, 'hospitals']);
 Route::get('/sitemap/ambulances.xml', [\App\Http\Controllers\SitemapController::class, 'ambulances']);
 Route::get('/sitemap/blog.xml', [\App\Http\Controllers\SitemapController::class, 'blog']);
+Route::get('/sitemap/diseases.xml', [\App\Http\Controllers\SitemapController::class, 'diseases']);
 Route::get('/sitemap/pages-en.xml', [\App\Http\Controllers\SitemapController::class, 'pagesEn']);
 Route::get('/sitemap/pages-bn.xml', [\App\Http\Controllers\SitemapController::class, 'pagesBn']);
 
@@ -215,6 +222,14 @@ Route::prefix('admin')
         Route::resource('ambulances', \App\Http\Controllers\Admin\AdminAmbulanceController::class)->middleware('permission:manage ambulances');
         Route::resource('ambulance-types', \App\Http\Controllers\Admin\AmbulanceTypeController::class)->except('show')->middleware('permission:manage settings');
         Route::resource('ambulance-features', \App\Http\Controllers\Admin\AmbulanceFeatureController::class)->except('show')->middleware('permission:manage settings');
+        // Diseases & Conditions
+        Route::post('diseases/bulk-action', [\App\Http\Controllers\Admin\AdminDiseaseController::class, 'bulkAction'])->name('diseases.bulk-action')->middleware('permission:manage blog');
+        Route::resource('diseases', \App\Http\Controllers\Admin\AdminDiseaseController::class)->middleware('permission:manage blog');
+
+        // Symptoms & Checker Taxonomy
+        Route::post('symptoms/bulk-action', [\App\Http\Controllers\Admin\AdminSymptomController::class, 'bulkAction'])->name('symptoms.bulk-action')->middleware('permission:manage blog');
+        Route::resource('symptoms', \App\Http\Controllers\Admin\AdminSymptomController::class)->middleware('permission:manage blog');
+
         // Specialties
         Route::resource('specialties', \App\Http\Controllers\Admin\AdminSpecialtyController::class)->middleware('permission:manage settings');
         // Locations

@@ -17,6 +17,10 @@
         <lastmod>{{ now()->toAtomString() }}</lastmod>
     </sitemap>
     <sitemap>
+        <loc>{{ url('/sitemap/diseases.xml') }}</loc>
+        <lastmod>{{ now()->toAtomString() }}</lastmod>
+    </sitemap>
+    <sitemap>
         <loc>{{ url('/sitemap/pages-en.xml') }}</loc>
         <lastmod>{{ now()->toAtomString() }}</lastmod>
     </sitemap>

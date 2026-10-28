@@ -48,6 +48,13 @@ class SitemapController extends Controller
         return response($content, 200)->header('Content-Type', 'application/xml; charset=utf-8');
     }
 
+    public function diseases(): Response
+    {
+        $diseases = \App\Models\Disease::where('status', 'published')->select('id', 'name', 'slug', 'updated_at')->get();
+        $content  = view('sitemap.diseases', compact('diseases'))->render();
+        return response($content, 200)->header('Content-Type', 'application/xml; charset=utf-8');
+    }
+
     public function pagesEn(): StreamedResponse
     {
         @ini_set('memory_limit', '512M');

@@ -1,0 +1,266 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Disease;
+use App\Models\Specialty;
+use App\Models\Symptom;
+use App\Models\DiseaseReference;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Services\ImageOptimizerService;
+
+class AdminDiseaseController extends Controller
+{
+    use \App\Traits\HasBulkActions;
+    protected $model = Disease::class;
+
+    public function index(Request $request)
+    {
+        $baseQuery = Disease::query();
+
+        $counts = [
+            'all'       => (clone $baseQuery)->count(),
+            'published' => (clone $baseQuery)->where('status', 'published')->count(),
+            'draft'     => (clone $baseQuery)->where('status', 'draft')->count(),
+        ];
+
+        $query = (clone $baseQuery)->with(['primarySpecialty', 'symptoms']);
+
+        $status = $request->query('status', 'all');
+        if ($status === 'published') {
+            $query->where('status', 'published');
+        } elseif ($status === 'draft') {
+            $query->where('status', 'draft');
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->query('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('specialty_id')) {
+            $query->where('primary_specialty_id', $request->query('specialty_id'));
+        }
+
+        $perPage = (int) $request->input('per_page', 20);
+        if (!in_array($perPage, [10, 20, 50, 100])) {
+            $perPage = 20;
+        }
+
+        $diseases = $query->latest('id')->paginate($perPage)->withQueryString();
+        $specialties = Specialty::orderBy('slug')->get();
+
+        return view('admin.diseases.index', compact('diseases', 'counts', 'status', 'specialties'));
+    }
+
+    public function create()
+    {
+        $specialties = Specialty::orderBy('slug')->get();
+        $symptoms = Symptom::with('bodyPart')->orderBy('slug')->get();
+        return view('admin.diseases.create', compact('specialties', 'symptoms'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name.en'              => ['required', 'string', 'max:255'],
+            'name.bn'              => ['nullable', 'string', 'max:255'],
+            'slug'                 => ['nullable', 'string', 'max:255', 'unique:diseases,slug'],
+            'primary_specialty_id' => ['nullable', 'exists:specialties,id'],
+            'status'               => ['required', 'in:published,draft'],
+            'is_featured'          => ['boolean'],
+            'is_emergency'         => ['boolean'],
+            'image'                => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
+        ]);
+
+        $enName = $request->input('name.en');
+        $bnName = $request->input('name.bn', $enName);
+
+        $slug = $request->filled('slug')
+            ? Str::slug($request->input('slug'))
+            : Str::slug($enName);
+
+        $firstLetter = strtoupper(substr($enName, 0, 1));
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = ImageOptimizerService::storeAndOptimize($request->file('image'), 'diseases', 1200);
+        }
+
+        $disease = Disease::create([
+            'name'                 => ['en' => $enName, 'bn' => $bnName],
+            'slug'                 => $slug,
+            'first_letter'         => $firstLetter,
+            'primary_specialty_id' => $request->input('primary_specialty_id'),
+            'overview'             => $request->input('overview', []),
+            'symptoms_summary'     => $request->input('symptoms_summary', []),
+            'causes'               => $request->input('causes', []),
+            'risk_factors'         => $request->input('risk_factors', []),
+            'complications'        => $request->input('complications', []),
+            'prevention'           => $request->input('prevention', []),
+            'when_to_see_doctor'   => $request->input('when_to_see_doctor', []),
+            'diagnosis_treatment'  => $request->input('diagnosis_treatment', []),
+            'image'                => $imagePath,
+            'is_featured'          => $request->boolean('is_featured'),
+            'is_emergency'         => $request->boolean('is_emergency'),
+            'status'               => $request->input('status', 'published'),
+            'published_at'         => $request->input('status') === 'published' ? now() : null,
+        ]);
+
+        // Sync Secondary Specialties
+        if ($request->has('secondary_specialties')) {
+            $disease->specialties()->sync($request->input('secondary_specialties', []));
+        }
+
+        // Sync Symptoms
+        if ($request->has('symptoms')) {
+            $symptomData = [];
+            foreach ($request->input('symptoms', []) as $symptomId => $pivot) {
+                if (!empty($pivot['selected'])) {
+                    $symptomData[$symptomId] = [
+                        'is_primary'   => !empty($pivot['is_primary']),
+                        'match_weight' => (int) ($pivot['match_weight'] ?? 10),
+                    ];
+                }
+            }
+            $disease->symptoms()->sync($symptomData);
+        }
+
+        // Save References
+        if ($request->has('references')) {
+            foreach ($request->input('references', []) as $index => $ref) {
+                if (!empty($ref['source_name'])) {
+                    $disease->references()->create([
+                        'source_name' => $ref['source_name'],
+                        'source_url'  => $ref['source_url'] ?? null,
+                        'notes'       => $ref['notes'] ?? null,
+                        'order_index' => $index + 1,
+                    ]);
+                }
+            }
+        }
+
+        // Save SEO Meta
+        if ($request->has('seo')) {
+            $seoData = $request->input('seo');
+            if ($request->hasFile('seo.og_image_file')) {
+                $seoData['og_image'] = ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
+            }
+            $disease->updateSeo($seoData);
+        }
+
+        return redirect()->route('admin.diseases.index')->with('success', 'Disease guide created successfully.');
+    }
+
+    public function edit(Disease $disease)
+    {
+        $disease->load(['primarySpecialty', 'specialties', 'symptoms', 'references']);
+        $specialties = Specialty::orderBy('slug')->get();
+        $symptoms = Symptom::with('bodyPart')->orderBy('slug')->get();
+
+        return view('admin.diseases.edit', compact('disease', 'specialties', 'symptoms'));
+    }
+
+    public function update(Request $request, Disease $disease)
+    {
+        $validated = $request->validate([
+            'name.en'              => ['required', 'string', 'max:255'],
+            'name.bn'              => ['nullable', 'string', 'max:255'],
+            'slug'                 => ['nullable', 'string', 'max:255', 'unique:diseases,slug,' . $disease->id],
+            'primary_specialty_id' => ['nullable', 'exists:specialties,id'],
+            'status'               => ['required', 'in:published,draft'],
+            'is_featured'          => ['boolean'],
+            'is_emergency'         => ['boolean'],
+            'image'                => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
+        ]);
+
+        $enName = $request->input('name.en');
+        $bnName = $request->input('name.bn', $enName);
+
+        $slug = $request->filled('slug')
+            ? Str::slug($request->input('slug'))
+            : Str::slug($enName);
+
+        $firstLetter = strtoupper(substr($enName, 0, 1));
+
+        $data = [
+            'name'                 => ['en' => $enName, 'bn' => $bnName],
+            'slug'                 => $slug,
+            'first_letter'         => $firstLetter,
+            'primary_specialty_id' => $request->input('primary_specialty_id'),
+            'overview'             => $request->input('overview', []),
+            'symptoms_summary'     => $request->input('symptoms_summary', []),
+            'causes'               => $request->input('causes', []),
+            'risk_factors'         => $request->input('risk_factors', []),
+            'complications'        => $request->input('complications', []),
+            'prevention'           => $request->input('prevention', []),
+            'when_to_see_doctor'   => $request->input('when_to_see_doctor', []),
+            'diagnosis_treatment'  => $request->input('diagnosis_treatment', []),
+            'is_featured'          => $request->boolean('is_featured'),
+            'is_emergency'         => $request->boolean('is_emergency'),
+            'status'               => $request->input('status', 'published'),
+        ];
+
+        if ($request->boolean('remove_image')) {
+            $data['image'] = null;
+        } elseif ($request->hasFile('image')) {
+            $data['image'] = ImageOptimizerService::storeAndOptimize($request->file('image'), 'diseases', 1200);
+        }
+
+        $disease->update($data);
+
+        // Sync Secondary Specialties
+        $disease->specialties()->sync($request->input('secondary_specialties', []));
+
+        // Sync Symptoms
+        $symptomData = [];
+        if ($request->has('symptoms')) {
+            foreach ($request->input('symptoms', []) as $symptomId => $pivot) {
+                if (!empty($pivot['selected'])) {
+                    $symptomData[$symptomId] = [
+                        'is_primary'   => !empty($pivot['is_primary']),
+                        'match_weight' => (int) ($pivot['match_weight'] ?? 10),
+                    ];
+                }
+            }
+        }
+        $disease->symptoms()->sync($symptomData);
+
+        // Replace References
+        $disease->references()->delete();
+        if ($request->has('references')) {
+            foreach ($request->input('references', []) as $index => $ref) {
+                if (!empty($ref['source_name'])) {
+                    $disease->references()->create([
+                        'source_name' => $ref['source_name'],
+                        'source_url'  => $ref['source_url'] ?? null,
+                        'notes'       => $ref['notes'] ?? null,
+                        'order_index' => $index + 1,
+                    ]);
+                }
+            }
+        }
+
+        // Save SEO Meta
+        if ($request->has('seo')) {
+            $seoData = $request->input('seo');
+            if ($request->hasFile('seo.og_image_file')) {
+                $seoData['og_image'] = ImageOptimizerService::storeAndOptimize($request->file('seo.og_image_file'), 'seo/og', 1200);
+            }
+            $disease->updateSeo($seoData);
+        }
+
+        return redirect()->route('admin.diseases.index')->with('success', 'Disease guide updated successfully.');
+    }
+
+    public function destroy(Disease $disease)
+    {
+        $disease->delete();
+        return redirect()->route('admin.diseases.index')->with('success', 'Disease deleted successfully.');
+    }
+}

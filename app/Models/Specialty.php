@@ -16,5 +16,10 @@ class Specialty extends Model
     {
         return $this->belongsToMany(Doctor::class, 'doctor_specialty');
     }
+
+    public function diseases(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Disease::class, 'primary_specialty_id');
+    }
 }
 

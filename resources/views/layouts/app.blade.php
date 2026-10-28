@@ -118,6 +118,9 @@
                     <a href="{{ route('hospitals.index') }}" class="text-sm transition-colors {{ request()->routeIs('hospitals.*') ? 'font-extrabold text-sky-400' : 'font-medium text-gray-200 hover:text-sky-400' }}">
                         {{ __('Hospitals') }}
                     </a>
+                    <a href="{{ route('diseases.index') }}" class="text-sm transition-colors {{ request()->routeIs('diseases.*') ? 'font-extrabold text-sky-400' : 'font-medium text-gray-200 hover:text-sky-400' }}">
+                        {{ __('Diseases') }}
+                    </a>
                     <a href="{{ route('ambulances.index') }}" class="text-sm transition-colors {{ request()->routeIs('ambulances.*') ? 'font-extrabold text-sky-400' : 'font-medium text-gray-200 hover:text-sky-400' }}">
                         {{ __('Ambulance') }}
                     </a>
@@ -225,6 +228,12 @@
                 <a href="{{ route('hospitals.index') }}" class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('hospitals.*') ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-sky-50 dark:hover:bg-gray-800' }}">
                     {{ __('Hospitals') }}
                 </a>
+                <a href="{{ route('diseases.index') }}" class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('diseases.*') ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-sky-50 dark:hover:bg-gray-800' }}">
+                    {{ __('Diseases & Conditions') }}
+                </a>
+                <a href="{{ route('symptom-checker.index') }}" class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('symptom-checker.*') ? 'bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-gray-800' }}">
+                    {{ __('Symptom Checker') }}
+                </a>
                 <a href="{{ route('ambulances.index') }}" class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('ambulances.*') ? 'bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-300 font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-sky-50 dark:hover:bg-gray-800' }}">
                     {{ __('Ambulance') }}
                 </a>
@@ -324,6 +333,8 @@
                     <ul class="space-y-2 text-sm">
                         <li><a href="{{ route('doctors.index') }}" class="hover:text-sky-400 transition-colors">{{ __('Doctors') }}</a></li>
                         <li><a href="{{ route('hospitals.index') }}" class="hover:text-sky-400 transition-colors">{{ __('Hospitals') }}</a></li>
+                        <li><a href="{{ route('diseases.index') }}" class="hover:text-sky-400 transition-colors">{{ __('Diseases & Conditions') }}</a></li>
+                        <li><a href="{{ route('symptom-checker.index') }}" class="hover:text-sky-400 transition-colors">{{ __('Symptom Checker') }}</a></li>
                         <li><a href="{{ route('ambulances.index') }}" class="hover:text-sky-400 transition-colors">{{ __('Ambulance') }}</a></li>
                         <li><a href="{{ route('blog.index') }}" class="hover:text-sky-400 transition-colors">{{ __('Health Blog') }}</a></li>
                     </ul>
