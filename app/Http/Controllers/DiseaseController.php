@@ -58,12 +58,20 @@ class DiseaseController extends Controller
             });
         }
 
+        // Body System Filter
+        if ($request->filled('system')) {
+            $systemSlug = $request->query('system');
+            $query->whereHas('bodySystem', function ($q) use ($systemSlug) {
+                $q->where('slug', $systemSlug);
+            });
+        }
+
         $diseases = $query->orderBy('name->en', 'asc')->paginate(18)->withQueryString();
 
         // Featured Diseases for Top Highlights
         $featuredDiseases = Disease::where('status', 'published')
             ->where('is_featured', true)
-            ->with('primarySpecialty')
+            ->with(['primarySpecialty', 'bodySystem'])
             ->take(6)
             ->get();
 
@@ -93,7 +101,15 @@ class DiseaseController extends Controller
     {
         $disease = Disease::where('slug', $slug)
             ->where('status', 'published')
-            ->with(['primarySpecialty', 'specialties', 'symptoms.bodyPart', 'references'])
+            ->with([
+                'primarySpecialty',
+                'specialties',
+                'bodySystem',
+                'reviewerDoctor.specialties',
+                'reviewerDoctor.chambers',
+                'symptoms.bodyPart',
+                'references'
+            ])
             ->firstOrFail();
 
         $disease->incrementViewCount();
@@ -112,7 +128,7 @@ class DiseaseController extends Controller
             SEOTools::setTitle($customTitle ?: "{$name} - লক্ষণ, কারণ ও চিকিৎসা | DoctorBD24");
             SEOTools::setDescription($customDesc ?: $seoDesc);
         } else {
-            SEOTools::setTitle($isBn ? "{$name} - লক্ষণ, কারণ, প্রতিরোধ ও চিকিৎসা" : "{$name} - Symptoms, Causes & Treatments");
+            SEOTools::setTitle($isBn ? "{$name} - লক্ষণ, কারণ, প্রতিরোধ ও চিকিৎসা | DoctorBD24" : "{$name} - Symptoms, Causes & Treatments | DoctorBD24");
             SEOTools::setDescription($seoDesc);
         }
 
@@ -127,16 +143,29 @@ class DiseaseController extends Controller
             ->take(6)
             ->get();
 
-        // Related Diseases in the same specialty
-        $relatedDiseases = Disease::where('status', 'published')
-            ->where('id', '!=', $disease->id)
-            ->where(function ($q) use ($disease) {
-                if ($disease->primary_specialty_id) {
-                    $q->where('primary_specialty_id', $disease->primary_specialty_id);
-                }
-            })
-            ->take(4)
-            ->get();
+        // Related Diseases in the same specialty or specified related_conditions
+        $relatedConditionsList = collect();
+        if (!empty($disease->related_conditions) && is_array($disease->related_conditions)) {
+            $relatedConditionsList = Disease::where('status', 'published')
+                ->whereIn('slug', $disease->related_conditions)
+                ->where('id', '!=', $disease->id)
+                ->take(4)
+                ->get();
+        }
+
+        if ($relatedConditionsList->isEmpty()) {
+            $relatedDiseases = Disease::where('status', 'published')
+                ->where('id', '!=', $disease->id)
+                ->where(function ($q) use ($disease) {
+                    if ($disease->primary_specialty_id) {
+                        $q->where('primary_specialty_id', $disease->primary_specialty_id);
+                    }
+                })
+                ->take(4)
+                ->get();
+        } else {
+            $relatedDiseases = $relatedConditionsList;
+        }
 
         return view('diseases.show', compact('disease', 'relevantDoctors', 'relatedDiseases'));
     }
