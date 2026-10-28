@@ -48,9 +48,9 @@
 
         {{-- Breadcrumb --}}
         <nav class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-            <a href="{{ route('home') }}" class="hover:text-sky-600 transition-colors">{{ $isBn ? 'হোম' : 'Home' }}</a>
+            <a href="{{ route('home') }}" class="hover:text-emerald-600 transition-colors">{{ $isBn ? 'হোম' : 'Home' }}</a>
             <span>/</span>
-            <a href="{{ route('diseases.index') }}" class="hover:text-sky-600 transition-colors">{{ $isBn ? 'রোগ ও স্বাস্থ্য সমস্যা' : 'Diseases & Conditions' }}</a>
+            <a href="{{ route($isBn ? 'bn.diseases.index' : 'diseases.index') }}" class="hover:text-emerald-600 transition-colors">{{ $isBn ? 'রোগ ও স্বাস্থ্য সমস্যা' : 'Diseases & Conditions' }}</a>
             <span>/</span>
             <span class="text-gray-800 dark:text-gray-200 font-semibold truncate">{{ $disease->getTranslation('name', $locale) }}</span>
         </nav>
@@ -372,7 +372,7 @@
                     <p class="text-xs text-teal-100 mb-4 leading-relaxed">
                         {{ $isBn ? 'আমাদের ফ্রি সিম্পটম চেকার দিয়ে শারীরিক লক্ষণগুলো মিলিয়ে সম্ভাব্য রোগ জানুন।' : 'Assess your symptoms step by step and understand possible causes.' }}
                     </p>
-                    <a href="{{ route('symptom-checker.index') }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-teal-800 rounded-xl text-xs font-bold shadow hover:bg-teal-50 transition-colors">
+                    <a href="{{ route($isBn ? 'bn.symptom-checker.index' : 'symptom-checker.index') }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-teal-800 rounded-xl text-xs font-bold shadow hover:bg-teal-50 transition-colors">
                         <span>{{ $isBn ? 'সিম্পটম চেকার খুলুন' : 'Open Symptom Checker' }}</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </a>
@@ -387,7 +387,7 @@
                     <ul class="space-y-2 text-xs">
                         @foreach($relatedDiseases as $rel)
                         <li>
-                            <a href="{{ route('diseases.show', $rel->slug) }}" class="text-gray-700 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400 font-medium flex items-center gap-2 transition-colors">
+                            <a href="{{ route($isBn ? 'bn.diseases.show' : 'diseases.show', $rel->slug) }}" class="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium flex items-center gap-2 transition-colors">
                                 <span class="text-sky-500">•</span>
                                 <span>{{ $rel->getTranslation('name', $locale) }}</span>
                             </a>

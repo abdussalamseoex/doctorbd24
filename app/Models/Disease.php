@@ -55,6 +55,21 @@ class Disease extends Model
         'view_count' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function ($disease) {
+            if (empty($disease->first_letter)) {
+                $enName = $disease->getTranslation('name', 'en', false) ?: $disease->slug;
+                $clean = strtoupper(substr(trim($enName), 0, 1));
+                if (preg_match('/[A-Z]/', $clean)) {
+                    $disease->first_letter = $clean;
+                } else {
+                    $disease->first_letter = 'A';
+                }
+            }
+        });
+    }
+
     public function primarySpecialty(): BelongsTo
     {
         return $this->belongsTo(Specialty::class, 'primary_specialty_id');

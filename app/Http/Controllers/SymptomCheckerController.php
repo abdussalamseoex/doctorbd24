@@ -61,11 +61,12 @@ class SymptomCheckerController extends Controller
         foreach ($selectedFactors as $factor) {
             if (!empty($factor->options)) {
                 foreach ($factor->options as $opt) {
-                    if (in_array($opt['id'], $factorAnswers) && !empty($opt['red_flag'])) {
+                    $isRed = !empty($opt['red_flag']) || !empty($opt['is_red_flag']);
+                    if (in_array($opt['id'], $factorAnswers) && $isRed) {
                         $hasEmergencyFlag = true;
                         $redFlagReasons[] = [
-                            'en' => $opt['text_en'] ?? 'Critical symptom sign detected',
-                            'bn' => $opt['text_bn'] ?? 'জরুরি চিকিৎসার লক্ষণ শনাক্ত হয়েছে',
+                            'en' => $opt['label']['en'] ?? ($opt['text_en'] ?? 'Critical symptom sign detected'),
+                            'bn' => $opt['label']['bn'] ?? ($opt['text_bn'] ?? 'জরুরি চিকিৎসার লক্ষণ শনাক্ত হয়েছে'),
                         ];
                     }
                 }
@@ -124,7 +125,7 @@ class SymptomCheckerController extends Controller
                 'matched_count'   => $matchedCount,
                 'primary_matched' => $primaryMatched,
                 'is_emergency'    => $disease->is_emergency,
-                'url'             => route('diseases.show', $disease->slug),
+                'url'             => route(app()->getLocale() === 'bn' ? 'bn.diseases.show' : 'diseases.show', $disease->slug),
             ];
         }
 
