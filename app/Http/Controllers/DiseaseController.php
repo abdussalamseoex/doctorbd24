@@ -138,6 +138,20 @@ class DiseaseController extends Controller
             SEOTools::opengraph()->addImage(asset('storage/' . $disease->image));
         }
 
+        // Apply SEO Meta Keywords: Record's seo_keywords if present, else fallback to global default
+        $recordKeywords = $disease->seo_keywords 
+            ?: ($seoMeta?->getTranslation('keywords', $locale, false) ?: ($seoMeta?->keywords ?? null));
+        if (!empty($recordKeywords)) {
+            $kwList = is_array($recordKeywords) ? $recordKeywords : array_filter(array_map('trim', explode(',', $recordKeywords)));
+            if (!empty($kwList)) {
+                SEOTools::metatags()->setKeywords($kwList);
+            }
+        }
+
+        // Canonical URL: Self-canonical (EN URL on EN page, BN URL on BN page)
+        $canonicalUrl = $isBn ? route('bn.diseases.show', $disease->slug) : route('diseases.show', $disease->slug);
+        SEOTools::setCanonical($canonicalUrl);
+
         // Relevant Specialist Doctors from Existing Database
         $relevantDoctors = $disease->getRelevantDoctorsQuery()
             ->take(6)

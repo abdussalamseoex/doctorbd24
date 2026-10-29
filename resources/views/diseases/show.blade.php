@@ -4,6 +4,25 @@
 @php
     $locale = app()->getLocale();
     $isBn = $locale === 'bn';
+
+    // 1. Meta Keywords: Use record's seo_keywords (or seoMeta) if present, else fallback to global default
+    $recordKeywords = $disease->seo_keywords 
+        ?: ($disease->seoMeta?->getTranslation('keywords', $locale, false) 
+            ?: ($disease->seoMeta?->keywords ?? null));
+            
+    if (!empty($recordKeywords)) {
+        $kwList = is_array($recordKeywords) ? $recordKeywords : array_filter(array_map('trim', explode(',', $recordKeywords)));
+        if (!empty($kwList)) {
+            \Artesaos\SEOTools\Facades\SEOTools::metatags()->setKeywords($kwList);
+        }
+    }
+
+    // 2. Canonical tag: EN URL on EN page, BN URL on BN page (Self-canonical)
+    $canonicalUrl = $isBn 
+        ? route('bn.diseases.show', $disease->slug) 
+        : route('diseases.show', $disease->slug);
+    \Artesaos\SEOTools\Facades\SEOTools::setCanonical($canonicalUrl);
+
     $name = $disease->getTranslation('name', $locale);
     $altName = $disease->getTranslation('name', $isBn ? 'en' : 'bn');
     $overviewText = strip_tags($disease->getTranslation('overview', $locale));

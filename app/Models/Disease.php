@@ -358,4 +358,14 @@ class Disease extends Model
             })
             ->with(['specialties', 'chambers']);
     }
+
+    /**
+     * Dynamic accessor for SEO keywords from associated SeoMeta
+     */
+    public function getSeoKeywordsAttribute()
+    {
+        $locale = app()->getLocale();
+        return $this->seoMeta?->getTranslation('keywords', $locale, false) 
+            ?: ($this->seoMeta?->keywords ?? null);
+    }
 }
